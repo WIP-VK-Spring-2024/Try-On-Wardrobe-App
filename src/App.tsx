@@ -8,21 +8,27 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {GluestackUIProvider, Box} from '@gluestack-ui/themed';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { GarmentList } from './components/GarmentList';
-import { Footer } from './components/Footer'
 import { Header } from './components/Header';
+import { RobotoText } from './components/common';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { BaseScreen } from './components/base';
 
-const Stack = createNativeStackNavigator();
+export const Stack = createNativeStackNavigator();
 
-const GarmentPage = () => {
+const GarmentScreen = ({navigation}: {navigation: any}) => {
   return (
-    <Box
-      height="100%"
-    >
+    <BaseScreen navigation={navigation}>
       <GarmentList/>
-      <Footer />
-    </Box>
+    </BaseScreen>
+  )
+}
+
+const AnotherScreen = ({navigation}: {navigation: any}) => {
+  return (
+    <BaseScreen navigation={navigation}>
+      <RobotoText>Another page</RobotoText>
+    </BaseScreen>
   )
 }
 
@@ -47,8 +53,14 @@ function App(): JSX.Element {
           >
             <Stack.Screen
               name="Home"
-              component={GarmentPage}
+              component={GarmentScreen}
             />
+
+            <Stack.Screen
+              name="Another"
+              component={AnotherScreen}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
       </GluestackUIProvider>
