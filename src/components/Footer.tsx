@@ -1,0 +1,29 @@
+import React from 'react'
+import { Box } from "@gluestack-ui/themed";
+import { windowWidth } from "../consts";
+
+import NewsPaperIcon from '../../assets/icons/paper.svg';
+import GarmentIcon from '../../assets/icons/garment.svg';
+import AddBtnIcon from '../../assets/icons/add-btn.svg';
+import OutfitIcon from '../../assets/icons/outfit.svg';
+import HangerIcon from '../../assets/icons/hanger.svg';
+
+export const Footer = () => {
+    const normalSize = windowWidth / 8;
+    const addBtnSize = normalSize + 20;
+    return (
+      <Box 
+        bg="$white" 
+        display="flex" 
+        flexDirection='row' 
+        justifyContent='space-around'
+        alignItems='center'
+      >
+        <NewsPaperIcon width={normalSize} height={normalSize}/>
+        <GarmentIcon  width={normalSize} height={normalSize}/>
+        <AddBtnIcon  width={addBtnSize} height={addBtnSize}/>
+        <OutfitIcon  width={normalSize} height={normalSize}/>
+        <HangerIcon  width={normalSize} height={normalSize}/>
+      </Box>
+    )
+}
