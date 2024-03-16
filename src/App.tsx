@@ -8,7 +8,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {GluestackUIProvider, Box, Pressable, Text, Center, Spinner, HStack} from '@gluestack-ui/themed';
 import {NavigationContainer} from '@react-navigation/native';
-import { GarmentList } from './components/GarmentList';
+import { GarmentList, PeopleList, StaticGarmentList } from './components/GarmentList';
 import { Header } from './components/Header';
 import { RobotoText } from './components/common';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,34 +16,52 @@ import { BaseScreen } from './components/base';
 import { active_color, windowHeight, windowWidth } from './consts';
 import { endpoint } from '../config';
 
-import { selectionStore } from './store';
+import { peopleSelectionStore, clothesSelectionStore } from './store';
 import { observer } from 'mobx-react-lite';
+import { Footer } from './components/Footer';
 
 export const Stack = createNativeStackNavigator();
 
-const GarmentScreen = observer(({navigation}: {navigation: any}) => {
+const HomeScreen = observer(({navigation}: {navigation: any}) => {
   return (
     <BaseScreen navigation={navigation}>
+      <StaticGarmentList/>
+    </BaseScreen>
+  )
+})
+
+const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
+  const footer = clothesSelectionStore.somethingSelected
+                ? <ForwardFooter navigation={navigation} destination='Result'/>
+                : <Footer navigation={navigation} />
+  return (
+    <BaseScreen navigation={navigation} footer={footer}>
       <GarmentList/>
     </BaseScreen>
   )
 })
 
-const AnotherScreen = observer(({navigation}: {navigation: any}) => {
-  const customFooter = (
-      <Pressable 
-        onPress={()=>navigation.navigate('Result')} 
-        bgColor={active_color} h={65}
-      >
-        <Center>
-          <Text color="white" fontSize="$3xl">Выбрать</Text>
-        </Center>
-      </Pressable>
-    )
-  
+const ForwardFooter = observer(({navigation, destination}: {navigation: any, destination: string}) => {
   return (
-    <BaseScreen navigation={navigation} footer={customFooter}>
-      <RobotoText>Another page</RobotoText>
+    <Pressable 
+      onPress={()=>navigation.navigate(destination)} 
+      bgColor={active_color} h={65}
+    >
+      <Center>
+        <Text color="white" fontSize="$3xl">Выбрать</Text>
+      </Center>
+    </Pressable>
+  )
+})
+
+const PersonSelectionScreen = observer(({navigation}: {navigation: any}) => {
+  const footer = peopleSelectionStore.somethingSelected
+                 ? <ForwardFooter navigation={navigation} destination='Clothes'/>
+                 : <Footer navigation={navigation} />
+
+  return (
+    <BaseScreen navigation={navigation} footer={footer}>
+      <PeopleList/>
     </BaseScreen>
   )
 })
@@ -65,11 +83,12 @@ const ResultScreen = observer(({navigation}: {navigation: any}) => {
 
 fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/clothes').then(
   res => res.json().then(data => {
-      selectionStore.setItems(data.map((el: any) => el.Image))
-      console.log(selectionStore.items)
+      clothesSelectionStore.setItems(data.map((el: any) => el.Image))
     }
   )
 )
+
+peopleSelectionStore.setItems(['person.jpg'])
 
 const App = observer((): JSX.Element => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -92,12 +111,17 @@ const App = observer((): JSX.Element => {
           >
             <Stack.Screen
               name="Home"
-              component={GarmentScreen}
+              component={HomeScreen}
             />
 
             <Stack.Screen
-              name="Another"
-              component={AnotherScreen}
+              name="Person"
+              component={PersonSelectionScreen}
+            />
+
+            <Stack.Screen
+              name="Clothes"
+              component={GarmentSelectionScreen}
             />
 
             <Stack.Screen

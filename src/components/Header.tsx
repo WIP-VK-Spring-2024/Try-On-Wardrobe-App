@@ -29,7 +29,7 @@ export const Header = () => {
                 <AvatarFallbackText>nikstarling</AvatarFallbackText>
                 </Avatar>
                 <RobotoText color={base_color} fontSize="$2xl">
-                Вещи
+                    Try-On
                 </RobotoText>
             </Box>
             <Box

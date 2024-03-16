@@ -53,10 +53,10 @@ class SelectionList {
             if (this.items[i].id === id) {
                 if (this.items[i].selected) {
                     this.items[i].selected = false;
-                    this.selectedItemId = i;
+                    this.selectedItemId = undefined;
                 } else {
                     this.items[i].selected = true;
-                    this.selectedItemId = undefined;
+                    this.selectedItemId = i;
                 }
             } else {
                 this.items[i].selected = false;
@@ -76,4 +76,5 @@ class SelectionList {
     }
 }
 
-export const selectionStore = new SelectionList([]);
+export const clothesSelectionStore = new SelectionList([]);
+export const peopleSelectionStore = new SelectionList([]);
