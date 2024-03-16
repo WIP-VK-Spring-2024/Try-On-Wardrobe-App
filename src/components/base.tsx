@@ -1,8 +1,10 @@
 import React from 'react'
 import { Footer } from './Footer'
-import { Box, ScrollView } from '@gluestack-ui/themed'
+import { Box, ScrollView, Text } from '@gluestack-ui/themed'
+import { observer } from 'mobx-react-lite';
 
-export const BaseScreen = (props: any) => {
+export const BaseScreen = observer((props: any) => {
+    const footer = props.footer || <Footer navigation={props.navigation}/>;
     return (
       <Box
         height="100%"
@@ -11,7 +13,7 @@ export const BaseScreen = (props: any) => {
         <ScrollView>
             {props.children}
         </ScrollView>
-        <Footer navigation={props.navigation}/>
+        {footer}
       </Box>
     )
-}
+})

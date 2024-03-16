@@ -7,8 +7,9 @@ import GarmentIcon from '../../assets/icons/garment.svg';
 import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import OutfitIcon from '../../assets/icons/outfit.svg';
 import HangerIcon from '../../assets/icons/hanger.svg';
+import { observer } from 'mobx-react-lite';
 
-export const Footer = ({navigation}: {navigation: any}) => {
+export const Footer = observer(({navigation}: {navigation: any}) => {
     const normalSize = windowWidth / 8;
     const addBtnSize = normalSize + 20;
     return (
@@ -27,4 +28,4 @@ export const Footer = ({navigation}: {navigation: any}) => {
         <HangerIcon  width={normalSize} height={normalSize}/>
       </Box>
     )
-}
+})

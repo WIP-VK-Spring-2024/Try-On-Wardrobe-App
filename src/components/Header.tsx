@@ -7,6 +7,7 @@ import { RobotoText } from "./common";
 import FilterIcon from '../../assets/icons/filter.svg';
 import SettingsIcon from '../../assets/icons/settings.svg';
 import SearchIcon from '../../assets/icons/search.svg';
+import { observer } from 'mobx-react-lite';
 
 export const Header = () => {
     return (
@@ -42,4 +43,4 @@ export const Header = () => {
             </Box>
         </Box>
     );
-};
+}
