@@ -109,7 +109,7 @@ export const BaseList = observer((props: {items: any}) => {
 export const StaticGarmentList = observer((props: any) => {
   const clothes = clothesSelectionStore.items.map(item => (
     <ListImage 
-      source={{uri: endpoint + 'static/clothes/' + item.url}}
+      source={{uri: 'file:///' + item.url}}
     />
   ))
 

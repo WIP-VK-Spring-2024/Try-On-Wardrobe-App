@@ -20,6 +20,7 @@ class SelectionList {
             select: action,
             toggle: action,
             setItems: action,
+            addItem: action,
 
             somethingSelected: computed
         });
@@ -35,6 +36,14 @@ class SelectionList {
             url,
             selected: false
         }))
+    }
+
+    addItem(url: string) {
+        this.items.push({
+            id: this.items.length,
+            url,
+            selected: false
+        })
     }
 
     select(id: number) {

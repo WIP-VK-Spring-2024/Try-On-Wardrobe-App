@@ -23,6 +23,8 @@ import { Footer } from './components/Footer';
 import LikeIcon from '../assets/icons/like.svg';
 import DislikeIcon from '../assets/icons/dislike.svg';
 
+import RNFS from 'react-native-fs'
+
 export const Stack = createNativeStackNavigator();
 
 const HomeScreen = observer(({navigation}: {navigation: any}) => {
@@ -124,12 +126,34 @@ const ResultScreen = observer(({navigation}: {navigation: any}) => {
   )
 })
 
-fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/clothes').then(
-  res => res.json().then(data => {
-      clothesSelectionStore.setItems(data.map((el: any) => el.Image))
-    }
-  )
-)
+// fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/clothes').then(
+//   res => res.json().then(data => {
+//       clothesSelectionStore.setItems(data.map((el: any) => el.Image))
+//     }
+//   )
+// )
+
+// const localPath = async (image) => {
+//   const newPath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
+//   await RNFS.copyFile(image, newPath);
+
+//   return newPath;
+// }
+
+// RNFS.writefile(RNFS.DocumentDirectoryPath + '1.png', require())
+
+// clothesSelectionStore.setItems(['1.png', '2.png', '3.png', '4.png', '5.png', '6.png']);
+
+const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes'
+console.log(pictures_path)
+
+RNFS.mkdir(pictures_path)
+
+RNFS.readDir(pictures_path).then(items => {
+  console.log(items);
+  clothesSelectionStore.setItems(items.map(item => item.path));
+});
 
 peopleSelectionStore.setItems(['person.jpg'])
 
