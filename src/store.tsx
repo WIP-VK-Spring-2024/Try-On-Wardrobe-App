@@ -76,5 +76,24 @@ class SelectionList {
     }
 }
 
+class ResultStore {
+    resultUrl: string | undefined
+
+    constructor() {
+        this.resultUrl = undefined;
+        makeObservable(this, {
+            resultUrl: observable,
+
+            setResultUrl: action
+        })
+    }
+
+    setResultUrl(url: string) {
+        this.resultUrl = url;
+    }
+}
+
 export const clothesSelectionStore = new SelectionList([]);
 export const peopleSelectionStore = new SelectionList([]);
+
+export const resultStore = new ResultStore();

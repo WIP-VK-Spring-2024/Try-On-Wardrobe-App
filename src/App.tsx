@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
-import {GluestackUIProvider, Box, Pressable, Text, Center, Spinner, HStack} from '@gluestack-ui/themed';
+import {GluestackUIProvider, Box, Pressable, Text, Center, Spinner, HStack, Image} from '@gluestack-ui/themed';
 import {NavigationContainer} from '@react-navigation/native';
 import { GarmentList, PeopleList, StaticGarmentList } from './components/GarmentList';
 import { Header } from './components/Header';
@@ -16,9 +16,12 @@ import { BaseScreen } from './components/base';
 import { active_color, windowHeight, windowWidth } from './consts';
 import { endpoint } from '../config';
 
-import { peopleSelectionStore, clothesSelectionStore } from './store';
+import { peopleSelectionStore, clothesSelectionStore, resultStore } from './store';
 import { observer } from 'mobx-react-lite';
 import { Footer } from './components/Footer';
+
+import LikeIcon from '../assets/icons/like.svg';
+import DislikeIcon from '../assets/icons/dislike.svg';
 
 export const Stack = createNativeStackNavigator();
 
@@ -32,8 +35,34 @@ const HomeScreen = observer(({navigation}: {navigation: any}) => {
 
 const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   const footer = clothesSelectionStore.somethingSelected
-                ? <ForwardFooter navigation={navigation} destination='Result'/>
-                : <Footer navigation={navigation} />
+      ? <ButtonFooter onPress = {()=>{
+        navigation.navigate('Result');
+
+        fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/try_on/62e29ffe-b3dd-4652-bc18-d4aebb76068f',
+          {
+            method: 'POST'
+          }
+        )
+
+        const interval_id = setInterval(() => {
+          fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/try_on/62e29ffe-b3dd-4652-bc18-d4aebb76068f').then((res)=>{
+            console.log()
+            if (res.status === 200) {
+              res.json().then(data => {
+                console.log(data)
+
+                setTimeout(() => {
+                  resultStore.setResultUrl('static/try_on/' + data.url);
+                }, 1000);
+                clearInterval(interval_id);
+              })
+              .catch(reason => console.log(reason));
+            }
+          })
+          .catch(reason => console.log(reason))
+        }, 1000)
+      }}/>
+      : <Footer navigation={navigation} />
   return (
     <BaseScreen navigation={navigation} footer={footer}>
       <GarmentList/>
@@ -41,10 +70,10 @@ const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   )
 })
 
-const ForwardFooter = observer(({navigation, destination}: {navigation: any, destination: string}) => {
+const ButtonFooter = observer(({onPress}: {onPress: ()=>void}) => {
   return (
     <Pressable 
-      onPress={()=>navigation.navigate(destination)} 
+      onPress={()=>onPress()} 
       bgColor={active_color} h={65}
     >
       <Center>
@@ -52,6 +81,10 @@ const ForwardFooter = observer(({navigation, destination}: {navigation: any, des
       </Center>
     </Pressable>
   )
+})
+
+const ForwardFooter = observer(({navigation, destination}: {navigation: any, destination: string}) => {
+  return <ButtonFooter onPress ={()=>navigation.navigate(destination)}/>
 })
 
 const PersonSelectionScreen = observer(({navigation}: {navigation: any}) => {
@@ -69,13 +102,23 @@ const PersonSelectionScreen = observer(({navigation}: {navigation: any}) => {
 const ResultScreen = observer(({navigation}: {navigation: any}) => {
   return (
     <BaseScreen navigation={navigation}>
-      <Box h={600} w="100%"
+      <Box h={800} w="100%"
         display="flex" justifyContent='center' alignItems='center'
       >
-          <HStack>
+        {
+          resultStore.resultUrl === undefined
+          ? <HStack>
             <Spinner size="large" color={active_color}/>
             <RobotoText>Загрузка...</RobotoText>
           </HStack>
+          : <Box w="100%" h="100%" display="flex" flexDirection='column'>
+              <Image w="100%" h="80%" source={endpoint + resultStore.resultUrl} alt="result"/>
+              <Box w="100%" display="flex" flexDirection='row' justifyContent='space-around' alignItems='center'>
+                <DislikeIcon width={50} height={50}/>
+                <LikeIcon width={50} height={50}/>
+              </Box>
+            </Box>
+        }
       </Box>
     </BaseScreen>
   )
