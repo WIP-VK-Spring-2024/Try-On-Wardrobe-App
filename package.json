@@ -20,6 +20,7 @@
     "@react-navigation/native-stack": "^6.9.25",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.6",
+    "prettier": "^3.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.3",
@@ -43,7 +44,6 @@
     "eslint": "^8.19.0",
     "jest": "^29.2.1",
     "metro-react-native-babel-preset": "0.76.8",
-    "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4"
   },

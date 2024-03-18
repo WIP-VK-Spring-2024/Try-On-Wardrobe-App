@@ -1,20 +1,18 @@
-import React, { useState } from 'react'
+import React from 'react';
 
-import { Box, ScrollView, Image, Pressable } from "@gluestack-ui/themed";
-import { ImageSourcePropType, StyleSheet } from "react-native";
-import { base_color, windowHeight, windowWidth } from "../consts";
-
+import { Box, Image, Pressable } from '@gluestack-ui/themed';
+import { ImageSourcePropType, StyleSheet } from 'react-native';
+import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
 import { clothesSelectionStore, peopleSelectionStore } from '../store';
 import { endpoint } from '../../config';
 
-
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
   for (let i = 0; i < items.length; i++) {
-    if (i % 2 == 0) {
+    if (i % 2 === 0) {
       item_pairs.push([items[i]]);
     } else {
       item_pairs[item_pairs.length - 1].push(items[i]);
@@ -22,94 +20,94 @@ const divideIntoPairs = (items: any[]) => {
   }
 
   return item_pairs;
-}
+};
 
-const ListImage = observer((props: {source: string | ImageSourcePropType}) => {
+const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
   return (
-    <Image {...props} w="49%" h={windowHeight / 3} alt="" />
-  )
-})
+    <Image {...props} w={(windowWidth - 30) / 2} h={(windowWidth - 30) / 2 * 3 / 2} alt="" borderRadius={20}/>
+  );
+});
 
 const style = StyleSheet.create({
-  overlay:{
+  overlay: {
     width: 3,
     height: 3,
-    position:'absolute',
+    position: 'absolute',
     right: 10,
     bottom: 10,
-  }
-})
+  },
+});
 
 const ClothesListCard = observer(
-  ( {source, selected, id}: 
-    {source: string | ImageSourcePropType, selected: boolean, id: number}
+  ({ source, selected, id }:
+    { source: string | ImageSourcePropType, selected: boolean, id: number }
   ) => {
-  const overlaySize = windowWidth / 4;
+    const overlaySize = windowWidth / 4;
 
-  return (
-    <Pressable 
-      bg={base_color} 
-      onPress={()=>clothesSelectionStore.toggle(id)}
-      w="49%" h={windowHeight / 3}
-    >
-      <Image source={source} w="100%" h="100%" alt=""/>
-      { selected && <SelectedIcon 
-          position='absolute' 
-          style={style.overlay} 
-          width={overlaySize} 
+    return (
+      <Pressable
+        bg={base_color}
+        onPress={() => clothesSelectionStore.toggle(id)}
+        w="49%" h={windowHeight / 3}
+      >
+        <Image source={source} w="100%" h="100%" alt="" />
+        {selected && <SelectedIcon
+          position='absolute'
+          style={style.overlay}
+          width={overlaySize}
           height={overlaySize}
           color="blue"
         />
-      }
-    </Pressable>)
-})
+        }
+      </Pressable>)
+  })
 
 const PersonListCard = observer(
-  ( {source, selected, id}: 
-    {source: string | ImageSourcePropType, selected: boolean, id: number}
+  ({ source, selected, id }:
+    { source: string | ImageSourcePropType, selected: boolean, id: number }
   ) => {
-  const overlaySize = windowWidth / 4;
+    const overlaySize = windowWidth / 4;
 
-  return (
-    <Pressable 
-      bg={base_color} 
-      onPress={()=>peopleSelectionStore.toggle(id)}
-      w="49%" h={windowHeight / 3}
-    >
-      <Image source={source} w="100%" h="100%" alt=""/>
-      { selected && <SelectedIcon 
-          position='absolute' 
-          style={style.overlay} 
-          width={overlaySize} 
+    return (
+      <Pressable
+        bg={base_color}
+        onPress={() => peopleSelectionStore.toggle(id)}
+        w="49%" h={windowHeight / 3}
+      >
+        <Image source={source} w="100%" h="100%" alt="" />
+        {selected && <SelectedIcon
+          position='absolute'
+          style={style.overlay}
+          width={overlaySize}
           height={overlaySize}
           color="blue"
         />
-      }
-    </Pressable>)
-})
+        }
+      </Pressable>)
+  })
 
-export const BaseList = observer((props: {items: any}) => {
+export const BaseList = observer((props: { items: any }) => {
   const pairs = divideIntoPairs(props.items);
   return (
-    <Box bg={base_color} display='flex' flexDirection='column' gap={10}>
-    {
-      pairs.map((item_pair, i) => {
-        return (
-          <Box key={i} display='flex' flexDirection='row' gap={10}>
-            {item_pair[0]}
-            {item_pair[1]}
-          </Box>
-        )
-      })
-    }
+    <Box bg={base_color} display='flex' flexDirection='column' gap={10} padding={10}>
+      {
+        pairs.map((item_pair, i) => {
+          return (
+            <Box key={i} display='flex' flexDirection='row' gap={10}>
+              {item_pair[0]}
+              {item_pair[1]}
+            </Box>
+          )
+        })
+      }
     </Box>
   )
 })
 
 export const StaticGarmentList = observer((props: any) => {
   const clothes = clothesSelectionStore.items.map(item => (
-    <ListImage 
-      source={{uri: 'file:///' + item.url}}
+    <ListImage
+      source={{ uri: 'file:///' + item.url }}
     />
   ))
 
@@ -118,9 +116,9 @@ export const StaticGarmentList = observer((props: any) => {
 
 export const GarmentList = observer((props: any) => {
   const clothes = clothesSelectionStore.items.map(item => (
-    <ClothesListCard 
-      source={{uri: endpoint + 'static/clothes/' + item.url}}
-      selected={item.selected} 
+    <ClothesListCard
+      source={{ uri: endpoint + 'static/clothes/' + item.url }}
+      selected={item.selected}
       id={item.id}
     />
   ))
@@ -130,9 +128,9 @@ export const GarmentList = observer((props: any) => {
 
 export const PeopleList = observer((props: any) => {
   const clothes = peopleSelectionStore.items.map(item => (
-    <PersonListCard 
-      source={{uri: endpoint + 'static/people/' + item.url}}
-      selected={item.selected} 
+    <PersonListCard
+      source={{ uri: endpoint + 'static/people/' + item.url }}
+      selected={item.selected}
       id={item.id}
     />
   ))
