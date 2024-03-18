@@ -27,7 +27,7 @@ export const Header = () => {
         </RobotoText>
       </Box>
       <Box display="flex" flexDirection="row" gap={20}>
-        <FilterIcon />
+        <FilterIcon stroke={active_color}/>
         <SettingsIcon />
         <SearchIcon />
       </Box>
