@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Avatar, AvatarFallbackText, Box} from '@gluestack-ui/themed';
-import {active_color, base_color} from '../consts';
+import {active_color, base_color, header_color, header_icon_color, text_color} from '../consts';
 import {RobotoText} from './common';
 
 import FilterIcon from '../../assets/icons/filter.svg';
@@ -11,7 +11,7 @@ import SearchIcon from '../../assets/icons/search.svg';
 export const Header = () => {
   return (
     <Box
-      bg={base_color}
+      bg={header_color}
       $base-height={60}
       display="flex"
       flexDirection="row"
@@ -22,14 +22,14 @@ export const Header = () => {
         <Avatar bg={active_color} borderRadius="$full">
           <AvatarFallbackText>nikstarling</AvatarFallbackText>
         </Avatar>
-        <RobotoText color="#FFFFFF" fontSize="$2xl">
+        <RobotoText color={text_color} fontSize="$2xl">
           Try-On
         </RobotoText>
       </Box>
       <Box display="flex" flexDirection="row" gap={20}>
-        <FilterIcon stroke={active_color}/>
-        <SettingsIcon />
-        <SearchIcon />
+        <FilterIcon stroke={header_icon_color}/>
+        <SettingsIcon stroke={header_icon_color}/>
+        <SearchIcon stroke={header_icon_color}/>
       </Box>
     </Box>
   );

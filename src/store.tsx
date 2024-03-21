@@ -1,87 +1,58 @@
 import {makeObservable, observable, action, computed} from 'mobx';
+import { ImageType } from './models';
+import { garmentStore } from './stores/GarmentStore';
 
-interface ItemCard {
-  id: number;
-  url: string;
-  selected: boolean;
-}
+type ItemGetter = (id: number) => any;
 
-class SelectionList {
-  items: ItemCard[] = [];
+export class SingleSelectionStore {
+  // getItem: ItemGetter;
+  items: any[];
   selectedItemId: number | undefined;
 
-  constructor(urls: string[] | undefined) {
+  constructor(items: any[]) {
+    this.items = items;
     this.selectedItemId = undefined;
 
     makeObservable(this, {
-      items: observable,
       selectedItemId: observable,
 
       select: action,
       toggle: action,
-      setItems: action,
-      addItem: action,
 
-      somethingSelected: computed,
-    });
-
-    if (urls !== undefined) {
-      this.setItems(urls);
-    }
-  }
-
-  setItems(urls: string[]) {
-    this.items = urls.map((url, id) => ({
-      id,
-      url,
-      selected: false,
-    }));
-  }
-
-  addItem(url: string) {
-    this.items.push({
-      id: this.items.length,
-      url,
-      selected: false,
+      somethingIsSelected: computed,
+      selectedItem: computed
     });
   }
+
+  // setItemGetter(getItem: ItemGetter) {
+  //   this.getItem = getItem;
+  // }
 
   select(id: number) {
     this.selectedItemId = id;
-    for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].id === id) {
-        this.items[i].selected = true;
-      } else {
-        this.items[i].selected = false;
-      }
-    }
   }
 
   toggle(id: number) {
-    for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].id === id) {
-        if (this.items[i].selected) {
-          this.items[i].selected = false;
-          this.selectedItemId = undefined;
-        } else {
-          this.items[i].selected = true;
-          this.selectedItemId = i;
-        }
-      } else {
-        this.items[i].selected = false;
-      }
+    if (this.selectedItemId === id) {
+      this.selectedItemId = undefined;
+    } else {
+      this.selectedItemId = id;
     }
   }
 
   unselect() {
     this.selectedItemId = undefined;
-    for (let i = 0; i < this.items.length; i++) {
-      this.items[i].selected = false;
-    }
   }
 
-  get somethingSelected() {
+  get somethingIsSelected() {
     return this.selectedItemId !== undefined;
+  }
+
+  get selectedItem() {
+    if (this.selectedItemId === undefined)
+      return undefined;
+
+    return this.items[this.selectedItemId];
   }
 }
 
@@ -102,7 +73,5 @@ class ResultStore {
   }
 }
 
-export const clothesSelectionStore = new SelectionList([]);
-export const peopleSelectionStore = new SelectionList([]);
-
+export const garmentScreenSelectionStore = new SingleSelectionStore(garmentStore.garments);
 export const resultStore = new ResultStore();

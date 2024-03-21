@@ -1,6 +1,7 @@
 {
     "replaceAttrValues": {
-        "#000000": "{props.stroke}"
+        "#000000": "{props.stroke}",
+        "#ffffff": "{props.fill}"
     },
     "svgo": true
 }

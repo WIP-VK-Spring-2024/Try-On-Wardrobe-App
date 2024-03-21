@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Box, Image, Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
@@ -6,8 +6,11 @@ import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
-import { clothesSelectionStore, peopleSelectionStore } from '../store';
+import { garmentScreenSelectionStore, SingleSelectionStore } from '../store';
 import { endpoint } from '../../config';
+import { garmentStore } from '../stores/GarmentStore';
+
+import RNFS from 'react-native-fs';
 
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
@@ -23,6 +26,7 @@ const divideIntoPairs = (items: any[]) => {
 };
 
 const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
+  console.log(props.source)
   return (
     <Image {...props} w={(windowWidth - 30) / 2} h={(windowWidth - 30) / 2 * 3 / 2} alt="" borderRadius={20}/>
   );
@@ -105,17 +109,24 @@ export const BaseList = observer((props: { items: any }) => {
 })
 
 export const StaticGarmentList = observer((props: any) => {
-  const clothes = clothesSelectionStore.items.map(item => (
-    <ListImage
-      source={{ uri: 'file:///' + item.url }}
-    />
+  const clothes = garmentScreenSelectionStore.items.map((item, i) => (
+    <Pressable
+      onPress={()=>{
+        garmentScreenSelectionStore.select(i);
+        props.navigation.navigate('Garment');
+      }}
+    >
+      <ListImage
+        source={{ uri: 'file://' + RNFS.DocumentDirectoryPath + '/images/clothes' + item.image.uri }}
+      />
+    </Pressable>
   ))
 
   return <BaseList items={clothes} />
 })
 
 export const GarmentList = observer((props: any) => {
-  const clothes = clothesSelectionStore.items.map(item => (
+  const clothes = garmentScreenSelectionStore.items.map(item => (
     <ClothesListCard
       source={{ uri: endpoint + 'static/clothes/' + item.url }}
       selected={item.selected}
@@ -127,7 +138,9 @@ export const GarmentList = observer((props: any) => {
 })
 
 export const PeopleList = observer((props: any) => {
-  const clothes = peopleSelectionStore.items.map(item => (
+  const [selectionStore, setSelectionStore] = useState(new SingleSelectionStore(garmentStore.garments));
+
+  const clothes = selectionStore.items.map(item => (
     <PersonListCard
       source={{ uri: endpoint + 'static/people/' + item.url }}
       selected={item.selected}
