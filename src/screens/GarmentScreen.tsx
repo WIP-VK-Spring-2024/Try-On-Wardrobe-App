@@ -1,23 +1,91 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { garmentScreenSelectionStore } from '../store';
-import { Box, Image } from '@gluestack-ui/themed';
-import { GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
+import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup } from '@gluestack-ui/themed';
+import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
 
-import EditIcon from '../assets/icons/edit.svg';
+import EditIcon from '../../assets/icons/edit.svg';
+import HashTagIcon from '../../assets/icons/hashtag.svg';
+import CrossIcon from '../../assets/icons/cross.svg';
 
-import WinterIcon from '../assets/icons/seasons/winter.svg';
-import SpringIcon from '../assets/icons/seasons/spring.svg';
-import SummerIcon from '../assets/icons/seasons/summer.svg';
-import AutumnIcon from '../assets/icons/seasons/autumn.svg';
+import WinterIcon from '../../assets/icons/seasons/winter.svg';
+import SpringIcon from '../../assets/icons/seasons/spring.svg';
+import SummerIcon from '../../assets/icons/seasons/summer.svg';
+import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 import { Pressable } from '@gluestack-ui/themed';
-import { CustomSelect, IconWithCaption, UpdateableText } from '../components/common';
+import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
+import { BaseScreen } from './base';
+import { Heading } from '@gluestack-ui/themed';
+import { Icon } from '@gluestack-ui/themed';
+import { AlertDialogFooter } from '@gluestack-ui/themed';
+import { Button } from '@gluestack-ui/themed';
+import { ButtonText } from '@gluestack-ui/themed';
+import { CloseIcon } from '@gluestack-ui/themed';
+
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
+  const [showAlertDialog, setShowAlertDialog] = useState(false);
+
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenSelectionStore.selectedItem as GarmentCard));
+
+  useEffect(() => {
+    props.navigation.addListener('beforeRemove', (e) => {
+      setShowAlertDialog(true);
+
+      e.preventDefault();
+    })
+  })
+
+  const CloseAlertDialog = observer(() => {
+    return (
+      <AlertDialog
+        isOpen={showAlertDialog}
+        onClose={() => {
+          setShowAlertDialog(false)
+        }}
+      >
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading size="lg">Сохранение </Heading>
+            <AlertDialogCloseButton>
+              <Icon as={CloseIcon} />
+            </AlertDialogCloseButton>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <RobotoText size="sm">
+              Вы действительно хотите выйти, не сохранив изменения?
+            </RobotoText>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <ButtonGroup space="lg">
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  setShowAlertDialog(false)
+                }}
+              >
+                <ButtonText>Отменить</ButtonText>
+              </Button>
+              <Button
+                bg="$error600"
+                action="negative"
+                onPress={() => {
+                  setShowAlertDialog(false)
+                }}
+              >
+                <ButtonText>Сбросить</ButtonText>
+              </Button>
+            </ButtonGroup>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    )
+  });
 
   const GarmentImage = observer(() => {
     return (
@@ -84,48 +152,128 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <IconWithCaption icon={<SpringIcon {...seasonIconProps('spring')}/>} caption="весна" />
         <IconWithCaption icon={<SummerIcon {...seasonIconProps('summer')}/>} caption="лето" />
         <IconWithCaption icon={<AutumnIcon {...seasonIconProps('autumn')}/>} caption="осень" />
+        <CloseAlertDialog />
+      </Box>
+    )
+  });
+
+  const GarmentTypeSelector = observer(() => {
+    return (
+      <Box
+        display="flex"
+        flexDirection='row'
+        justifyContent='space-between'
+      >
+        <CustomSelect
+          width="49%"
+          items={garmentStore.types}
+          selectedItem={garment.type?.name}
+          onChange={(value) => {
+            const type = garmentStore.getTypeByUUID(value);
+
+            if (type !== undefined) {
+              garment.setType(type);
+            }
+          }}
+          placeholder='Тип'
+        />
+        <CustomSelect
+          width="49%"
+          items={garmentStore.getAllSubtypes(garment.type)}
+          selectedItem={garment.subtype?.name}
+          onChange={(value) => {
+            const subtype = garmentStore.getSubTypeByUUID(value);
+
+            if (subtype !== undefined) {
+              garment.setSubtype(subtype);
+            }
+          }}
+          placeholder='Подтип'
+          disabled={garment.type === undefined}
+        />
+      </Box>
+    )
+  });
+
+  const GarmentStyleSelector = observer(() => {
+    return (
+      <CustomSelect
+        items={garmentStore.styles}
+        selectedItem={garment.style?.name}
+        onChange={value => {
+          const style = garmentStore.getStyleByUUID(value);
+
+          if (style !== undefined) {
+            garment.setStyle(style);
+          }
+        }}
+        placeholder='Стиль'
+      />
+    )
+  })
+
+  const Tag = observer((props: {name: string, isEditable: boolean}) => {
+    return (
+      <Box
+        display='flex'
+        flexDirection='row'
+        gap={4}
+        alignItems='center'
+      >
+        <HashTagIcon />
+        <RobotoText>{props.name}</RobotoText>
+        {
+          props.isEditable 
+          && <Pressable
+              onPress={() => {
+                garment.removeTag(props.name);
+              }}
+            >
+              <CrossIcon />
+            </Pressable>
+        }
+      </Box>
+    )
+  });
+
+  const GarmentTagBlock = observer(() => {
+    return (
+      <Box
+        display='flex'
+        flexDirection='row'
+        flexWrap='wrap'
+        gap={20}
+      >
+        {
+          garment.tags.map((tag, i) => {
+            return (
+              <Tag key={i} name={tag} isEditable={inEditing}/>
+            )
+          })
+        }
       </Box>
     )
   });
 
   return (
-    <Box 
-      display="flex" 
-      flexDirection='column' 
-      gap={20}
-      alignContent='center'
-      marginLeft={40}
-      marginRight={40}
-    >
-      <GarmentImage/>
-      <GarmentNameInput/>
-      <GarmentSeasonIcons/>
+    <BaseScreen navigation={props.navigation}>
+      <Box
+        display="flex" 
+        flexDirection='column' 
+        gap={20}
+        alignContent='center'
+        marginLeft={40}
+        marginRight={40}
+        marginBottom={100}
+      >
+        <GarmentImage/>
+        <GarmentNameInput/>
+        <GarmentSeasonIcons/>
+        <GarmentTypeSelector />
+        <GarmentStyleSelector />
+        <GarmentTagBlock />
 
-      <CustomSelect 
-        items={garmentStore.types}
-        selectedItem={garment.type?.name}
-        onChange={(value) => {
-          const type = garmentStore.getTypeByUUID(value);
-
-          if (type !== undefined) {
-            garment.setType(type);
-          }
-        }}
-        placeholder='Тип'
-      />
-      <CustomSelect 
-        items={garmentStore.getAllSubtypes(garment.type)}
-        selectedItem={garment.subtype?.name}
-        onChange={(value) => {
-          const subtype = garmentStore.getSubTypeByUUID(value);
-
-          if (subtype !== undefined) {
-            garment.setSubtype(subtype);
-          }
-        }}
-        placeholder='Подтип'
-        disabled={garment.type === undefined}
-      />
-    </Box>
-  )
-})
+      </Box>
+    </BaseScreen>
+  );
+});

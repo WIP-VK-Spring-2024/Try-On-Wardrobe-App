@@ -9,6 +9,8 @@ import { SelectDragIndicator } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
 import { InputField } from '@gluestack-ui/themed';
 import { Box } from '@gluestack-ui/themed';
+import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
+import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -18,20 +20,22 @@ export const RobotoText = observer((props: any) => {
   );
 });
 
-export const CustomSelect = observer((props: {
+interface CustomSelectProps extends StyledComponentProps<StyleProp<ViewStyle>, unknown, ViewProps, "Select"> {
   items: any[], 
   selectedItem: string | undefined,
   placeholder: string,
   onChange: ((value: string) => void) | undefined,
   disabled?: boolean
-}) => {
+}
+
+export const CustomSelect = observer((props: CustomSelectProps) => {
   return (
     <Select {...props}
       onValueChange={props.onChange}
       selectedValue={props.selectedItem}
       isDisabled={props.disabled || false}
     >
-      <SelectTrigger variant="outline" size="md">
+      <SelectTrigger variant="underlined" size="md">
         <SelectInput placeholder={props.placeholder}/>
         <SelectIcon mr="$3" as={ChevronDownIcon}/>
       </SelectTrigger>

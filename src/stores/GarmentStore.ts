@@ -26,6 +26,7 @@ export interface GarmentCardProps {
   subtype?: Updateable,
   style?: GarmentStyle,
   color?: string,
+  tags?: string[]
 }
 
 export class GarmentCard {
@@ -38,6 +39,7 @@ export class GarmentCard {
   subtype?: Updateable
   style?: GarmentStyle
   color?: string
+  tags: string[]
 
   constructor(props: GarmentCardProps) {
     this.uuid = props.uuid;
@@ -47,7 +49,8 @@ export class GarmentCard {
     this.type = props.type;
     this.subtype = props.subtype;
     this.style = props.style;
-    this.color = props.color;
+    // this.color = props.color;
+    this.tags = props.tags || [];
 
     makeObservable(this, {
       uuid: observable,
@@ -58,6 +61,7 @@ export class GarmentCard {
       subtype: observable,
       style: observable,
       // color: observable,
+      tags: observable,
 
       setUUID: action,
       setName: action,
@@ -66,7 +70,10 @@ export class GarmentCard {
       setImage: action,
       setType: action,
       setSubtype: action,
-      setStyle: action
+      setStyle: action,
+      setTags: action,
+      addTag: action,
+      removeTag: action
     })
   }
 
@@ -110,6 +117,22 @@ export class GarmentCard {
 
   setStyle(style: GarmentStyle) {
     this.style = style;
+  }
+
+  setTags(tags: string[]) {
+    this.tags = tags;
+  }
+
+  addTag(tag: string) {
+    this.tags.push(tag);
+  }
+
+  removeTag(tag: string) {
+    const index = this.tags.indexOf(tag);
+
+    if (index > -1) {
+      this.tags.splice(index, 1);
+    }
   }
 }
 
@@ -180,6 +203,10 @@ export class GarmentStore {
 
   getSubTypeByUUID(uuid: string) {
     return this.subtypes.find(t => t.uuid === uuid);
+  }
+
+  getStyleByUUID(uuid: string) {
+    return this.styles.find(st => st.uuid === uuid);
   }
 
   loadGarments(garments: GarmentResponse[]) {

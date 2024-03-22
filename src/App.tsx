@@ -269,10 +269,20 @@ garmentStore.setTypes(
   ]
 );
 
-garmentStore.setStyles([{
-  uuid: '1',
-  name: 'Стиль'
-}]);
+garmentStore.setStyles([
+  {
+    uuid: '1',
+    name: 'Повседневный'
+  },
+  {
+    uuid: '2',
+    name: 'Офисный'
+  },
+  {
+    uuid: '3',
+    name: 'Спортивный'
+  },
+]);
 
 garmentStore.setGarments([new GarmentCard({
   uuid: '1',
@@ -282,7 +292,14 @@ garmentStore.setGarments([new GarmentCard({
   image: {
     uri: '/89d37d2e-99ee-4901-9ff3-3560db533285.jpg',
     type: 'local'
-  }
+  },
+  tags: [
+    'кожа',
+    'skvorcovski',
+    'шнурки',
+    'удобные',
+    'маломерки'
+  ]
 })]);
 
 const App = observer((): JSX.Element => {
