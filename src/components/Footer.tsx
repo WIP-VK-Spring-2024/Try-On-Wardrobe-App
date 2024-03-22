@@ -11,7 +11,7 @@ import {observer} from 'mobx-react-lite';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
-import {clothesSelectionStore} from '../store';
+import { garmentStore } from '../stores/GarmentStore';
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
   const normalSize = windowWidth / 8;
@@ -42,14 +42,13 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
             cropping: true,
           })
           .then(image => {
-            console.log(image);
             const image_p = image.path.split('/');
             const image_name = image_p[image_p.length - 1];
 
             const new_path =
               RNFS.DocumentDirectoryPath + '/images/clothes/' + image_name;
             RNFS.moveFile(image.path, new_path).then(() => {
-              clothesSelectionStore.addItem(new_path);
+              // garmentStore.addItem(new_path);
             });
           })
           .catch(reason => console.log(reason))

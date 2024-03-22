@@ -1,11 +1,7 @@
 import {makeObservable, observable, action, computed} from 'mobx';
-import { ImageType } from './models';
 import { garmentStore } from './stores/GarmentStore';
 
-type ItemGetter = (id: number) => any;
-
 export class SingleSelectionStore {
-  // getItem: ItemGetter;
   items: any[];
   selectedItemId: number | undefined;
 
@@ -23,10 +19,6 @@ export class SingleSelectionStore {
       selectedItem: computed
     });
   }
-
-  // setItemGetter(getItem: ItemGetter) {
-  //   this.getItem = getItem;
-  // }
 
   select(id: number) {
     this.selectedItemId = id;
