@@ -23,6 +23,10 @@ import { AlertDialogFooter } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
 import { ButtonText } from '@gluestack-ui/themed';
 import { CloseIcon } from '@gluestack-ui/themed';
+import { getImageSource } from '../utils';
+import { ButtonFooter } from '../components/Footer';
+import { apiEndpoint } from '../../config';
+import { NavigationContainer } from '@react-navigation/native';
 
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
@@ -33,11 +37,45 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
 
   useEffect(() => {
     props.navigation.addListener('beforeRemove', (e) => {
-      setShowAlertDialog(true);
+      if (garment.hasChanges) {
+        setShowAlertDialog(true);
 
-      e.preventDefault();
+        e.preventDefault();
+      }
     })
   })
+
+  const saveChanges = () => {
+    garment.saveChanges();
+
+    const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
+
+    const garmentUpdate = (garment: GarmentCard) => ({
+      uuid: garment.uuid,
+      name: garment.name,
+      type_id: garment.type?.uuid,
+      subtype_id: garment.subtype?.uuid,
+      style_id: garment.style?.uuid,
+      tags: garment.tags
+    })
+
+    const new_garment = garmentUpdate(garment)
+
+    clearObj(new_garment)
+
+    console.log(new_garment)
+    console.log('to', apiEndpoint + '/clothes/' + garment.uuid)
+
+    fetch(apiEndpoint + '/clothes/' + garment.uuid, {
+      method: 'PUT',
+      body: JSON.stringify(new_garment),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(res => res.text().then(body => console.log(body)))
+      .catch(res => console.error(res))
+  }
 
   const CloseAlertDialog = observer(() => {
     return (
@@ -75,6 +113,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
                 bg="$error600"
                 action="negative"
                 onPress={() => {
+                  garment.clearChanges();
                   setShowAlertDialog(false)
                 }}
               >
@@ -90,7 +129,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   const GarmentImage = observer(() => {
     return (
       <Image 
-        source={'file://' + RNFS.DocumentDirectoryPath + '/images/clothes' + garment.image.uri}
+        source={getImageSource(garment.image)}
         w="auto"
         h={windowHeight / 2}
         resizeMode="contain"
@@ -124,6 +163,18 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
     )
   });
 
+  const SeasonIconPressable = (props: React.PropsWithChildren & {season: Season}) => {
+    return (
+      <Pressable
+        onPress={() => {
+          garment.toggleSeason(props.season);
+        }}
+      >
+        {props.children}
+      </Pressable>
+    )
+  }
+
   const GarmentSeasonIcons = observer(() => {
     const seasonIconSize = 40
 
@@ -148,10 +199,22 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         justifyContent='center'
         gap={20}
       >
-        <IconWithCaption icon={<WinterIcon {...seasonIconProps('winter')}/>} caption="зима" />
-        <IconWithCaption icon={<SpringIcon {...seasonIconProps('spring')}/>} caption="весна" />
-        <IconWithCaption icon={<SummerIcon {...seasonIconProps('summer')}/>} caption="лето" />
-        <IconWithCaption icon={<AutumnIcon {...seasonIconProps('autumn')}/>} caption="осень" />
+        <SeasonIconPressable season='winter'>
+          <IconWithCaption icon={<WinterIcon {...seasonIconProps('winter')}/>} caption="зима" />
+        </SeasonIconPressable>
+
+        <SeasonIconPressable season='spring'>
+          <IconWithCaption icon={<SpringIcon {...seasonIconProps('spring')}/>} caption="весна" />
+        </SeasonIconPressable>
+
+        <SeasonIconPressable season='summer'>
+          <IconWithCaption icon={<SummerIcon {...seasonIconProps('summer')}/>} caption="лето" />
+        </SeasonIconPressable>
+
+        <SeasonIconPressable season='autumn'>
+          <IconWithCaption icon={<AutumnIcon {...seasonIconProps('autumn')}/>} caption="осень" />
+        </SeasonIconPressable>
+
         <CloseAlertDialog />
       </Box>
     )
@@ -256,7 +319,12 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   });
 
   return (
-    <BaseScreen navigation={props.navigation}>
+    <BaseScreen 
+      navigation={props.navigation}
+      footer={
+        <ButtonFooter text='Сохранить' onPress={saveChanges}/>
+      }
+    >
       <Box
         display="flex" 
         flexDirection='column' 

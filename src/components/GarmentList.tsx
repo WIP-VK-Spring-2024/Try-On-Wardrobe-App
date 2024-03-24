@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 
-import { Box, Image, Pressable } from '@gluestack-ui/themed';
+import { Box, Image, MenuItem, Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
 import { garmentScreenSelectionStore, SingleSelectionStore } from '../store';
-import { endpoint } from '../../config';
+import { endpoint, staticEndpoint } from '../../config';
 import { garmentStore } from '../stores/GarmentStore';
 
 import RNFS from 'react-native-fs';
+import { ImageType } from '../models';
+import { getImageSource } from '../utils';
 
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
@@ -26,7 +28,6 @@ const divideIntoPairs = (items: any[]) => {
 };
 
 const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
-  console.log(props.source)
   return (
     <Image {...props} w={(windowWidth - 30) / 2} h={(windowWidth - 30) / 2 * 3 / 2} alt="" borderRadius={20}/>
   );
@@ -117,7 +118,7 @@ export const StaticGarmentList = observer((props: any) => {
       }}
     >
       <ListImage
-        source={{ uri: 'file://' + RNFS.DocumentDirectoryPath + '/images/clothes' + item.image.uri }}
+        source={getImageSource(item.image)}
       />
     </Pressable>
   ))

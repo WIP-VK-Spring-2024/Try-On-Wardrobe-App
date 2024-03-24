@@ -1,6 +1,6 @@
 import React from 'react';
-import {Box} from '@gluestack-ui/themed';
-import {add_btn_color, base_color, footer_color, footer_icon_color, windowWidth} from '../consts';
+import {Box, Button, Center} from '@gluestack-ui/themed';
+import {active_color, add_btn_color, base_color, footer_color, footer_icon_color, windowWidth} from '../consts';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
@@ -11,7 +11,7 @@ import {observer} from 'mobx-react-lite';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
-import { garmentStore } from '../stores/GarmentStore';
+import { RobotoText } from './common';
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
   const normalSize = windowWidth / 8;
@@ -63,5 +63,17 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         onPress={() => navigation.navigate('Person')}
       />
     </Box>
+  );
+});
+
+export const ButtonFooter = observer(({text, onPress}: {text: string, onPress: () => void}) => {
+  return (
+    <Button onPress={() => onPress()} bgColor={active_color} h={65}>
+      <Center>
+        <RobotoText color="white" fontSize="$3xl">
+          {text || 'Выбрать'}
+        </RobotoText>
+      </Center>
+    </Button>
   );
 });

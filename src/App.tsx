@@ -25,14 +25,14 @@ import {RobotoText} from './components/common';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {BaseScreen} from './screens/base';
 import {active_color, windowHeight, windowWidth} from './consts';
-import {endpoint} from '../config';
+import {apiEndpoint, endpoint} from '../config';
 
 import {
   garmentScreenSelectionStore,
   resultStore,
 } from './store';
 import {observer} from 'mobx-react-lite';
-import {Footer} from './components/Footer';
+import {ButtonFooter, Footer} from './components/Footer';
 
 import LikeIcon from '../assets/icons/like.svg';
 import DislikeIcon from '../assets/icons/dislike.svg';
@@ -94,18 +94,6 @@ const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
     <BaseScreen navigation={navigation} footer={footer}>
       <GarmentList navigation={navigation}/>
     </BaseScreen>
-  );
-});
-
-const ButtonFooter = observer(({onPress}: {onPress: () => void}) => {
-  return (
-    <Pressable onPress={() => onPress()} bgColor={active_color} h={65}>
-      <Center>
-        <Text color="white" fontSize="$3xl">
-          Выбрать
-        </Text>
-      </Center>
-    </Pressable>
   );
 });
 
@@ -186,121 +174,69 @@ RNFS.mkdir(pictures_path);
 
 // peopleSelectionStore.setItems(['person.jpg']);
 
-garmentStore.setTypes(
-  [
-    {
-      uuid: '1',
-      name: 'Ботинки'
-    },
-    {
-      uuid: '2',
-      name: 'Верх'
-    },
-    {
-      uuid: '3',
-      name: 'Низ'
-    },
-    {
-      uuid: '4',
-      name: 'Верхняя одежда'
-    },
-  ],
-  [
-    {
-      uuid: '1',
-      name: 'Туфли',
-      type_uuid: '1'
-    },
-    {
-      uuid: '2',
-      name: 'Полусапоги',
-      type_uuid: '1'
-    },
-    {
-      uuid: '3',
-      name: 'Кроссовки',
-      type_uuid: '1'
-    },
-    {
-      uuid: '4',
-      name: 'Футболки',
-      type_uuid: '2'
-    },
-    {
-      uuid: '5',
-      name: 'Рубашки',
-      type_uuid: '2'
-    },
-    {
-      uuid: '6',
-      name: 'Платья',
-      type_uuid: '2'
-    },
-    {
-      uuid: '7',
-      name: 'Штаны',
-      type_uuid: '3'
-    },
-    {
-      uuid: '8',
-      name: 'Джинсы',
-      type_uuid: '3'
-    },
-    {
-      uuid: '9',
-      name: 'Юбки',
-      type_uuid: '3'
-    },
-    {
-      uuid: '10',
-      name: 'Куртки',
-      type_uuid: '4'
-    },
-    {
-      uuid: '11',
-      name: 'Пальто',
-      type_uuid: '4'
-    },
-    {
-      uuid: '12',
-      name: 'Шубы',
-      type_uuid: '4'
-    },
-  ]
-);
+const typesRequest = fetch(apiEndpoint + '/types').then(data => {
+  return data.json().then(types => {
+    garmentStore.setTypes(types)
+    return true;
+  })
+});
 
-garmentStore.setStyles([
-  {
-    uuid: '1',
-    name: 'Повседневный'
-  },
-  {
-    uuid: '2',
-    name: 'Офисный'
-  },
-  {
-    uuid: '3',
-    name: 'Спортивный'
-  },
-]);
+const stylesRequest = fetch(apiEndpoint + '/styles').then(data => {
+  return data.json().then(styles => {
+    console.log(styles);
+    garmentStore.setStyles(styles);
+    return true;
+  })
+});
 
-garmentStore.setGarments([new GarmentCard({
-  uuid: '1',
-  name: 'Мои ботиночки',
-  color: '#0f0f0f',
-  seasons: ['spring', 'autumn'],
-  image: {
-    uri: '/89d37d2e-99ee-4901-9ff3-3560db533285.jpg',
-    type: 'local'
-  },
-  tags: [
-    'кожа',
-    'skvorcovski',
-    'шнурки',
-    'удобные',
-    'маломерки'
-  ]
-})]);
+fetch(apiEndpoint + '/clothes').then(async data => {
+  data.json().then(async clothes => {
+    console.log(clothes)
+
+    await Promise.all([typesRequest, stylesRequest]);
+    
+    const garmentCards = clothes.map(cloth => {
+      const garmentType = garmentStore.getTypeByUUID(cloth.type_id);
+      const garmentSubtype = garmentStore.getSubTypeByUUID(cloth.subtype_id);
+      const garmentStyle = garmentStore.getStyleByUUID(cloth.style_id);
+
+      return new GarmentCard({
+        uuid: cloth.uuid,
+        name: cloth.name,
+        type: garmentType,
+        subtype: garmentSubtype,
+        style: garmentStyle,
+        image: {
+          uri: `/clothes/${cloth.uuid}`,
+          type: 'remote'
+        },
+        tags: cloth.tags,
+
+      })
+    })
+
+    garmentStore.setGarments(garmentCards);
+    garmentScreenSelectionStore.setItems(garmentStore.garments);
+  })
+})
+
+// garmentStore.setGarments([new GarmentCard({
+//   uuid: '1',
+//   name: 'Мои ботиночки',
+//   color: '#0f0f0f',
+//   seasons: ['spring', 'autumn'],
+//   image: {
+//     uri: '/1.png',
+//     type: 'local'
+//   },
+//   tags: [
+//     'кожа',
+//     'skvorcovski',
+//     'шнурки',
+//     'удобные',
+//     'маломерки'
+//   ]
+// })]);
 
 const App = observer((): JSX.Element => {
   const isDarkMode = useColorScheme() === 'dark';

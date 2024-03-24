@@ -1,4 +1,4 @@
-import {makeObservable, observable, action, computed} from 'mobx';
+import {makeObservable, observable, action, computed, runInAction} from 'mobx';
 import { ImageType } from '../models';
 
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
@@ -94,6 +94,7 @@ export class GarmentCard {
     for (let i = 0; i < this.seasons.length; i++) {
       if (this.seasons[i] === season) {
         this.seasons.splice(i, 1);
+        found = true;
         break;
       }
     }
@@ -169,20 +170,8 @@ export class GarmentStore {
     this.styles = styles;
   }
 
-  setTypes(
-    types: {uuid: string, name: string}[],
-    subtypes: {uuid: string, type_uuid: string, name: string}[]
-  ) {
-    this.types = types.map(type => ({
-      uuid: type.uuid,
-      name: type.name,
-      subtypes: subtypes
-        .filter(subtype => subtype.type_uuid === type.uuid)
-        .map(subtype => ({
-          uuid: subtype.uuid, 
-          name: subtype.name
-        }))
-    }))
+  setTypes(types: GarmentType[]) {
+    this.types = types;
   }
 
   setGarments(garments: GarmentCard[]) {
@@ -251,8 +240,23 @@ export class GarmentCardEdit extends GarmentCard {
     makeObservable(this, {
       origin: observable,
       clearChanges: action,
-      saveChanges: action
+      saveChanges: action,
+
+      hasChanges: computed
     });
+  }
+
+  get hasChanges() {
+    return !(
+      this.uuid === this.origin.uuid &&
+      this.name === this.origin.name &&
+      this.seasons === this.origin.seasons &&
+      this.image === this.origin.image &&
+      this.type === this.origin.type &&
+      this.subtype === this.origin.subtype &&
+      this.style === this.origin.style &&
+      this.color === this.origin.color
+    );
   }
 
   clearChanges() {

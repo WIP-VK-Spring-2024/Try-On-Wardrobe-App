@@ -1,4 +1,4 @@
-import {makeObservable, observable, action, computed} from 'mobx';
+import {makeObservable, observable, action, computed, runInAction} from 'mobx';
 import { garmentStore } from './stores/GarmentStore';
 
 export class SingleSelectionStore {
@@ -10,14 +10,20 @@ export class SingleSelectionStore {
     this.selectedItemId = undefined;
 
     makeObservable(this, {
+      items: observable,
       selectedItemId: observable,
 
       select: action,
       toggle: action,
+      setItems: action,
 
       somethingIsSelected: computed,
       selectedItem: computed
     });
+  }
+
+  setItems(items: any) {
+    this.items = items;
   }
 
   select(id: number) {
