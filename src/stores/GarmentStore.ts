@@ -1,5 +1,6 @@
 import {makeObservable, observable, action, computed, runInAction} from 'mobx';
 import { ImageType } from '../models';
+import { deepEqualArr } from '../utils';
 
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
 
@@ -112,7 +113,7 @@ export class GarmentCard {
     this.type = type;
   }
 
-  setSubtype(subtype: Updateable) {
+  setSubtype(subtype: Updateable | undefined) {
     this.subtype = subtype;
   }
 
@@ -163,6 +164,8 @@ export class GarmentStore {
       setStyles: action,
       setTypes: action,
       setGarments: action,
+
+      addGarment: action
     })
   }
 
@@ -176,6 +179,10 @@ export class GarmentStore {
 
   setGarments(garments: GarmentCard[]) {
     this.garments = garments;
+  }
+
+  addGarment(garment: GarmentCard) {
+    this.garments.push(garment);
   }
 
   getAllSubtypes(type: Updateable | undefined) {
@@ -250,8 +257,7 @@ export class GarmentCardEdit extends GarmentCard {
     return !(
       this.uuid === this.origin.uuid &&
       this.name === this.origin.name &&
-      this.seasons === this.origin.seasons &&
-      this.image === this.origin.image &&
+      deepEqualArr(this.seasons, this.origin.seasons) &&
       this.type === this.origin.type &&
       this.subtype === this.origin.subtype &&
       this.style === this.origin.style &&
@@ -262,7 +268,7 @@ export class GarmentCardEdit extends GarmentCard {
   clearChanges() {
     this.uuid = this.origin.uuid;
     this.name = this.origin.name;
-    this.seasons = this.origin.seasons;
+    this.seasons = this.origin.seasons.slice();
     this.image = this.origin.image;
     this.type = this.origin.type;
     this.subtype = this.origin.subtype;
@@ -273,7 +279,7 @@ export class GarmentCardEdit extends GarmentCard {
   saveChanges() {
     this.origin.uuid = this.uuid;
     this.origin.name = this.name;
-    this.origin.seasons = this.seasons;
+    this.origin.seasons = this.seasons.slice();
     this.origin.image = this.image;
     this.origin.type = this.type;
     this.origin.subtype = this.subtype;

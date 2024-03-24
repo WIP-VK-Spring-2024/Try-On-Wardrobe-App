@@ -71,5 +71,49 @@ class ResultStore {
   }
 }
 
+class AppStateStore {
+  error: string | undefined
+  createMenuVisible: boolean
+
+  constructor() {
+    this.error = undefined
+    this.createMenuVisible = false;
+
+    makeObservable(this, {
+      error: observable,
+      createMenuVisible: observable,
+
+      setError: action,
+      closeError: action,
+      setCreateMenuVisible: action,
+      toggleCreateMenuVisible: action,
+
+      hasError: computed
+    })
+  }
+  
+  setError(error: string | undefined) {
+    this.error = error;
+  }
+
+  setCreateMenuVisible(isVisible: boolean) {
+    this.createMenuVisible = isVisible;
+  }
+
+  toggleCreateMenuVisible() {
+    this.createMenuVisible = !this.createMenuVisible;
+  }
+
+  closeError() {
+    this.error = undefined;
+  }
+
+  get hasError() {
+    return this.error != undefined;
+  }
+}
+
 export const garmentScreenSelectionStore = new SingleSelectionStore(garmentStore.garments);
 export const resultStore = new ResultStore();
+
+export const appState = new AppStateStore();

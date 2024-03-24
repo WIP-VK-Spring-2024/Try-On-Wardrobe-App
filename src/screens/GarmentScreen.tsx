@@ -26,7 +26,8 @@ import { CloseIcon } from '@gluestack-ui/themed';
 import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
-import { NavigationContainer } from '@react-navigation/native';
+
+import Animated from 'react-native-reanimated';
 
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
@@ -56,15 +57,13 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
       type_id: garment.type?.uuid,
       subtype_id: garment.subtype?.uuid,
       style_id: garment.style?.uuid,
-      tags: garment.tags
+      tags: garment.tags,
+      seasons: garment.seasons
     })
 
     const new_garment = garmentUpdate(garment)
 
     clearObj(new_garment)
-
-    console.log(new_garment)
-    console.log('to', apiEndpoint + '/clothes/' + garment.uuid)
 
     fetch(apiEndpoint + '/clothes/' + garment.uuid, {
       method: 'PUT',
@@ -73,7 +72,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         "Content-Type": "application/json",
       },
     })
-      .then(res => res.text().then(body => console.log(body)))
+      .then()
       .catch(res => console.error(res))
   }
 
@@ -128,12 +127,13 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
 
   const GarmentImage = observer(() => {
     return (
-      <Image 
+      <Animated.Image 
         source={getImageSource(garment.image)}
-        w="auto"
-        h={windowHeight / 2}
+        height={windowHeight / 2}
         resizeMode="contain"
         alt=""
+        // sharedTransitionTag={`garment-img-${garment.uuid}`}
+        // exiting={undefined}
       />
     )
   });
@@ -234,8 +234,14 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
           onChange={(value) => {
             const type = garmentStore.getTypeByUUID(value);
 
+            const oldType = garment.type;
+
             if (type !== undefined) {
               garment.setType(type);
+
+              if (type !== oldType) {
+                garment.setSubtype(undefined);
+              }
             }
           }}
           placeholder='Тип'

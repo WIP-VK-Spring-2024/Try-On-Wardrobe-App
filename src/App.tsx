@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {BackHandler, SafeAreaView, StatusBar, StyleSheet, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {
   GluestackUIProvider,
   Box,
-  Pressable,
-  Text,
-  Center,
   Spinner,
   HStack,
   Image,
-  Input,
-  InputField,
 } from '@gluestack-ui/themed';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {
   GarmentList,
   PeopleList,
@@ -28,6 +23,7 @@ import {active_color, windowHeight, windowWidth} from './consts';
 import {apiEndpoint, endpoint} from '../config';
 
 import {
+  appState,
   garmentScreenSelectionStore,
   resultStore,
 } from './store';
@@ -37,17 +33,134 @@ import {ButtonFooter, Footer} from './components/Footer';
 import LikeIcon from '../assets/icons/like.svg';
 import DislikeIcon from '../assets/icons/dislike.svg';
 
+import CameraIcon from '../assets/icons/camera.svg';
+import GalleryIcon from '../assets/icons/gallery.svg';
+
 import RNFS from 'react-native-fs';
 import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { GarmentScreen } from './screens/GarmentScreen';
+import { convertGarmentResponse } from './utils';
+import { Pressable } from '@gluestack-ui/themed';
+
+import Animated from 'react-native-reanimated';
+import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
+import { createGarmentFromCamera, createGarmentFromGallery } from './requests/imageCreation';
 
 export const Stack = createNativeStackNavigator();
 
-const HomeScreen = observer(({navigation}: {navigation: any}) => {
+const AddMenu = observer((props: {navigation: any}) => {
+  const floatingStyle = StyleSheet.create({
+    container: {
+      width: '100%',
+      margin: 10,
+      position: 'absolute',
+      bottom: 70,
+    },
+    menu: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+
+      gap: 10,
+
+      alignSelf: 'center',
+
+      padding: 20,
+
+      backgroundColor: '#ffffff',
+      borderRadius: 20,
+    },
+    menuItem: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: 10,
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+    }
+  })
+
+  const seasonIconSize = 40
+
+  const iconProps = {
+    width: seasonIconSize,
+    height: seasonIconSize,
+    fill: active_color
+  };
+
+  const openCreatedGarment = () => {
+    const index = garmentScreenSelectionStore.items.length - 1;
+    garmentScreenSelectionStore.select(index);
+    props.navigation.navigate('Garment');   
+  }
+
   return (
-    <BaseScreen navigation={navigation}>
-      <StaticGarmentList navigation={navigation}/>
-    </BaseScreen>
+    <Animated.View
+      style={floatingStyle.container}
+      entering={BounceInDown}
+      exiting={BounceOutDown}
+    >
+      <Box
+        style={floatingStyle.menu}
+      >
+        <Pressable 
+          style={floatingStyle.menuItem}
+          onPress={async () => {
+            const created = await createGarmentFromGallery();
+            if (created) {
+              openCreatedGarment();
+            }
+          }}
+        >
+          <GalleryIcon {...iconProps}/>
+          <RobotoText fontSize={24}>Из галереи</RobotoText>
+        </Pressable>
+        <Pressable 
+          style={floatingStyle.menuItem}
+          onPress={async () => {
+            const created = await createGarmentFromCamera();
+            if (created) {
+              openCreatedGarment();
+            }
+          }}
+        >
+          <CameraIcon {...iconProps}/>
+          <RobotoText fontSize={24}>Камера</RobotoText>
+        </Pressable>
+      </Box>
+    </Animated.View>
+  )
+})
+
+const HomeScreen = observer(({navigation}: {navigation: any}) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (appState.createMenuVisible) {
+          appState.setCreateMenuVisible(false);
+          return true;
+        }
+
+        return false;
+      }
+
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
+
+      return () => subscription.remove();
+    }, [appState.createMenuVisible])
+  )
+
+  return (
+    <>
+      <BaseScreen navigation={navigation}>
+        <StaticGarmentList navigation={navigation}/>
+
+      </BaseScreen>
+      { appState.createMenuVisible && <AddMenu navigation={navigation}/>}
+    </>
   );
 });
 
@@ -174,51 +287,35 @@ RNFS.mkdir(pictures_path);
 
 // peopleSelectionStore.setItems(['person.jpg']);
 
+const processNetworkError = (err: any) => {
+  console.log(err);
+  appState.setError('network')
+}
+
 const typesRequest = fetch(apiEndpoint + '/types').then(data => {
   return data.json().then(types => {
     garmentStore.setTypes(types)
     return true;
-  })
-});
+  }).catch(err => processNetworkError(err))
+}).catch(err => processNetworkError(err))
 
 const stylesRequest = fetch(apiEndpoint + '/styles').then(data => {
   return data.json().then(styles => {
-    console.log(styles);
     garmentStore.setStyles(styles);
     return true;
-  })
-});
+  }).catch(err => processNetworkError(err))
+}).catch(err => processNetworkError(err))
 
 fetch(apiEndpoint + '/clothes').then(async data => {
   data.json().then(async clothes => {
-    console.log(clothes)
-
     await Promise.all([typesRequest, stylesRequest]);
     
-    const garmentCards = clothes.map(cloth => {
-      const garmentType = garmentStore.getTypeByUUID(cloth.type_id);
-      const garmentSubtype = garmentStore.getSubTypeByUUID(cloth.subtype_id);
-      const garmentStyle = garmentStore.getStyleByUUID(cloth.style_id);
-
-      return new GarmentCard({
-        uuid: cloth.uuid,
-        name: cloth.name,
-        type: garmentType,
-        subtype: garmentSubtype,
-        style: garmentStyle,
-        image: {
-          uri: `/clothes/${cloth.uuid}`,
-          type: 'remote'
-        },
-        tags: cloth.tags,
-
-      })
-    })
+    const garmentCards = clothes.map(convertGarmentResponse)
 
     garmentStore.setGarments(garmentCards);
     garmentScreenSelectionStore.setItems(garmentStore.garments);
-  })
-})
+  }).catch(err => processNetworkError(err))
+}).catch(err => processNetworkError(err))
 
 // garmentStore.setGarments([new GarmentCard({
 //   uuid: '1',

@@ -7,12 +7,12 @@ import { base_color, windowHeight, windowWidth } from '../consts';
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
 import { garmentScreenSelectionStore, SingleSelectionStore } from '../store';
-import { endpoint, staticEndpoint } from '../../config';
+import { endpoint } from '../../config';
 import { garmentStore } from '../stores/GarmentStore';
 
-import RNFS from 'react-native-fs';
-import { ImageType } from '../models';
 import { getImageSource } from '../utils';
+
+import Animated from 'react-native-reanimated';
 
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
@@ -27,9 +27,15 @@ const divideIntoPairs = (items: any[]) => {
   return item_pairs;
 };
 
-const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
+const ListImage = observer((props: { source: string | ImageSourcePropType, uuid: string }) => {
   return (
-    <Image {...props} w={(windowWidth - 30) / 2} h={(windowWidth - 30) / 2 * 3 / 2} alt="" borderRadius={20}/>
+    <Animated.Image {...props} 
+            width={(windowWidth - 30) / 2} 
+            height={(windowWidth - 30) / 2 * 3 / 2} 
+            alt="" 
+            borderRadius={20}
+            sharedTransitionTag={`garment-img-${props.uuid}`}
+      />
   );
 });
 
@@ -119,6 +125,7 @@ export const StaticGarmentList = observer((props: any) => {
     >
       <ListImage
         source={getImageSource(item.image)}
+        uuid={item.uuid}
       />
     </Pressable>
   ))
