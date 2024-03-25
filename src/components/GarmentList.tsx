@@ -1,19 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { Box, Image, MenuItem, Pressable } from '@gluestack-ui/themed';
+import { Box, Image, Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
-import { garmentScreenSelectionStore, SingleSelectionStore, userPhotoSelectionStore } from '../store';
-import { endpoint } from '../../config';
-import { garmentStore } from '../stores/GarmentStore';
+import { garmentScreenSelectionStore, userPhotoSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
-
-import Animated from 'react-native-reanimated';
-import { userPhotoStore } from '../stores/UserPhotoStore';
 
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
@@ -30,12 +25,11 @@ const divideIntoPairs = (items: any[]) => {
 
 const ListImage = observer((props: { source: string | ImageSourcePropType, uuid: string }) => {
   return (
-    <Animated.Image {...props} 
+    <Image {...props} 
             width={(windowWidth - 30) / 2} 
             height={(windowWidth - 30) / 2 * 3 / 2} 
             alt="" 
             borderRadius={20}
-            sharedTransitionTag={`garment-img-${props.uuid}`}
       />
   );
 });
@@ -64,7 +58,7 @@ const ClothesListCard = observer(
       >
         <Image source={source} w="100%" h="100%" alt="" />
         {selected && <SelectedIcon
-          position='absolute'
+          // position='absolute'
           style={style.overlay}
           width={overlaySize}
           height={overlaySize}
@@ -88,7 +82,7 @@ const PersonListCard = observer(
       >
         <Image source={source} w="100%" h="100%" alt="" />
         {selected && <SelectedIcon
-          position='absolute'
+          // position='absolute'
           style={style.overlay}
           width={overlaySize}
           height={overlaySize}

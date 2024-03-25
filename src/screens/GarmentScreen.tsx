@@ -37,7 +37,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenSelectionStore.selectedItem as GarmentCard));
 
   useEffect(() => {
-    props.navigation.addListener('beforeRemove', (e) => {
+    props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
 
