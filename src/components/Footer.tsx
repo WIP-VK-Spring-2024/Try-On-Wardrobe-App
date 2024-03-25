@@ -11,7 +11,7 @@ import {observer} from 'mobx-react-lite';
 
 import RNFS from 'react-native-fs';
 import { RobotoText } from './common';
-import { appState } from '../store';
+import { appState } from '../stores/AppState';
 
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
@@ -50,7 +50,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
   );
 });
 
-export const ButtonFooter = observer(({text, onPress}: {text: string, onPress: () => void}) => {
+export const ButtonFooter = observer(({text, onPress}: {text?: string, onPress: () => void}) => {
   return (
     <Button onPress={() => onPress()} bgColor={active_color} h={65}>
       <Center>

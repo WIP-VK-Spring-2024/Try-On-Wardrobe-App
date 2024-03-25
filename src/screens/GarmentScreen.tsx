@@ -214,8 +214,6 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <SeasonIconPressable season='autumn'>
           <IconWithCaption icon={<AutumnIcon {...seasonIconProps('autumn')}/>} caption="осень" />
         </SeasonIconPressable>
-
-        <CloseAlertDialog />
       </Box>
     )
   });
@@ -346,6 +344,29 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <GarmentTypeSelector />
         <GarmentStyleSelector />
         <GarmentTagBlock />
+
+        <Button
+          size="md"
+          variant="solid"
+          action="negative"
+          isDisabled={false}
+          isFocusVisible={false}
+
+          onPress={() => {
+            fetch(apiEndpoint + `/clothes/${garment.uuid}`, {
+              method: 'DELETE'
+            }).then((response) => {
+              if (garment.uuid) {
+                garmentStore.removeGarment(garment.uuid);
+              }
+              props.navigation.navigate('Home');
+            }).catch((err) => console.error(err))
+          }}
+        >
+          <ButtonText>Удалить</ButtonText>
+        </Button>
+
+        <CloseAlertDialog />
 
       </Box>
     </BaseScreen>

@@ -4,7 +4,7 @@ import {Box, CloseIcon, ScrollView, Text} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
 
 import { Alert, AlertIcon, InfoIcon, AlertText } from '@gluestack-ui/themed';
-import { appState } from '../store';
+import { appState } from '../stores/AppState';
 import { windowWidth } from '../consts';
 import { Button } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';

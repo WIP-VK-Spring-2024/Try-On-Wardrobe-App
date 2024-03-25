@@ -1,4 +1,4 @@
-import {makeObservable, observable, action, computed, runInAction} from 'mobx';
+import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
 import { deepEqualArr } from '../utils';
 
@@ -165,7 +165,8 @@ export class GarmentStore {
       setTypes: action,
       setGarments: action,
 
-      addGarment: action
+      addGarment: action,
+      removeGarment: action,
     })
   }
 
@@ -183,6 +184,14 @@ export class GarmentStore {
 
   addGarment(garment: GarmentCard) {
     this.garments.push(garment);
+  }
+
+  removeGarment(garment_uuid: string) {
+    const index = this.garments.findIndex(g => g.uuid === garment_uuid);
+
+    if (index !== -1) {
+      this.garments.splice(index, 1);
+    }
   }
 
   getAllSubtypes(type: Updateable | undefined) {

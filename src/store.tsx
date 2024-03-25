@@ -1,5 +1,6 @@
-import {makeObservable, observable, action, computed, runInAction} from 'mobx';
+import { makeObservable, observable, action, computed, observe } from 'mobx';
 import { garmentStore } from './stores/GarmentStore';
+import { userPhotoStore } from './stores/UserPhotoStore';
 
 export class SingleSelectionStore {
   items: any[];
@@ -20,6 +21,10 @@ export class SingleSelectionStore {
       somethingIsSelected: computed,
       selectedItem: computed
     });
+
+    const disposer = observe(items, change => {
+      console.log('changed', change.object)
+    })
   }
 
   setItems(items: any) {
@@ -63,57 +68,30 @@ class ResultStore {
       resultUrl: observable,
 
       setResultUrl: action,
+      clearResult: action
     });
   }
 
   setResultUrl(url: string) {
     this.resultUrl = url;
   }
-}
 
-class AppStateStore {
-  error: string | undefined
-  createMenuVisible: boolean
-
-  constructor() {
-    this.error = undefined
-    this.createMenuVisible = false;
-
-    makeObservable(this, {
-      error: observable,
-      createMenuVisible: observable,
-
-      setError: action,
-      closeError: action,
-      setCreateMenuVisible: action,
-      toggleCreateMenuVisible: action,
-
-      hasError: computed
-    })
-  }
-  
-  setError(error: string | undefined) {
-    this.error = error;
-  }
-
-  setCreateMenuVisible(isVisible: boolean) {
-    this.createMenuVisible = isVisible;
-  }
-
-  toggleCreateMenuVisible() {
-    this.createMenuVisible = !this.createMenuVisible;
-  }
-
-  closeError() {
-    this.error = undefined;
-  }
-
-  get hasError() {
-    return this.error != undefined;
+  clearResult() {
+    this.resultUrl = undefined;
   }
 }
 
 export const garmentScreenSelectionStore = new SingleSelectionStore(garmentStore.garments);
-export const resultStore = new ResultStore();
 
-export const appState = new AppStateStore();
+observe(garmentStore, 'garments', change => {
+  garmentScreenSelectionStore.setItems(garmentStore.garments);
+})
+
+
+export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.photos);
+
+observe(userPhotoStore, 'photos', change => {
+  userPhotoSelectionStore.setItems(userPhotoStore.photos);
+})
+
+export const resultStore = new ResultStore();

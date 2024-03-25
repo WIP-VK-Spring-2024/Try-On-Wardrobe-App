@@ -2,8 +2,9 @@ import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
 import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { garmentScreenSelectionStore } from '../store';
+import { userPhotoStore } from '../stores/UserPhotoStore';
 
-const uploadImage = (image: ImageOrVideo) => {
+const uploadGarmentImage = (image: ImageOrVideo) => {
     const image_p = image.path.split('/');
     const image_name = image_p[image_p.length - 1];
 
@@ -23,8 +24,8 @@ const uploadImage = (image: ImageOrVideo) => {
             uuid: res.uuid,
             name: 'Без названия',
             image: {
-            uri: `/clothes/${res.uuid}`,
-            type: 'remote'
+                uri: `/clothes/${res.uuid}`,
+                type: 'remote'
             },
             tags: [],
             seasons: []
@@ -34,11 +35,39 @@ const uploadImage = (image: ImageOrVideo) => {
     .catch(err => console.error(err));
 }
 
+const uploadUserPhoto = (image: ImageOrVideo) => {
+    const image_p = image.path.split('/');
+    const image_name = image_p[image_p.length - 1];
+
+    let formData = new FormData();
+
+    formData.append('img', {
+        type: "image/png",
+        name: image_name,
+        uri: image.path
+    });
+
+    return fetch(apiEndpoint + '/photos', {
+        method: 'POST',
+        body: formData
+    }).then(resp => resp.json().then(res => {
+        userPhotoStore.addPhoto({
+            uuid: res.uuid,
+            image: {
+                uri: `/photos/${res.uuid}`,
+                type: 'remote'
+            }
+        })
+        return true;
+    }))
+    .catch(err => console.error(err));
+}
+
 export const createGarmentFromGallery = async () => {
     return ImagePicker.openPicker({
       cropping: true,
     })
-        .then(uploadImage)
+        .then(uploadGarmentImage)
         .catch(reason => console.log(reason))
 }
 
@@ -46,6 +75,14 @@ export const createGarmentFromCamera = async () => {
     return ImagePicker.openCamera({
         cropping: true,
     })
-        .then(uploadImage)
+        .then(uploadGarmentImage)
+        .catch(reason => console.log(reason))
+}
+
+export const createUserPhotoFromGallery = async () => {
+    return ImagePicker.openPicker({
+      cropping: true,
+    })
+        .then(uploadUserPhoto)
         .catch(reason => console.log(reason))
 }

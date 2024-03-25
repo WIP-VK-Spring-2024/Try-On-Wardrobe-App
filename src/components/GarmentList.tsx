@@ -6,13 +6,14 @@ import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
-import { garmentScreenSelectionStore, SingleSelectionStore } from '../store';
+import { garmentScreenSelectionStore, SingleSelectionStore, userPhotoSelectionStore } from '../store';
 import { endpoint } from '../../config';
 import { garmentStore } from '../stores/GarmentStore';
 
 import { getImageSource } from '../utils';
 
 import Animated from 'react-native-reanimated';
+import { userPhotoStore } from '../stores/UserPhotoStore';
 
 const divideIntoPairs = (items: any[]) => {
   let item_pairs = [];
@@ -58,7 +59,7 @@ const ClothesListCard = observer(
     return (
       <Pressable
         bg={base_color}
-        onPress={() => clothesSelectionStore.toggle(id)}
+        onPress={() => garmentScreenSelectionStore.toggle(id)}
         w="49%" h={windowHeight / 3}
       >
         <Image source={source} w="100%" h="100%" alt="" />
@@ -82,7 +83,7 @@ const PersonListCard = observer(
     return (
       <Pressable
         bg={base_color}
-        onPress={() => peopleSelectionStore.toggle(id)}
+        onPress={() => userPhotoSelectionStore.toggle(id)}
         w="49%" h={windowHeight / 3}
       >
         <Image source={source} w="100%" h="100%" alt="" />
@@ -134,11 +135,11 @@ export const StaticGarmentList = observer((props: any) => {
 })
 
 export const GarmentList = observer((props: any) => {
-  const clothes = garmentScreenSelectionStore.items.map(item => (
+  const clothes = garmentScreenSelectionStore.items.map((item, i) => (
     <ClothesListCard
-      source={{ uri: endpoint + 'static/clothes/' + item.url }}
-      selected={item.selected}
-      id={item.id}
+      source={getImageSource(item.image)}
+      selected={i === garmentScreenSelectionStore.selectedItemId}
+      id={i}
     />
   ))
 
@@ -146,13 +147,11 @@ export const GarmentList = observer((props: any) => {
 })
 
 export const PeopleList = observer((props: any) => {
-  const [selectionStore, setSelectionStore] = useState(new SingleSelectionStore(garmentStore.garments));
-
-  const clothes = selectionStore.items.map(item => (
+  const clothes = userPhotoSelectionStore.items.map((item, i) => (
     <PersonListCard
-      source={{ uri: endpoint + 'static/people/' + item.url }}
-      selected={item.selected}
-      id={item.id}
+      source={getImageSource(item.image)}
+      selected={i === userPhotoSelectionStore.selectedItemId}
+      id={i}
     />
   ))
 
