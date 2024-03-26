@@ -80,6 +80,7 @@ export const TypeFilter = observer(() => {
         flexDirection='row'
         gap={20}
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
       >
         <GarmentFilterBase 
           text='Все'
@@ -101,6 +102,7 @@ export const TypeFilter = observer(() => {
         garmentTypeSelectionStore.somethingIsSelected &&
         <ScrollView
           horizontal={true}
+          showsHorizontalScrollIndicator={false}
         >
           <View
             display='flex'

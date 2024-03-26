@@ -3,6 +3,7 @@ import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { garmentScreenSelectionStore } from '../store';
 import { userPhotoStore } from '../stores/UserPhotoStore';
+import { appState } from '../stores/AppState';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {
     const image_p = image.path.split('/');
@@ -24,12 +25,13 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
             uuid: res.uuid,
             name: 'Без названия',
             image: {
-                uri: `/clothes/${res.uuid}`,
+                uri: `/cut/${res.uuid}`,
                 type: 'remote'
             },
             tags: [],
             seasons: []
         }))
+        appState.setCreateMenuVisible(false);
         return true;
     }))
     .catch(err => console.error(err));
@@ -58,6 +60,7 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
                 type: 'remote'
             }
         })
+        appState.setCreateMenuVisible(false);
         return true;
     }))
     .catch(err => console.error(err));

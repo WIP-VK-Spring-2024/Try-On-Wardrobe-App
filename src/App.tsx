@@ -20,7 +20,7 @@ import {RobotoText} from './components/common';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {BaseScreen} from './screens/base';
 import {active_color} from './consts';
-import {apiEndpoint, centrifugeEndpoint, endpoint, login, password} from '../config';
+import {apiEndpoint, centrifugeEndpoint, endpoint, login, password, staticEndpoint} from '../config';
 
 import {
   garmentScreenSelectionStore,
@@ -34,17 +34,12 @@ import {ButtonFooter, Footer} from './components/Footer';
 import LikeIcon from '../assets/icons/like.svg';
 import DislikeIcon from '../assets/icons/dislike.svg';
 
-import CameraIcon from '../assets/icons/camera.svg';
-import GalleryIcon from '../assets/icons/gallery.svg';
-
 import RNFS from 'react-native-fs';
 import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { GarmentScreen } from './screens/GarmentScreen';
 import { convertGarmentResponse } from './utils';
 import { Pressable } from '@gluestack-ui/themed';
 
-import Animated from 'react-native-reanimated';
-import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from './requests/imageCreation';
 import { Centrifuge } from 'centrifuge';
 import { userPhotoStore } from './stores/UserPhotoStore';
@@ -52,104 +47,6 @@ import { filteredGarmentStore } from './stores/FilterStore';
 import { TypeFilter } from './components/FilterBlock';
 
 export const Stack = createNativeStackNavigator();
-
-const AddMenu = observer((props: {navigation: any}) => {
-  const floatingStyle = StyleSheet.create({
-    container: {
-      width: '100%',
-      margin: 10,
-      position: 'absolute',
-      bottom: 70,
-    },
-    menu: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-
-      gap: 10,
-
-      alignSelf: 'center',
-
-      padding: 20,
-
-      backgroundColor: '#ffffff',
-      borderRadius: 20,
-    },
-    menuItem: {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: 10,
-      alignItems: 'center',
-      justifyContent: 'flex-start'
-    }
-  })
-
-  const seasonIconSize = 40
-
-  const iconProps = {
-    width: seasonIconSize,
-    height: seasonIconSize,
-    fill: active_color
-  };
-
-  const openCreatedGarment = () => {
-    const index = garmentScreenSelectionStore.items.length - 1;
-    garmentScreenSelectionStore.select(index);
-    props.navigation.navigate('Garment');   
-  }
-
-  return (
-    <Animated.View
-      style={floatingStyle.container}
-      entering={BounceInDown}
-      exiting={BounceOutDown}
-    >
-      <Box
-        style={floatingStyle.menu}
-      >
-        <Pressable 
-          style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createGarmentFromGallery();
-            if (created) {
-              openCreatedGarment();
-            }
-          }}
-        >
-          <GalleryIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Из галереи</RobotoText>
-        </Pressable>
-        <Pressable
-          style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createGarmentFromCamera();
-            if (created) {
-              openCreatedGarment();
-            }
-          }}
-        >
-          <CameraIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Камера</RobotoText>
-        </Pressable>
-
-        <Pressable 
-          style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createUserPhotoFromGallery();
-            if (!created) {
-              console.log('not created')
-            }
-          }}
-        >
-          <GalleryIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Фото человека</RobotoText>
-        </Pressable>
-      </Box>
-    </Animated.View>
-  )
-})
-
 
 const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useFocusEffect(
@@ -173,14 +70,10 @@ const HomeScreen = observer(({navigation}: {navigation: any}) => {
   )
 
   return (
-    <>
-      <BaseScreen navigation={navigation}>
-        <TypeFilter/>
-        <StaticGarmentList navigation={navigation}/>
-
-      </BaseScreen>
-      { appState.createMenuVisible && <AddMenu navigation={navigation}/>}
-    </>
+    <BaseScreen navigation={navigation}>
+      <TypeFilter/>
+      <StaticGarmentList navigation={navigation}/>
+    </BaseScreen>
   );
 });
 
@@ -206,27 +99,6 @@ const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
           navigation.navigate('Result');
           resultStore.clearResult();
         }).catch(err => console.error(err))
-
-        // const interval_id = setInterval(() => {
-        //   fetch(
-        //     endpoint +
-        //       'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/try_on/62e29ffe-b3dd-4652-bc18-d4aebb76068f',
-        //   )
-        //     .then(res => {
-        //       if (res.status === 200) {
-        //         res
-        //           .json()
-        //           .then(data => {
-        //             setTimeout(() => {
-        //               resultStore.setResultUrl('static/try_on/' + data.url);
-        //             }, 1000);
-        //             clearInterval(interval_id);
-        //           })
-        //           .catch(reason => console.log(reason));
-        //       }
-        //     })
-        //     .catch(reason => console.log(reason));
-        // }, 1000);
       }}
     />
   ) : (
@@ -278,7 +150,7 @@ const ResultScreen = observer(({navigation}: {navigation: any}) => {
             <Image
               w="100%"
               h="80%"
-              source={endpoint + resultStore.resultUrl}
+              source={resultStore.resultUrl}
               alt="result"
             />
             <Box
@@ -297,22 +169,9 @@ const ResultScreen = observer(({navigation}: {navigation: any}) => {
   );
 });
 
-// fetch(endpoint + 'user/2a78df8a-0277-4c72-a2d9-43fb8fef1d2c/clothes').then(
-//   res => res.json().then(data => {
-//       clothesSelectionStore.setItems(data.map((el: any) => el.Image))
-//     }
-//   )
-// )
-
 const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 
 RNFS.mkdir(pictures_path);
-
-// RNFS.readDir(pictures_path).then(items => {
-//   // clothesSelectionStore.setItems(items.map(item => ({type: 'local', uri: item.path})));
-// });
-
-// peopleSelectionStore.setItems(['person.jpg']);
 
 const processNetworkError = (err: any) => {
   console.log(err);
@@ -345,7 +204,7 @@ fetch(apiEndpoint + '/clothes').then(async data => {
 
 fetch(apiEndpoint + '/photos').then(async data => {
   data.json().then(async photos => {
-    console.log(photos)
+    console.log('photos', photos)
     userPhotoStore.setPhotos(photos.map((photo: {uuid: string}) => ({
       uuid: photo.uuid,
       image: {
@@ -355,24 +214,6 @@ fetch(apiEndpoint + '/photos').then(async data => {
     })))
   }).catch(err => console.error(err))
 }).catch(err => console.error(err))
-
-// garmentStore.setGarments([new GarmentCard({
-//   uuid: '1',
-//   name: 'Мои ботиночки',
-//   color: '#0f0f0f',
-//   seasons: ['spring', 'autumn'],
-//   image: {
-//     uri: '/1.png',
-//     type: 'local'
-//   },
-//   tags: [
-//     'кожа',
-//     'skvorcovski',
-//     'шнурки',
-//     'удобные',
-//     'маломерки'
-//   ]
-// })]);
 
 const loginFunc = async () => {
   const loginBody = {
@@ -444,12 +285,18 @@ const loginFunc = async () => {
 
   processing_sub.on('publication', function(ctx) {
     console.log(ctx.data);
+
+    garmentStore.garments.find(garment => garment.uuid === ctx.data.uuid)?.setImage({
+      type: 'remote',
+      uri: `/photos/${ctx.data.uuid}`
+    })
   });
   
   try_on_sub.on('publication', function(ctx) {
     console.log(ctx.data);
 
-    resultStore.setResultUrl(apiEndpoint + `/static/try-on/${ctx.data.image}`);
+    console.log(staticEndpoint + ctx.data.imgae)
+    resultStore.setResultUrl(staticEndpoint + ctx.data.image);
   });
 
   processing_sub.on('error', function(ctx) {
