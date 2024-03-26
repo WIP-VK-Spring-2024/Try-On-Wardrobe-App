@@ -5,10 +5,10 @@ import {observer} from 'mobx-react-lite';
 
 import { Alert, AlertIcon, InfoIcon, AlertText } from '@gluestack-ui/themed';
 import { appState } from '../stores/AppState';
-import { windowWidth } from '../consts';
-import { Button } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
+import { AddMenu } from '../components/AddMenu';
+
 
 export const ConnectionErrorAlert = observer(() => {
   return (
@@ -28,11 +28,12 @@ export const BaseScreen = observer((props: any) => {
   const footer = props.footer || <Footer navigation={props.navigation} />;
   return (
     <>
-      {appState.error==='network' && <ConnectionErrorAlert/>}
+      { appState.error==='network' && <ConnectionErrorAlert/> }
       <Box height="100%" {...props}>
         <ScrollView>{props.children}</ScrollView>
         {footer}
       </Box>
+      { appState.createMenuVisible && <AddMenu navigation={props.navigation}/>}
     </>
   );
 });

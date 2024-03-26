@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {BackHandler, SafeAreaView, StatusBar, StyleSheet, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
@@ -8,7 +8,6 @@ import {
   Spinner,
   HStack,
   Image,
-  ScrollView,
 } from '@gluestack-ui/themed';
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {
@@ -20,7 +19,7 @@ import {Header} from './components/Header';
 import {RobotoText} from './components/common';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {BaseScreen} from './screens/base';
-import {active_color, windowHeight, windowWidth} from './consts';
+import {active_color} from './consts';
 import {apiEndpoint, centrifugeEndpoint, endpoint, login, password} from '../config';
 
 import {
@@ -50,6 +49,7 @@ import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromG
 import { Centrifuge } from 'centrifuge';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { filteredGarmentStore } from './stores/FilterStore';
+import { TypeFilter } from './components/FilterBlock';
 
 export const Stack = createNativeStackNavigator();
 
@@ -150,102 +150,6 @@ const AddMenu = observer((props: {navigation: any}) => {
   )
 })
 
-interface GarmentFilterBaseProps {
-  text: string
-  isSelected: boolean
-  onPress: () => void
-}
-
-const GarmentFilterBase = observer((props: GarmentFilterBaseProps) => {
-  const style = () => {
-    let style = {
-      margin: 10
-    }
-    if (props.isSelected) {
-      Object.assign(style, {
-        borderBottomColor: active_color,
-        borderBottomWidth: 2
-      })
-    }
-
-    return style;
-  }
-
-  return (
-    <Pressable
-      style={style()}
-      onPress={props.onPress}
-    >
-      <RobotoText
-        color={props.isSelected ? active_color : "#000000"}
-      >
-        {props.text}
-      </RobotoText>
-    </Pressable>
-  )
-})
-
-const TypeFilter = observer(() => {
-  // const baseFilters = [
-  //   'Все',
-  //   'Верх',
-  //   'Низ',
-  //   'Верхняя одежда',
-  //   'Обувь'
-  // ];
-
-  const baseFilters = [{name: 'Все', filter: (item: GarmentCard)=>true}].concat(garmentStore.types.map(type => ({
-    name: type.name,
-    filter: (item: GarmentCard) => item.type?.uuid === type.uuid
-  })));
-
-  const [selectedId, setSelectedId] = useState<number>(0);
-
-  return (
-    <ScrollView
-      display='flex'
-      flexDirection='row'
-      // justifyContent='space-around'
-      gap={20}
-      // marginLeft={40}
-      // marginRight={40}
-      horizontal={true}
-    >
-      {
-        baseFilters.map((filter, i) => {
-            return (
-              <GarmentFilterBase 
-                key={i} 
-                text={filter.name} 
-                isSelected={i === selectedId}
-                onPress={() => {
-                  if (i === selectedId) {
-                    return;
-                  }
-
-                  if (selectedId !== 0) {
-                    const old_key = baseFilters[selectedId].name;
-
-                    filteredGarmentStore.removeFilter(old_key);
-                  }
-
-
-                  if (i !== 0) {
-                    const new_filter = baseFilters[i]
-
-                    filteredGarmentStore.addFilter(new_filter.name, new_filter.filter);
-                  }
-
-                  setSelectedId(i)
-                }}
-              />
-            )
-          }
-        )
-      }
-    </ScrollView>
-  )
-})
 
 const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useFocusEffect(

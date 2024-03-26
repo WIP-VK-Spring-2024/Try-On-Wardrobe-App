@@ -1,5 +1,5 @@
 import { makeObservable, observable, action, computed, observe, autorun } from 'mobx';
-import { garmentStore } from './stores/GarmentStore';
+import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { filteredGarmentStore } from './stores/FilterStore';
 
@@ -18,6 +18,7 @@ export class SingleSelectionStore {
       select: action,
       toggle: action,
       setItems: action,
+      unselect: action,
 
       somethingIsSelected: computed,
       selectedItem: computed
@@ -56,6 +57,8 @@ export class SingleSelectionStore {
   }
 }
 
+
+
 class ResultStore {
   resultUrl: string | undefined;
 
@@ -88,6 +91,32 @@ export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.p
 
 autorun(() => {
   userPhotoSelectionStore.setItems(userPhotoStore.photos);
+})
+
+export const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.types);
+export const garmentSubtypeSelectionStore = new SingleSelectionStore([]);
+
+autorun(() => {
+  garmentTypeSelectionStore.setItems(garmentStore.types);
+
+})
+
+autorun(() => {
+  if (garmentTypeSelectionStore.somethingIsSelected) {
+    garmentSubtypeSelectionStore.setItems(garmentTypeSelectionStore.selectedItem.subtypes);
+    filteredGarmentStore.setFilter('type_filter', (item: GarmentCard) => item.type?.uuid === garmentTypeSelectionStore.selectedItem.uuid);
+  } else {
+    garmentSubtypeSelectionStore.setItems([]);
+    filteredGarmentStore.removeFilter('type_filter');
+  }
+})
+
+autorun(() => {
+  if (garmentSubtypeSelectionStore.somethingIsSelected) {
+    filteredGarmentStore.setFilter('subtype_filter', (item: GarmentCard) => item.subtype?.uuid === garmentSubtypeSelectionStore.selectedItem.uuid);
+  } else {
+    filteredGarmentStore.removeFilter('subtype_filter');
+  }
 })
 
 export const resultStore = new ResultStore();

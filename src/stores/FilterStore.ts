@@ -22,7 +22,7 @@ class FilterStore {
             filterPredicates: observable,
             setOrigin: action,
 
-            addFilter: action,
+            setFilter: action,
             removeFilter: action,
 
             items: computed,    // all computed properties are calculated lazily
@@ -33,7 +33,7 @@ class FilterStore {
         this.origin = origin;
     }
 
-    addFilter(key: string, filter: FilterPredicateType) {
+    setFilter(key: string, filter: FilterPredicateType) {
         this.filterPredicates[key] = filter;
     }
 
@@ -52,6 +52,5 @@ export const filteredGarmentStore = new FilterStore({
 });
 
 autorun(() => {
-    console.log('filter set origin')
     filteredGarmentStore.setOrigin(garmentStore.garments);
 })
