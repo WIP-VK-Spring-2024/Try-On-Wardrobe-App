@@ -49,6 +49,7 @@ import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from './requests/imageCreation';
 import { Centrifuge } from 'centrifuge';
 import { userPhotoStore } from './stores/UserPhotoStore';
+import { filteredGarmentStore } from './stores/FilterStore';
 
 export const Stack = createNativeStackNavigator();
 
@@ -158,7 +159,7 @@ interface GarmentFilterBaseProps {
 const GarmentFilterBase = observer((props: GarmentFilterBaseProps) => {
   const style = () => {
     let style = {
-      
+      margin: 10
     }
     if (props.isSelected) {
       Object.assign(style, {
@@ -185,38 +186,64 @@ const GarmentFilterBase = observer((props: GarmentFilterBaseProps) => {
 })
 
 const TypeFilter = observer(() => {
-  const baseFilters = [
-    'Все',
-    'Верх',
-    'Низ',
-    'Верхняя одежда',
-    'Обувь'
-  ];
+  // const baseFilters = [
+  //   'Все',
+  //   'Верх',
+  //   'Низ',
+  //   'Верхняя одежда',
+  //   'Обувь'
+  // ];
+
+  const baseFilters = [{name: 'Все', filter: (item: GarmentCard)=>true}].concat(garmentStore.types.map(type => ({
+    name: type.name,
+    filter: (item: GarmentCard) => item.type?.uuid === type.uuid
+  })));
 
   const [selectedId, setSelectedId] = useState<number>(0);
 
   return (
-    <Box
+    <ScrollView
       display='flex'
       flexDirection='row'
-      justifyContent='space-between'
-      marginLeft={40}
-      marginRight={40}
+      // justifyContent='space-around'
+      gap={20}
+      // marginLeft={40}
+      // marginRight={40}
+      horizontal={true}
     >
       {
         baseFilters.map((filter, i) => {
             return (
               <GarmentFilterBase 
                 key={i} 
-                text={filter} 
+                text={filter.name} 
                 isSelected={i === selectedId}
-                onPress={()=>setSelectedId(i)}
+                onPress={() => {
+                  if (i === selectedId) {
+                    return;
+                  }
+
+                  if (selectedId !== 0) {
+                    const old_key = baseFilters[selectedId].name;
+
+                    filteredGarmentStore.removeFilter(old_key);
+                  }
+
+
+                  if (i !== 0) {
+                    const new_filter = baseFilters[i]
+
+                    filteredGarmentStore.addFilter(new_filter.name, new_filter.filter);
+                  }
+
+                  setSelectedId(i)
+                }}
               />
             )
           }
         )
       }
-    </Box>
+    </ScrollView>
   )
 })
 

@@ -1,6 +1,7 @@
-import { makeObservable, observable, action, computed, observe } from 'mobx';
+import { makeObservable, observable, action, computed, observe, autorun } from 'mobx';
 import { garmentStore } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
+import { filteredGarmentStore } from './stores/FilterStore';
 
 export class SingleSelectionStore {
   items: any[];
@@ -21,10 +22,6 @@ export class SingleSelectionStore {
       somethingIsSelected: computed,
       selectedItem: computed
     });
-
-    const disposer = observe(items, change => {
-      console.log('changed', change.object)
-    })
   }
 
   setItems(items: any) {
@@ -83,14 +80,13 @@ class ResultStore {
 
 export const garmentScreenSelectionStore = new SingleSelectionStore(garmentStore.garments);
 
-observe(garmentStore, 'garments', change => {
-  garmentScreenSelectionStore.setItems(garmentStore.garments);
+autorun(() => {
+  garmentScreenSelectionStore.setItems(filteredGarmentStore.items);
 })
-
 
 export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.photos);
 
-observe(userPhotoStore, 'photos', change => {
+autorun(() => {
   userPhotoSelectionStore.setItems(userPhotoStore.photos);
 })
 

@@ -1,24 +1,57 @@
-import { makeObservable, observable, action, computed } from 'mobx';
+import { makeObservable, observable, action, computed, autorun } from 'mobx';
+import { garmentStore } from './GarmentStore';
 
 type FilterPredicateType = (item: any) => boolean
+type FilterPredicatesType = {[key: string]: FilterPredicateType}
 
 interface FilterStoreProps {
     origin: any[],
-    filterPredicates?: FilterPredicateType[]
+    filterPredicates?: FilterPredicatesType
 }
 
 class FilterStore {
     origin: any[]
-    filterPredicates: FilterPredicateType[]
+    filterPredicates: FilterPredicatesType
 
     constructor(props: FilterStoreProps) {
         this.origin = props.origin;
-        this.filterPredicates = props.filterPredicates || []
+        this.filterPredicates = props.filterPredicates || {}
 
         makeObservable(this, {
             origin: observable,
+            filterPredicates: observable,
+            setOrigin: action,
+
+            addFilter: action,
+            removeFilter: action,
+
+            items: computed,    // all computed properties are calculated lazily
         })
     }
 
+    setOrigin(origin: any[]) {
+        this.origin = origin;
+    }
 
+    addFilter(key: string, filter: FilterPredicateType) {
+        this.filterPredicates[key] = filter;
+    }
+
+    removeFilter(key: string) {
+        delete this.filterPredicates[key];
+    }
+
+    get items() {
+        const filters = Object.values(this.filterPredicates)
+        return filters.reduce((result, filterPredicate) => result.filter(filterPredicate), this.origin);
+    }
 }
+
+export const filteredGarmentStore = new FilterStore({
+    origin: garmentStore.garments
+});
+
+autorun(() => {
+    console.log('filter set origin')
+    filteredGarmentStore.setOrigin(garmentStore.garments);
+})

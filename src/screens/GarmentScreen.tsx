@@ -27,8 +27,6 @@ import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
 
-import Animated from 'react-native-reanimated';
-
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
@@ -127,8 +125,9 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
 
   const GarmentImage = observer(() => {
     return (
-      <Animated.Image 
+      <Image 
         source={getImageSource(garment.image)}
+        w="100%"
         height={windowHeight / 2}
         resizeMode="contain"
         alt=""
