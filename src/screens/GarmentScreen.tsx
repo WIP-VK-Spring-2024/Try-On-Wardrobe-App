@@ -26,6 +26,7 @@ import { CloseIcon } from '@gluestack-ui/themed';
 import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
+import { StackActions } from '@react-navigation/native';
 
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
@@ -75,17 +76,21 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   }
 
   const CloseAlertDialog = observer(() => {
+    const closeDialog = () => {
+      setShowAlertDialog(false);
+      props.navigation.dispatch(StackActions.pop(1));
+    }
     return (
       <AlertDialog
         isOpen={showAlertDialog}
         onClose={() => {
-          setShowAlertDialog(false)
+          setShowAlertDialog(false);
         }}
       >
         <AlertDialogBackdrop />
         <AlertDialogContent>
           <AlertDialogHeader>
-            <Heading size="lg">Сохранение </Heading>
+            <Heading size="lg">Сохранение</Heading>
             <AlertDialogCloseButton>
               <Icon as={CloseIcon} />
             </AlertDialogCloseButton>
@@ -101,20 +106,20 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
                 variant="outline"
                 action="secondary"
                 onPress={() => {
-                  setShowAlertDialog(false)
-                }}
-              >
-                <ButtonText>Отменить</ButtonText>
-              </Button>
-              <Button
-                bg="$error600"
-                action="negative"
-                onPress={() => {
                   garment.clearChanges();
-                  setShowAlertDialog(false)
+                  closeDialog();
                 }}
               >
                 <ButtonText>Сбросить</ButtonText>
+              </Button>
+              <Button
+                bg={active_color}
+                onPress={() => {
+                  garment.saveChanges();
+                  closeDialog();
+                }}
+              >
+                <ButtonText>Сохранить</ButtonText>
               </Button>
             </ButtonGroup>
           </AlertDialogFooter>

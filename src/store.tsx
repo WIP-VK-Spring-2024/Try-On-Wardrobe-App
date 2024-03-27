@@ -1,4 +1,4 @@
-import { makeObservable, observable, action, computed, observe, autorun } from 'mobx';
+import { makeObservable, observable, action, computed, autorun } from 'mobx';
 import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
