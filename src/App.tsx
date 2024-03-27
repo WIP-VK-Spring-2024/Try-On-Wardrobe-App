@@ -7,12 +7,7 @@ import {
   Box,
   Spinner,
   HStack,
-  Image,
-  View,
-  Button,
-  ArrowLeftIcon,
-  Pressable,
-  ChevronLeftIcon,
+  Image
 } from '@gluestack-ui/themed';
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {
@@ -20,7 +15,7 @@ import {
   PeopleList,
   StaticGarmentList,
 } from './components/GarmentList';
-import {Header} from './components/Header';
+import {Header, backHeader} from './components/Header';
 import {RobotoText} from './components/common';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {BaseScreen} from './screens/base';
@@ -28,7 +23,6 @@ import {active_color} from './consts';
 import {apiEndpoint, centrifugeEndpoint, endpoint, login, password, staticEndpoint} from '../config';
 
 import {
-  garmentScreenGarmentSelectionStore,
   garmentScreenSubtypeSelectionStore,
   garmentScreenTypeSelectionStore,
   resultStore,
@@ -334,24 +328,6 @@ const App = observer((): JSX.Element => {
     flex: 1,
   };
 
-  const backHeader = () => {
-    return (
-      <View
-        bg="#ffffff"
-      >
-        <Pressable
-          display='flex'
-          flexDirection='row'
-          alignItems='center'
-          gap={3}
-        >
-          <ChevronLeftIcon size="lg" color={active_color}/>
-          <RobotoText color={active_color}>Назад</RobotoText>
-        </Pressable>
-      </View>
-    )
-  }
-
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -372,12 +348,12 @@ const App = observer((): JSX.Element => {
 
             <Stack.Screen name="Result" component={ResultScreen} />
 
-            <Stack.Screen 
+            <Stack.Screen
               name="Garment" 
               component={GarmentScreen} 
-              // options={
-              //   {header: backHeader}
-              // }
+              options={
+                {header: backHeader}
+              }
             />
           </Stack.Navigator>
         </NavigationContainer>
