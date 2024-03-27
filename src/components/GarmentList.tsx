@@ -6,7 +6,7 @@ import { base_color, windowHeight, windowWidth } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
-import { garmentScreenSelectionStore, userPhotoSelectionStore } from '../store';
+import { garmentScreenGarmentSelectionStore, tryOnScreenGarmentSelectionStore, userPhotoSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
 
@@ -46,15 +46,15 @@ const style = StyleSheet.create({
 });
 
 const ClothesListCard = observer(
-  ({ source, selected, id }:
-    { source: string | ImageSourcePropType, selected: boolean, id: number }
+  ({ source, selected, id, onPress }:
+    { source: string | ImageSourcePropType, selected: boolean, id: number, onPress: ()=>void }
   ) => {
     const overlaySize = windowWidth / 4;
 
     return (
       <Pressable
         bg={base_color}
-        onPress={() => garmentScreenSelectionStore.toggle(id)}
+        onPress={onPress}
         w="49%" h={windowHeight / 3}
       >
         <Image source={source} w="100%" h="100%" alt="" />
@@ -112,10 +112,10 @@ export const BaseList = observer((props: { items: any }) => {
 })
 
 export const StaticGarmentList = observer((props: any) => {
-  const clothes = garmentScreenSelectionStore.items.map((item, i) => (
+  const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (
     <Pressable
       onPress={()=>{
-        garmentScreenSelectionStore.select(i);
+        garmentScreenGarmentSelectionStore.select(i);
         props.navigation.navigate('Garment');
       }}
     >
@@ -130,11 +130,12 @@ export const StaticGarmentList = observer((props: any) => {
 })
 
 export const GarmentList = observer((props: any) => {
-  const clothes = garmentScreenSelectionStore.items.map((item, i) => (
+  const clothes = tryOnScreenGarmentSelectionStore.items.map((item, i) => (
     <ClothesListCard
       source={getImageSource(item.image)}
-      selected={i === garmentScreenSelectionStore.selectedItemId}
+      selected={i === tryOnScreenGarmentSelectionStore.selectedItemId}
       id={i}
+      onPress={() => tryOnScreenGarmentSelectionStore.toggle(i)}
     />
   ))
 

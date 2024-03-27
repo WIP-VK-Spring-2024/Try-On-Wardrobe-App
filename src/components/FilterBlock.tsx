@@ -1,11 +1,13 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { active_color } from '../consts';
 import { Pressable, ScrollView, View } from '@gluestack-ui/themed';
 import { RobotoText } from './common';
-import { GarmentCard, garmentStore } from '../stores/GarmentStore';
-import { filteredGarmentStore } from '../stores/FilterStore';
-import { garmentSubtypeSelectionStore, garmentTypeSelectionStore } from '../store';
+import { 
+        garmentScreenTypeSelectionStore, 
+        garmentScreenSubtypeSelectionStore, 
+        SingleSelectionStore
+       } from '../store';
 
 interface FilterTabProps {
     text: string
@@ -62,17 +64,12 @@ const GarmentFilterSpecific = observer((props: FilterTabProps) => {
   )
 })
 
-type filterPredicateType = (item: GarmentCard) => boolean
-interface BaseFilterType {
-  name: string,
-  filter: filterPredicateType,
-  specifics: {
-    name: string,
-    filter: filterPredicateType
-  }[]
+interface TypeFilterProps {
+  typeStore: SingleSelectionStore
+  subtypeStore: SingleSelectionStore
 }
 
-export const TypeFilter = observer(() => {
+export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) => {
   return (
     <View>
       <ScrollView
@@ -84,22 +81,22 @@ export const TypeFilter = observer(() => {
       >
         <GarmentFilterBase 
           text='Все'
-          isSelected={!garmentTypeSelectionStore.somethingIsSelected}
-          onPress={() => garmentTypeSelectionStore.unselect()}
+          isSelected={!typeStore.somethingIsSelected}
+          onPress={() => typeStore.unselect()}
         />
         {
-          garmentTypeSelectionStore.items.map((type, i) => (
+          typeStore.items.map((type, i) => (
             <GarmentFilterBase 
               key={i} 
               text={type.name} 
-              isSelected={i === garmentTypeSelectionStore.selectedItemId}
-              onPress={() => garmentTypeSelectionStore.select(i)}
+              isSelected={i === typeStore.selectedItemId}
+              onPress={() => typeStore.select(i)}
             />
           ))
         }
       </ScrollView>
       {
-        garmentTypeSelectionStore.somethingIsSelected &&
+        typeStore.somethingIsSelected &&
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -112,12 +109,12 @@ export const TypeFilter = observer(() => {
             marginRight={10}
           >
             {
-              garmentTypeSelectionStore.selectedItem.subtypes.map((subtype, i) => (
+              typeStore.selectedItem.subtypes.map((subtype: any, i: number) => (
                 <GarmentFilterSpecific
                   key={i}
                   text={subtype.name}
-                  isSelected={i === garmentSubtypeSelectionStore.selectedItemId}
-                  onPress={() => garmentSubtypeSelectionStore.toggle(i)}
+                  isSelected={i === subtypeStore.selectedItemId}
+                  onPress={() => subtypeStore.toggle(i)}
                 />
               ))
             }

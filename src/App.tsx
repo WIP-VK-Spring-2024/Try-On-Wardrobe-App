@@ -23,8 +23,13 @@ import {active_color} from './consts';
 import {apiEndpoint, centrifugeEndpoint, endpoint, login, password, staticEndpoint} from '../config';
 
 import {
-  garmentScreenSelectionStore,
+  garmentScreenGarmentSelectionStore,
+  garmentScreenSubtypeSelectionStore,
+  garmentScreenTypeSelectionStore,
   resultStore,
+  tryOnScreenGarmentSelectionStore,
+  tryOnScreenSubtypeSelectionStore,
+  tryOnScreenTypeSelectionStore,
   userPhotoSelectionStore,
 } from './store';
 import { appState } from './stores/AppState';
@@ -35,15 +40,13 @@ import LikeIcon from '../assets/icons/like.svg';
 import DislikeIcon from '../assets/icons/dislike.svg';
 
 import RNFS from 'react-native-fs';
-import { GarmentCard, garmentStore } from './stores/GarmentStore';
+import { garmentStore } from './stores/GarmentStore';
 import { GarmentScreen } from './screens/GarmentScreen';
 import { convertGarmentResponse } from './utils';
-import { Pressable } from '@gluestack-ui/themed';
 
-import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from './requests/imageCreation';
 import { Centrifuge } from 'centrifuge';
 import { userPhotoStore } from './stores/UserPhotoStore';
-import { filteredGarmentStore } from './stores/FilterStore';
+
 import { TypeFilter } from './components/FilterBlock';
 
 export const Stack = createNativeStackNavigator();
@@ -71,7 +74,10 @@ const HomeScreen = observer(({navigation}: {navigation: any}) => {
 
   return (
     <BaseScreen navigation={navigation}>
-      <TypeFilter/>
+      <TypeFilter
+        typeStore={garmentScreenTypeSelectionStore}
+        subtypeStore={garmentScreenSubtypeSelectionStore}
+      />
       <StaticGarmentList navigation={navigation}/>
     </BaseScreen>
   );
@@ -82,7 +88,7 @@ const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
     <ButtonFooter
       onPress={() => {
         const tryOnBody = {
-          clothes_id: garmentScreenSelectionStore.selectedItem.uuid,
+          clothes_id: tryOnScreenGarmentSelectionStore.selectedItem.uuid,
           user_image_id: userPhotoSelectionStore.selectedItem.uuid
         }
 
@@ -106,6 +112,10 @@ const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   );
   return (
     <BaseScreen navigation={navigation} footer={footer}>
+      <TypeFilter
+        typeStore={tryOnScreenTypeSelectionStore}
+        subtypeStore={tryOnScreenSubtypeSelectionStore}
+      />
       <GarmentList navigation={navigation}/>
     </BaseScreen>
   );

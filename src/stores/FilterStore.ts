@@ -1,5 +1,4 @@
 import { makeObservable, observable, action, computed, autorun } from 'mobx';
-import { garmentStore } from './GarmentStore';
 
 type FilterPredicateType = (item: any) => boolean
 type FilterPredicatesType = {[key: string]: FilterPredicateType}
@@ -9,7 +8,7 @@ interface FilterStoreProps {
     filterPredicates?: FilterPredicatesType
 }
 
-class FilterStore {
+export class FilterStore {
     origin: any[]
     filterPredicates: FilterPredicatesType
 
@@ -46,11 +45,3 @@ class FilterStore {
         return filters.reduce((result, filterPredicate) => result.filter(filterPredicate), this.origin);
     }
 }
-
-export const filteredGarmentStore = new FilterStore({
-    origin: garmentStore.garments
-});
-
-autorun(() => {
-    filteredGarmentStore.setOrigin(garmentStore.garments);
-})
