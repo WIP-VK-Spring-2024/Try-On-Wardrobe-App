@@ -30,6 +30,7 @@ const ListImage = observer((props: { source: string | ImageSourcePropType, uuid:
             height={(windowWidth - 30) / 2 * 3 / 2} 
             alt="" 
             borderRadius={20}
+            backgroundColor='#ffffff'
       />
   );
 });

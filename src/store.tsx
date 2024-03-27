@@ -57,8 +57,6 @@ export class SingleSelectionStore {
   }
 }
 
-
-
 class ResultStore {
   resultUrl: string | undefined;
 
@@ -107,12 +105,14 @@ autorun(() => {
     filteredGarmentStore.setFilter('type_filter', (item: GarmentCard) => item.type?.uuid === garmentTypeSelectionStore.selectedItem.uuid);
   } else {
     garmentSubtypeSelectionStore.setItems([]);
+    garmentSubtypeSelectionStore.unselect();
     filteredGarmentStore.removeFilter('type_filter');
   }
 })
 
 autorun(() => {
-  if (garmentSubtypeSelectionStore.somethingIsSelected) {
+  if (garmentTypeSelectionStore.somethingIsSelected && 
+      garmentSubtypeSelectionStore.somethingIsSelected) {
     filteredGarmentStore.setFilter('subtype_filter', (item: GarmentCard) => item.subtype?.uuid === garmentSubtypeSelectionStore.selectedItem.uuid);
   } else {
     filteredGarmentStore.removeFilter('subtype_filter');

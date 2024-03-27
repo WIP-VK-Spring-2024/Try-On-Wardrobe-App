@@ -131,8 +131,6 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         height={windowHeight / 2}
         resizeMode="contain"
         alt=""
-        // sharedTransitionTag={`garment-img-${garment.uuid}`}
-        // exiting={undefined}
       />
     )
   });
