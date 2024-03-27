@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { garmentScreenGarmentSelectionStore } from '../store';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup } from '@gluestack-ui/themed';
+import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
 
@@ -137,19 +137,21 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
 
   const GarmentNameInput = observer(() => {
     return (
-      <Box 
+      <Box
         display="flex" 
         flexDirection="row"
         justifyContent='center'
         alignItems='center'
         gap={20}
       >
+        <View flex={1}></View>
         <UpdateableText
           text={garment.name}
           inEditing={inEditing}
           onUpdate={(text: string)=>{garment.setName(text)}}
         />
         <Pressable
+          flex={1}
           onPress={() => {
             setInEditing((oldInEditing: boolean) => !oldInEditing);
           }}

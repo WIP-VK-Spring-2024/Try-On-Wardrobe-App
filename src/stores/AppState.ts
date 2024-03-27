@@ -3,13 +3,13 @@ import {makeObservable, observable, action, computed} from 'mobx';
 class AppStateStore {
     error: string | undefined
     createMenuVisible: boolean
-  
+
     JWTToken: string | undefined
     userID: string | undefined
   
     constructor() {
       this.error = undefined
-      this.createMenuVisible = false;
+      this.createMenuVisible = false
       
       makeObservable(this, {
         error: observable,

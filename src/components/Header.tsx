@@ -46,7 +46,7 @@ export const Header = () => {
   );
 };
 
-export const backHeader = (props: {navigation: any}) => {
+export const BackHeader = (props: {navigation: any}) => {
   return (
     <HeaderBase>
       <Pressable

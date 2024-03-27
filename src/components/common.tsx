@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, SelectPortal, Text} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
 import { Select } from '@gluestack-ui/themed';
@@ -62,8 +62,13 @@ export const CustomSelect = observer((props: CustomSelectProps) => {
   )
 });
 
+interface UpdateableTextProps {
+  inEditing: boolean,
+  text: string,
+  onUpdate: (text: string)=>void
+}
 
-export const UpdateableText = observer((props: {inEditing: boolean, text: string, onUpdate: (text: string)=>void}) => {
+export const UpdateableText = observer((props: PropsWithChildren & UpdateableTextProps) => {
   return (
     <>
      {
@@ -72,10 +77,11 @@ export const UpdateableText = observer((props: {inEditing: boolean, text: string
         <Input
           variant="rounded"
           size="md"
-          w="90%"
+          w="60%"
           isDisabled={false}
           isInvalid={false}
           isReadOnly={false}
+          {...props}
         >
           <InputField 
             type="text" 
@@ -84,7 +90,7 @@ export const UpdateableText = observer((props: {inEditing: boolean, text: string
           />
         </Input>
 
-        :  <RobotoText fontSize={24} {...props}>
+        :  <RobotoText fontSize={24} textAlign='center' {...props}>
           {props.text}
         </RobotoText>
      }
@@ -97,6 +103,7 @@ export const IconWithCaption = observer((props: {icon: React.ReactNode, caption:
     <Box
       display='flex'
       flexDirection='column'
+      alignItems='center'
       {...props}
     >
       {props.icon}
