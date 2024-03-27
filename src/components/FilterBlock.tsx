@@ -3,11 +3,7 @@ import React from 'react';
 import { active_color } from '../consts';
 import { Pressable, ScrollView, View } from '@gluestack-ui/themed';
 import { RobotoText } from './common';
-import { 
-        garmentScreenTypeSelectionStore, 
-        garmentScreenSubtypeSelectionStore, 
-        SingleSelectionStore
-       } from '../store';
+import { SingleSelectionStore } from '../store';
 
 interface FilterTabProps {
     text: string
@@ -48,11 +44,12 @@ export const GarmentFilterBase = observer((props: FilterTabProps) => {
 const GarmentFilterSpecific = observer((props: FilterTabProps) => {
   return (
     <Pressable
-      borderRadius={20}
+      borderRadius={15}
       bgColor={props.isSelected ? active_color : '#ffffff'}
       onPress={props.onPress}
-      paddingLeft={10}
-      paddingRight={10}
+      padding={2}
+      paddingLeft={15}
+      paddingRight={15}
     >
       <RobotoText
         fontSize={18}
@@ -71,13 +68,17 @@ interface TypeFilterProps {
 
 export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) => {
   return (
-    <View>
+    <View
+      marginBottom={10}
+    >
       <ScrollView
         display='flex'
         flexDirection='row'
         gap={20}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
+        paddingLeft={10}
+        paddingRight={10}
       >
         <GarmentFilterBase 
           text='Все'

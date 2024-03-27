@@ -8,6 +8,11 @@ import {
   Spinner,
   HStack,
   Image,
+  View,
+  Button,
+  ArrowLeftIcon,
+  Pressable,
+  ChevronLeftIcon,
 } from '@gluestack-ui/themed';
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
 import {
@@ -329,6 +334,24 @@ const App = observer((): JSX.Element => {
     flex: 1,
   };
 
+  const backHeader = () => {
+    return (
+      <View
+        bg="#ffffff"
+      >
+        <Pressable
+          display='flex'
+          flexDirection='row'
+          alignItems='center'
+          gap={3}
+        >
+          <ChevronLeftIcon size="lg" color={active_color}/>
+          <RobotoText color={active_color}>Назад</RobotoText>
+        </Pressable>
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -342,11 +365,20 @@ const App = observer((): JSX.Element => {
 
             <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
-            <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
+            <Stack.Screen 
+              name="Clothes" 
+              component={GarmentSelectionScreen} 
+            />
 
             <Stack.Screen name="Result" component={ResultScreen} />
 
-            <Stack.Screen name="Garment" component={GarmentScreen} />
+            <Stack.Screen 
+              name="Garment" 
+              component={GarmentScreen} 
+              // options={
+              //   {header: backHeader}
+              // }
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </GluestackUIProvider>

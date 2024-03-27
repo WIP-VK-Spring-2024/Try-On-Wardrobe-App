@@ -32,7 +32,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
-  const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenSelectionStore.selectedItem as GarmentCard));
+  const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenGarmentSelectionStore.selectedItem as GarmentCard));
 
   useEffect(() => {
     props.navigation.addListener('beforeRemove', (e: any) => {

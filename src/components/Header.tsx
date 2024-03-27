@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Avatar, AvatarFallbackText, Box} from '@gluestack-ui/themed';
-import {active_color, base_color, header_color, header_icon_color, text_color} from '../consts';
+import {active_color, header_color, header_icon_color, text_color} from '../consts';
 import {RobotoText} from './common';
 
 import FilterIcon from '../../assets/icons/filter.svg';
