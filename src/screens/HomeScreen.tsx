@@ -8,7 +8,7 @@ import { BaseScreen } from "./base";
 import { TypeFilter } from "../components/FilterBlock";
 import { garmentScreenSubtypeSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
-
+import { FilterModal } from "../components/FilterModal";
 
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useFocusEffect(
@@ -32,12 +32,15 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   )
   
   return (
-    <BaseScreen navigation={navigation}>
-      <TypeFilter
-        typeStore={garmentScreenTypeSelectionStore}
-        subtypeStore={garmentScreenSubtypeSelectionStore}
-      />
-      <StaticGarmentList navigation={navigation}/>
-    </BaseScreen>
+    <>
+      <BaseScreen navigation={navigation}>
+        <TypeFilter
+          typeStore={garmentScreenTypeSelectionStore}
+          subtypeStore={garmentScreenSubtypeSelectionStore}
+        />
+        <StaticGarmentList navigation={navigation}/>
+      </BaseScreen>
+      <FilterModal/>
+    </>
   );
 });

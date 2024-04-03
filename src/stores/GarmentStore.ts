@@ -167,6 +167,9 @@ export class GarmentStore {
 
       addGarment: action,
       removeGarment: action,
+
+      tags: computed,
+      subtypes: computed
     })
   }
 
@@ -212,6 +215,16 @@ export class GarmentStore {
 
   getStyleByUUID(uuid: string) {
     return this.styles.find(st => st.uuid === uuid);
+  }
+
+  get tags() {
+    return Array.from(
+                new Set(
+                  this.garments.reduce(
+                    (tags: string[], garment) => tags.concat(garment.tags), []
+                  )
+                )
+              ).sort((a, b) => a < b ? -1 : 1);
   }
 
   loadGarments(garments: GarmentResponse[]) {

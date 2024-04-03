@@ -10,6 +10,7 @@ export const active_color = '#E46B6F';
 export const base_color = '#F0F0F0';
 export const header_color = '#FFFFFF';
 export const header_icon_color = "#000000";
+export const secondary_color = '#6F6B71';
 
 export const text_color = '#000000';
 export const footer_color = header_color;

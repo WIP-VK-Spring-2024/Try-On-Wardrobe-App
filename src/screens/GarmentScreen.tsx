@@ -1,19 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { garmentScreenGarmentSelectionStore } from '../store';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View } from '@gluestack-ui/themed';
+import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
-
-import EditIcon from '../../assets/icons/edit.svg';
-import HashTagIcon from '../../assets/icons/hashtag.svg';
-import CrossIcon from '../../assets/icons/cross.svg';
-
-import WinterIcon from '../../assets/icons/seasons/winter.svg';
-import SpringIcon from '../../assets/icons/seasons/spring.svg';
-import SummerIcon from '../../assets/icons/seasons/summer.svg';
-import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
 import { BaseScreen } from './base';
@@ -27,7 +18,40 @@ import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
 import { StackActions } from '@react-navigation/native';
+import { BackHeader } from '../components/Header';
 
+import EditIcon from '../../assets/icons/edit.svg';
+import HashTagIcon from '../../assets/icons/hashtag.svg';
+import CrossIcon from '../../assets/icons/cross.svg';
+
+import WinterIcon from '../../assets/icons/seasons/winter.svg';
+import SpringIcon from '../../assets/icons/seasons/spring.svg';
+import SummerIcon from '../../assets/icons/seasons/summer.svg';
+import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
+
+import TrashIcon from '../../assets/icons/trash.svg';
+import { deleteGarment } from '../requests/garment';
+
+export const GarmentHeader = (props: {navigation: any}) => {
+  return (
+    <BackHeader
+      navigation={props.navigation}
+      rightMenu={
+      <Pressable
+        onPress={async ()=>{
+          const garment = garmentScreenGarmentSelectionStore.selectedItem;
+          const deleteSuccess = await deleteGarment(garment);
+
+          if (deleteSuccess) {
+            props.navigation.navigate('Home');
+          }
+        }}
+      >
+        <TrashIcon width={25} height={25} fill="#ff0000"/>
+      </Pressable>}
+    />
+  )
+};
 
 export const GarmentScreen = observer((props: {navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
@@ -307,21 +331,59 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
     )
   });
 
-  const GarmentTagBlock = observer(() => {
+  const [tagInputValue, setTagInputValue] = useState('');
+
+  const GarmentTagBlock = observer((props: {tagInputValue: string, setTagInputValue: (t: string)=>void}) => {
+    const [tagInputValue, setTagInputValue] = useState(props.tagInputValue);
+    
     return (
-      <Box
-        display='flex'
-        flexDirection='row'
-        flexWrap='wrap'
-        gap={20}
-      >
-        {
-          garment.tags.map((tag, i) => {
-            return (
-              <Tag key={i} name={tag} isEditable={inEditing}/>
-            )
-          })
-        }
+      <Box>
+        <Heading>
+          Теги
+        </Heading>
+        <Box
+          display='flex'
+          flexDirection='row'
+          flexWrap='wrap'
+          gap={20}
+          marginBottom={10}
+        >
+          {
+            garment.tags.map((tag, i) => {
+              return (
+                <Tag key={i} name={tag} isEditable={inEditing}/>
+              )
+            })
+          }
+        </Box>
+        <Input
+          variant="outline"
+          size="md"
+          w="100%"
+          isDisabled={false}
+          isInvalid={false}
+          isReadOnly={false}
+        >
+          <InputField
+            flex={1}
+            type="text" 
+            value={tagInputValue}
+            onChangeText={(text: string) => setTagInputValue(text)}
+            onEndEditing={()=>props.setTagInputValue(tagInputValue)}
+          />
+          <Button
+            bg={active_color}
+            onPress={() => {
+              props.setTagInputValue(tagInputValue)
+              garment.addTag(props.tagInputValue);
+              setTagInputValue('');
+            }}
+          >
+            <RobotoText color='#ffffff'>
+              Добавить
+            </RobotoText>
+          </Button>
+        </Input>
       </Box>
     )
   });
@@ -347,28 +409,11 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <GarmentSeasonIcons/>
         <GarmentTypeSelector />
         <GarmentStyleSelector />
-        <GarmentTagBlock />
 
-        <Button
-          size="md"
-          variant="solid"
-          action="negative"
-          isDisabled={false}
-          isFocusVisible={false}
-
-          onPress={() => {
-            fetch(apiEndpoint + `/clothes/${garment.uuid}`, {
-              method: 'DELETE'
-            }).then((response) => {
-              if (garment.uuid) {
-                garmentStore.removeGarment(garment.uuid);
-              }
-              props.navigation.navigate('Home');
-            }).catch((err) => console.error(err))
-          }}
-        >
-          <ButtonText>Удалить</ButtonText>
-        </Button>
+        <GarmentTagBlock 
+          tagInputValue={tagInputValue}
+          setTagInputValue={setTagInputValue}
+        />
 
         <CloseAlertDialog />
 

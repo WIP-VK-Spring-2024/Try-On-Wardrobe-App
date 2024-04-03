@@ -12,7 +12,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {observer} from 'mobx-react-lite';
 
 import RNFS from 'react-native-fs';
-import { GarmentScreen } from './screens/GarmentScreen';
+import { GarmentHeader, GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen } from './screens/TryOnScreens';
@@ -35,6 +35,29 @@ const App = observer((): JSX.Element => {
     flex: 1,
   };
 
+  const ScreenStack = observer(() => (
+    <Stack.Navigator screenOptions={{header: Header}}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+
+      <Stack.Screen name="Person" component={PersonSelectionScreen} />
+
+      <Stack.Screen 
+        name="Clothes" 
+        component={GarmentSelectionScreen} 
+      />
+
+      <Stack.Screen name="Result" component={ResultScreen} />
+
+      <Stack.Screen
+        name="Garment" 
+        component={GarmentScreen} 
+        options={
+          {header: GarmentHeader}
+        }
+      />
+    </Stack.Navigator>
+  ))
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -43,26 +66,7 @@ const App = observer((): JSX.Element => {
       />
       <GluestackUIProvider config={config}>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{header: Header}}>
-            <Stack.Screen name="Home" component={HomeScreen} />
-
-            <Stack.Screen name="Person" component={PersonSelectionScreen} />
-
-            <Stack.Screen 
-              name="Clothes" 
-              component={GarmentSelectionScreen} 
-            />
-
-            <Stack.Screen name="Result" component={ResultScreen} />
-
-            <Stack.Screen
-              name="Garment" 
-              component={GarmentScreen} 
-              options={
-                {header: BackHeader}
-              }
-            />
-          </Stack.Navigator>
+          <ScreenStack/>
         </NavigationContainer>
       </GluestackUIProvider>
     </SafeAreaView>

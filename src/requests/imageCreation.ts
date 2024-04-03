@@ -1,7 +1,6 @@
 import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
 import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
-import { garmentScreenSelectionStore } from '../store';
 import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
 

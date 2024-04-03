@@ -1,13 +1,16 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
 import {active_color, header_color, header_icon_color, text_color} from '../consts';
 import {RobotoText} from './common';
+import { StackActions } from '@react-navigation/native';
 
 import FilterIcon from '../../assets/icons/filter.svg';
 import SettingsIcon from '../../assets/icons/settings.svg';
 import SearchIcon from '../../assets/icons/search.svg';
-import { StackActions } from '@react-navigation/native';
+import { appState } from '../stores/AppState';
+import { observer } from 'mobx-react-lite';
+
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -27,6 +30,7 @@ const HeaderBase = (props: PropsWithChildren) => {
 }
 
 export const Header = () => {
+  const filter_icon_color = appState.filterModalVisible ? active_color : header_icon_color
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
@@ -38,7 +42,11 @@ export const Header = () => {
         </RobotoText>
       </Box>
       <Box display="flex" flexDirection="row" gap={20}>
-        <FilterIcon stroke={header_icon_color}/>
+        <Pressable onPress={()=>{
+            appState.setFilterModalVisible(true)
+          }}>
+          <FilterIcon stroke={filter_icon_color}/>
+        </Pressable>
         <SettingsIcon stroke={header_icon_color}/>
         <SearchIcon stroke={header_icon_color}/>
       </Box>
@@ -46,7 +54,7 @@ export const Header = () => {
   );
 };
 
-export const BackHeader = (props: {navigation: any}) => {
+export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
   return (
     <HeaderBase>
       <Pressable
@@ -70,7 +78,9 @@ export const BackHeader = (props: {navigation: any}) => {
       >
         Толстовка
       </RobotoText>
-      <View flex={1}></View>
+      <View flex={1}>
+        {props.rightMenu}
+      </View>
     </HeaderBase>
   )
-}
+};

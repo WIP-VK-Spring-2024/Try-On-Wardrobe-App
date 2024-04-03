@@ -30,7 +30,7 @@ export const BaseScreen = observer((props: any) => {
     <>
       { appState.error==='network' && <ConnectionErrorAlert/> }
       <Box height="100%" {...props}>
-        <ScrollView>{props.children}</ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>{props.children}</ScrollView>
         {footer}
       </Box>
       { appState.createMenuVisible && <AddMenu navigation={props.navigation}/>}

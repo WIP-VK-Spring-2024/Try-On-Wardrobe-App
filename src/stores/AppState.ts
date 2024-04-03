@@ -3,6 +3,7 @@ import {makeObservable, observable, action, computed} from 'mobx';
 class AppStateStore {
     error: string | undefined
     createMenuVisible: boolean
+    filterModalVisible: boolean
 
     JWTToken: string | undefined
     userID: string | undefined
@@ -10,14 +11,17 @@ class AppStateStore {
     constructor() {
       this.error = undefined
       this.createMenuVisible = false
+      this.filterModalVisible = false;
       
       makeObservable(this, {
         error: observable,
         createMenuVisible: observable,
+        filterModalVisible: observable,
   
         setError: action,
         closeError: action,
         setCreateMenuVisible: action,
+        setFilterModalVisible: action,
         toggleCreateMenuVisible: action,
   
         hasError: computed
@@ -35,6 +39,10 @@ class AppStateStore {
   
     setCreateMenuVisible(isVisible: boolean) {
       this.createMenuVisible = isVisible;
+    }
+
+    setFilterModalVisible(isVisible: boolean) {
+      this.filterModalVisible = isVisible;
     }
   
     toggleCreateMenuVisible() {
