@@ -53,4 +53,40 @@ export class SingleSelectionStore {
       return this.items[this.selectedItemId];
     }
 }
-  
+
+export class MultipleSelectionStore {
+    items: any[]
+    selectedItems: any[]
+
+    constructor(items: any[]) {
+        this.items = items;
+        this.selectedItems = [];
+
+        makeObservable(this, {
+            items: observable,
+            selectedItems: observable,
+
+            select: action,
+            setItems: action,
+            setSelectedItems: action,
+        })
+    }
+
+    select(item: any) {
+        if (this.items.includes(item) && !this.selectedItems.includes(item)) {
+            this.selectedItems.push(item);
+        }
+    }
+
+    setItems(items: any[]) {
+        const selected = this.selectedItems;
+
+        this.items = items;
+
+        selected.forEach(item => this.select(item));
+    }
+
+    setSelectedItems(selectedItems: any[]) {
+        this.selectedItems = selectedItems;
+    }
+}

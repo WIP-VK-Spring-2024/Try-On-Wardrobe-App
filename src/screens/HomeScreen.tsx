@@ -6,7 +6,7 @@ import { appState } from "../stores/AppState";
 import { BackHandler } from "react-native";
 import { BaseScreen } from "./base";
 import { TypeFilter } from "../components/FilterBlock";
-import { garmentScreenSubtypeSelectionStore, garmentScreenTypeSelectionStore } from "../store";
+import { garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
 import { FilterModal } from "../components/FilterModal";
 
@@ -40,7 +40,10 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
         />
         <StaticGarmentList navigation={navigation}/>
       </BaseScreen>
-      <FilterModal/>
+      <FilterModal
+        styleSelectionStore={garmentScreenStyleSelectionStore}
+        tagsSelectionStore={garmentScreenTagsSelectionStore}
+      />
     </>
   );
 });

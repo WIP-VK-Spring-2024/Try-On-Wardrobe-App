@@ -18,6 +18,8 @@ import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
+import { active_color } from './consts';
+import { appState } from './stores/AppState';
 
 export const Stack = createNativeStackNavigator();
 
@@ -35,28 +37,38 @@ const App = observer((): JSX.Element => {
     flex: 1,
   };
 
-  const ScreenStack = observer(() => (
-    <Stack.Navigator screenOptions={{header: Header}}>
-      <Stack.Screen name="Home" component={HomeScreen} />
+  const ScreenStack = observer(() => {
+    console.log('rerender')
+    const getFilterColor = () => {
+      if (appState.filterModalVisible) {
+        return active_color;
+      }
 
-      <Stack.Screen name="Person" component={PersonSelectionScreen} />
+      return "#000000";
+    }
+    return (
+      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}}>
+        <Stack.Screen name="Home" component={HomeScreen} />
 
-      <Stack.Screen 
-        name="Clothes" 
-        component={GarmentSelectionScreen} 
-      />
+        <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
-      <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen 
+          name="Clothes" 
+          component={GarmentSelectionScreen} 
+        />
 
-      <Stack.Screen
-        name="Garment" 
-        component={GarmentScreen} 
-        options={
-          {header: GarmentHeader}
-        }
-      />
-    </Stack.Navigator>
-  ))
+        <Stack.Screen name="Result" component={ResultScreen} />
+
+        <Stack.Screen
+          name="Garment" 
+          component={GarmentScreen} 
+          options={
+            {header: GarmentHeader}
+          }
+        />
+      </Stack.Navigator>
+  )
+  })
 
   return (
     <SafeAreaView style={backgroundStyle}>

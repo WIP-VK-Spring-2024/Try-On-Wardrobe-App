@@ -416,7 +416,6 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         />
 
         <CloseAlertDialog />
-
       </Box>
     </BaseScreen>
   );

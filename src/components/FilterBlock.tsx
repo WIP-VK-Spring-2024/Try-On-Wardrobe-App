@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { active_color } from '../consts';
 import { Pressable, ScrollView, View } from '@gluestack-ui/themed';
 import { RobotoText } from './common';
-import { SingleSelectionStore } from '../store';
+import { SingleSelectionStore } from '../stores/SelectionStore';
+import { GarmentType } from '../stores/GarmentStore';
 
 interface FilterTabProps {
     text: string
@@ -11,7 +12,7 @@ interface FilterTabProps {
     onPress: () => void
   }
   
-export const GarmentFilterBase = observer((props: FilterTabProps) => {
+export const GarmentFilterBase = observer((props: FilterTabProps & PropsWithChildren) => {
   const style = () => {
     let style = {
       margin: 10
@@ -29,7 +30,7 @@ export const GarmentFilterBase = observer((props: FilterTabProps) => {
   return (
     <Pressable
       style={style()}
-      onPress={props.onPress}
+      {...props}
     >
       <RobotoText
         fontSize={24}
@@ -72,29 +73,29 @@ export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) 
       marginBottom={10}
     >
       <ScrollView
-        display='flex'
-        flexDirection='row'
-        gap={20}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        paddingLeft={10}
-        paddingRight={10}
       >
-        <GarmentFilterBase 
-          text='Все'
-          isSelected={!typeStore.somethingIsSelected}
-          onPress={() => typeStore.unselect()}
-        />
-        {
-          typeStore.items.map((type, i) => (
-            <GarmentFilterBase 
-              key={i} 
-              text={type.name} 
-              isSelected={i === typeStore.selectedItemId}
-              onPress={() => typeStore.select(i)}
-            />
-          ))
-        }
+        <View
+          display='flex'
+          flexDirection='row'
+        >
+          <GarmentFilterBase 
+            text='Все'
+            isSelected={!typeStore.somethingIsSelected}
+            onPress={() => typeStore.unselect()}
+          />
+          {
+            typeStore.items.map((type: GarmentType, i: number) => (
+              <GarmentFilterBase 
+                key={i} 
+                text={type.name} 
+                isSelected={i === typeStore.selectedItemId}
+                onPress={() => typeStore.select(i)}
+              />
+            ))
+          }
+        </View>
       </ScrollView>
       {
         typeStore.somethingIsSelected &&

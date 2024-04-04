@@ -29,7 +29,10 @@ const HeaderBase = (props: PropsWithChildren) => {
   )
 }
 
-export const Header = () => {
+interface HeaderProps {
+  filterColor: string
+}
+export const Header = (props: HeaderProps) => {
   const filter_icon_color = appState.filterModalVisible ? active_color : header_icon_color
   return (
     <HeaderBase>
@@ -45,7 +48,7 @@ export const Header = () => {
         <Pressable onPress={()=>{
             appState.setFilterModalVisible(true)
           }}>
-          <FilterIcon stroke={filter_icon_color}/>
+          <FilterIcon stroke={props.filterColor}/>
         </Pressable>
         <SettingsIcon stroke={header_icon_color}/>
         <SearchIcon stroke={header_icon_color}/>

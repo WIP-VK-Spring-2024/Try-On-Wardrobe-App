@@ -14,77 +14,75 @@ import { RadioIcon } from "@gluestack-ui/themed";
 import { View } from "@gluestack-ui/themed";
 import { garmentStore } from "../stores/GarmentStore";
 import { active_color, secondary_color } from "../consts";
-import { Checkbox } from "@gluestack-ui/themed";
+import { Checkbox as GlueStackCheckbox } from "@gluestack-ui/themed";
 import { CheckboxIndicator } from "@gluestack-ui/themed";
 import { CheckboxIcon } from "@gluestack-ui/themed";
 import { CheckboxLabel } from "@gluestack-ui/themed";
 import { CheckIcon } from "@gluestack-ui/themed";
+import { MultipleSelectionStore } from "../stores/SelectionStore";
 
-export const FilterModal = observer(() => {
-  // const [showModal, setShowModal] = useState(false);
+interface FilterModalProps {
+  styleSelectionStore: MultipleSelectionStore,
+  tagsSelectionStore: MultipleSelectionStore,
+}
+export const FilterModal = observer(({
+  styleSelectionStore,
+  tagsSelectionStore
+  }: FilterModalProps) => {
   const ref = useRef();
 
-  interface RadioBtnProps {
-    value: string,
-    label: string,
-  }
-  const RadioBtn = (props: RadioBtnProps) => {
-    const circleIcon = () => <CircleIcon color={active_color}/>;
-
+  const Checkbox = (props: {label: string, value: string}) => {
     return (
-      <Radio size="md" isInvalid={false} isDisabled={false} {...props}>
-        <RadioIndicator mr="$2">
-          <RadioIcon as={circleIcon} color={active_color}/>
-        </RadioIndicator>
-        <RadioLabel>{props.label}</RadioLabel>
-      </Radio>
+      <GlueStackCheckbox size="md" isInvalid={false} isDisabled={false} value={props.value} aria-label="tag">
+        <CheckboxIndicator mr="$2">
+          <CheckboxIcon as={CheckIcon} color={active_color}/>
+        </CheckboxIndicator>
+        <CheckboxLabel>{props.label}</CheckboxLabel>
+      </GlueStackCheckbox>
     )
   }
 
-  const StyleRadioBtnBlock = () => {
+  const StyleCheckboxBlock = observer(() => {
+    const styles = styleSelectionStore.items;
     return (
-      <RadioGroup
+      <CheckboxGroup
+        display="flex"
+        flexDirection="row"
+        flexWrap="wrap"
+        aria-label="tags"
+        gap={20}
+        rowGap={10}
+        value={styleSelectionStore.selectedItems}
+        onChange={tags => styleSelectionStore.setSelectedItems(tags)}
+      >
+        {
+          styles.map((style, i) => 
+            <Checkbox 
+              key={i} 
+              value={style} 
+              label={garmentStore.getStyleByUUID(style)?.name || 'ошибка'}
+            />
+          )
+        }
+      </CheckboxGroup>
+    )
+  })
+
+  const TagCheckboxBlock = observer(() => {
+    const tags = tagsSelectionStore.items;
+    return (
+      <CheckboxGroup
         display="flex"
         flexDirection="row"
         flexWrap="wrap"
         gap={20}
         rowGap={10}
-      >
-        {
-          garmentStore.styles.map((style, i) => {
-            return (
-              <RadioBtn
-                key={i}
-                value={style.uuid}
-                label={style.name}
-              />
-            )
-          })
-        }
-      </RadioGroup>
-    )
-  }
-
-  const TagCheckbox = (props: {label: string, value: string}) => {
-    return (
-      <Checkbox size="md" isInvalid={false} isDisabled={false} value={props.value} aria-label="tag">
-        <CheckboxIndicator mr="$2">
-          <CheckboxIcon as={CheckIcon} />
-        </CheckboxIndicator>
-        <CheckboxLabel>{props.label}</CheckboxLabel>
-      </Checkbox>
-    )
-  }
-
-  const TagCheckboxBlock = observer(() => {
-    const tags = garmentStore.tags;
-    return (
-      <CheckboxGroup
         aria-label="tags"
-        value={tags}
+        value={tagsSelectionStore.selectedItems}
+        onChange={tags => tagsSelectionStore.setSelectedItems(tags)}
       >
         {
-          tags.map((tag, i) => <TagCheckbox key={i} value={tag} label={tag}/>)
+          tags.map((tag, i) => <Checkbox key={i} value={tag} label={tag}/>)
         }
       </CheckboxGroup>
     )
@@ -104,7 +102,7 @@ export const FilterModal = observer(() => {
       <ModalContent>
         <ModalBody>
           <RobotoText fontSize={28} marginBottom={10}>Стили</RobotoText>
-          <StyleRadioBtnBlock/>
+          <StyleCheckboxBlock/>
           <Divider h="$0.5" marginTop={10} marginBottom={10}/>
           <RobotoText fontSize={28} marginBottom={10}>Теги</RobotoText>
           <TagCheckboxBlock/>

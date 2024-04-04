@@ -1,11 +1,12 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { ButtonFooter, Footer } from "../components/Footer";
-import { resultStore, tryOnScreenGarmentSelectionStore, tryOnScreenSubtypeSelectionStore, tryOnScreenTypeSelectionStore, userPhotoSelectionStore } from "../store";
+import { resultStore, tryOnScreenGarmentSelectionStore, tryOnScreenStyleSelectionStore, tryOnScreenSubtypeSelectionStore, tryOnScreenTagsSelectionStore, tryOnScreenTypeSelectionStore, userPhotoSelectionStore } from "../store";
 import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./base";
 import { TypeFilter } from "../components/FilterBlock";
 import { GarmentList, PeopleList } from "../components/GarmentList";
+import { FilterModal } from "../components/FilterModal";
 
 export const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   const footer = true ? (
@@ -59,8 +60,14 @@ export const PersonSelectionScreen = observer(({navigation}: {navigation: any}) 
   );
 
   return (
-    <BaseScreen navigation={navigation} footer={footer}>
-      <PeopleList />
-    </BaseScreen>
+    <>
+      <BaseScreen navigation={navigation} footer={footer}>
+        <PeopleList />
+      </BaseScreen>
+      <FilterModal
+        styleSelectionStore={tryOnScreenStyleSelectionStore}
+        tagsSelectionStore={tryOnScreenTagsSelectionStore}
+      />
+    </>
   );
 });

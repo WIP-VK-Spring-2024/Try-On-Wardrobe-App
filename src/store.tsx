@@ -2,7 +2,7 @@ import { makeObservable, observable, action, computed, autorun } from 'mobx';
 import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
-import { SingleSelectionStore } from './stores/SelectionStore';
+import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
 
 class ResultStore {
   resultUrl: string | undefined;
@@ -26,7 +26,14 @@ class ResultStore {
   }
 }
 
-const makeTypeFilter = (): [FilterStore, SingleSelectionStore, SingleSelectionStore, SingleSelectionStore] => {
+const makeGarmentFilter = (): [
+  FilterStore,
+  SingleSelectionStore,
+  SingleSelectionStore,
+  SingleSelectionStore,
+  MultipleSelectionStore,
+  MultipleSelectionStore
+] => {
   const filteredGarmentStore = new FilterStore({
     origin: garmentStore.garments
   });
@@ -68,11 +75,42 @@ const makeTypeFilter = (): [FilterStore, SingleSelectionStore, SingleSelectionSt
     }
   })
 
+  const styleFilterSelectionStore = new MultipleSelectionStore(garmentStore.styles.map(style=>style.uuid));
+
+  autorun(() => {
+    styleFilterSelectionStore.setItems(garmentStore.styles.map(style=>style.uuid));
+  })
+
+  const tagFilterSelectionStore = new MultipleSelectionStore(garmentStore.tags);
+
+  autorun(() => {
+    tagFilterSelectionStore.setItems(garmentStore.tags);
+  })
+
+  autorun(() => {
+    if (styleFilterSelectionStore.selectedItems.length > 0) {
+      filteredGarmentStore.setFilter('style_filter', (item: GarmentCard) => styleFilterSelectionStore.selectedItems.includes(item.style?.uuid))
+    } else {
+      filteredGarmentStore.removeFilter('style_filter');
+    }
+  })
+
+  autorun(() => {
+    if (tagFilterSelectionStore.selectedItems.length > 0) {
+      filteredGarmentStore.setFilter('tag_filter', 
+        (item: GarmentCard) => item.tags.map(tag => tagFilterSelectionStore.selectedItems.includes(tag)).some((b => b)))
+    } else {
+      filteredGarmentStore.removeFilter('tag_filter');
+    }
+  })
+
   return [
     filteredGarmentStore,
     garmentSelectionStore,
     garmentTypeSelectionStore,
-    garmentSubtypeSelectionStore
+    garmentSubtypeSelectionStore,
+    styleFilterSelectionStore,
+    tagFilterSelectionStore
   ]
 }
 
@@ -80,26 +118,34 @@ const [
   garmentScreenFilteredGarmentStore,
   garmentScreenGarmentSelectionStore,
   garmentScreenTypeSelectionStore,
-  garmentScreenSubtypeSelectionStore
-] = makeTypeFilter();
+  garmentScreenSubtypeSelectionStore,
+  garmentScreenStyleSelectionStore,
+  garmentScreenTagsSelectionStore,
+] = makeGarmentFilter();
 
 const [
   tryOnScreenFilteredGarmentStore,
   tryOnScreenGarmentSelectionStore,
   tryOnScreenTypeSelectionStore,
-  tryOnScreenSubtypeSelectionStore
-] = makeTypeFilter();
+  tryOnScreenSubtypeSelectionStore,
+  tryOnScreenStyleSelectionStore,
+  tryOnScreenTagsSelectionStore,
+] = makeGarmentFilter();
 
 export {
   garmentScreenFilteredGarmentStore,
   garmentScreenGarmentSelectionStore,
   garmentScreenTypeSelectionStore,
   garmentScreenSubtypeSelectionStore,
+  garmentScreenStyleSelectionStore,
+  garmentScreenTagsSelectionStore,
 
   tryOnScreenFilteredGarmentStore,
   tryOnScreenGarmentSelectionStore,
   tryOnScreenTypeSelectionStore,
   tryOnScreenSubtypeSelectionStore,
+  tryOnScreenStyleSelectionStore,
+  tryOnScreenTagsSelectionStore,
 }
 
 export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.photos);
