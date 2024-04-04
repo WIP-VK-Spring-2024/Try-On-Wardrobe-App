@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { garmentScreenGarmentSelectionStore } from '../store';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField } from '@gluestack-ui/themed';
+import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
@@ -31,6 +31,7 @@ import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
+import { appState } from '../stores/AppState';
 
 export const GarmentHeader = (props: {navigation: any}) => {
   return (
@@ -58,6 +59,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenGarmentSelectionStore.selectedItem as GarmentCard));
+  const [tagInputValue, setTagInputValue] = useState('');
 
   useEffect(() => {
     props.navigation.addListener('beforeRemove', (e: any) => {
@@ -71,6 +73,8 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
 
   const saveChanges = () => {
     garment.saveChanges();
+
+    setTagInputValue('');
 
     const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
 
@@ -95,7 +99,10 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         "Content-Type": "application/json",
       },
     })
-      .then()
+      .then(()=>{
+        appState.setSuccessMessage('Изменения успешно сохранены');
+        setTimeout(()=>appState.closeSuccessMessage(), 2000);
+      })
       .catch(res => console.error(res))
   }
 
@@ -331,8 +338,6 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
     )
   });
 
-  const [tagInputValue, setTagInputValue] = useState('');
-
   const GarmentTagBlock = observer((props: {tagInputValue: string, setTagInputValue: (t: string)=>void}) => {
     const [tagInputValue, setTagInputValue] = useState(props.tagInputValue);
     
@@ -346,6 +351,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
           flexDirection='row'
           flexWrap='wrap'
           gap={20}
+          rowGap={10}
           marginBottom={10}
         >
           {
@@ -395,7 +401,9 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }
     >
-      <Box
+      <KeyboardAvoidingView
+        behavior="position"
+        keyboardVerticalOffset={100}
         display="flex" 
         flexDirection='column' 
         gap={20}
@@ -416,7 +424,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         />
 
         <CloseAlertDialog />
-      </Box>
+      </KeyboardAvoidingView>
     </BaseScreen>
   );
 });

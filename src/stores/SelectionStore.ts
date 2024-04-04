@@ -69,6 +69,7 @@ export class MultipleSelectionStore {
             select: action,
             setItems: action,
             setSelectedItems: action,
+            clearSelectedItems: action,
         })
     }
 
@@ -88,5 +89,9 @@ export class MultipleSelectionStore {
 
     setSelectedItems(selectedItems: any[]) {
         this.selectedItems = selectedItems;
+    }
+
+    clearSelectedItems() {
+        this.selectedItems = [];
     }
 }

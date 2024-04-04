@@ -113,24 +113,25 @@ export const FilterModal = observer(({
         >
           <Button
             size="lg"
-            action="primary"
-            bg={active_color}
-            mr="$3"
-            onPress={() => {
-              appState.setFilterModalVisible(false);
-            }}
-          >
-            <ButtonText>Применить</ButtonText>
-          </Button>
-          <Button
-            size="lg"
             action="secondary"
             onPress={() => {
+              styleSelectionStore.clearSelectedItems();
+              tagsSelectionStore.clearSelectedItems();
               appState.setFilterModalVisible(false);
             }}
             bg={secondary_color}
           >
             <ButtonText>Сбросить</ButtonText>
+          </Button>
+          <Button
+            size="lg"
+            action="primary"
+            bg={active_color}
+            onPress={() => {
+              appState.setFilterModalVisible(false);
+            }}
+          >
+            <ButtonText>Применить</ButtonText>
           </Button>
         </ModalFooter>
       </ModalContent>

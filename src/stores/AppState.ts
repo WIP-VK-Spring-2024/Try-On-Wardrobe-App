@@ -2,6 +2,7 @@ import {makeObservable, observable, action, computed} from 'mobx';
 
 class AppStateStore {
     error: string | undefined
+    successMessage: string | undefined
     createMenuVisible: boolean
     filterModalVisible: boolean
 
@@ -10,16 +11,20 @@ class AppStateStore {
   
     constructor() {
       this.error = undefined
+      this.successMessage = undefined
       this.createMenuVisible = false
       this.filterModalVisible = false;
       
       makeObservable(this, {
         error: observable,
+        successMessage: observable,
         createMenuVisible: observable,
         filterModalVisible: observable,
   
         setError: action,
+        setSuccessMessage: action,
         closeError: action,
+        closeSuccessMessage: action,
         setCreateMenuVisible: action,
         setFilterModalVisible: action,
         toggleCreateMenuVisible: action,
@@ -36,6 +41,10 @@ class AppStateStore {
     setError(error: string | undefined) {
       this.error = error;
     }
+
+    setSuccessMessage(msg: string | undefined) {
+      this.successMessage = msg;
+    }
   
     setCreateMenuVisible(isVisible: boolean) {
       this.createMenuVisible = isVisible;
@@ -51,6 +60,10 @@ class AppStateStore {
   
     closeError() {
       this.error = undefined;
+    }
+    
+    closeSuccessMessage() {
+      this.successMessage = undefined;
     }
   
     get hasError() {

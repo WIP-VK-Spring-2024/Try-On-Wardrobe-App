@@ -1,6 +1,6 @@
 import React from 'react';
 import {Footer} from '../components/Footer';
-import {Box, CloseIcon, ScrollView, Text} from '@gluestack-ui/themed';
+import {Box, CheckIcon, CloseIcon, KeyboardAvoidingView, ScrollView, Text, View} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
 
 import { Alert, AlertIcon, InfoIcon, AlertText } from '@gluestack-ui/themed';
@@ -24,15 +24,30 @@ export const ConnectionErrorAlert = observer(() => {
   )
 })
 
+const SuccesAlert = observer((props: {msg: string}) => {
+  return (
+    <Alert mx="$2.5" action="success" variant="solid" w="100%">
+      <AlertIcon as={CheckIcon} mr="$3" />
+      <AlertText>
+        {props.msg}
+      </AlertText>
+      <Pressable onPress={()=>appState.closeSuccessMessage()}>
+        <Icon as={CloseIcon} marginRight={10}/>
+      </Pressable>
+    </Alert>
+  )
+})
+
 export const BaseScreen = observer((props: any) => {
   const footer = props.footer || <Footer navigation={props.navigation} />;
   return (
     <>
+      <View height="100%" {...props}>
       { appState.error==='network' && <ConnectionErrorAlert/> }
-      <Box height="100%" {...props}>
+      { appState.successMessage!==undefined && <SuccesAlert msg={appState.successMessage}/> }
         <ScrollView showsVerticalScrollIndicator={false}>{props.children}</ScrollView>
         {footer}
-      </Box>
+      </View>
       { appState.createMenuVisible && <AddMenu navigation={props.navigation}/>}
     </>
   );
