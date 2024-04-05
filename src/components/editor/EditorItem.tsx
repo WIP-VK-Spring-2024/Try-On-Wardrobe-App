@@ -3,18 +3,20 @@ import { observer } from 'mobx-react-lite';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { Rectangle } from './models';
 import { Image, Rect, SkImage, Skia, vec } from '@shopify/react-native-skia';
+import { getImageSource } from '../../utils';
+import { ImageType } from '../../models';
 
 export const EditorItem = observer((props: {
   id: number, 
   positions: SharedValue<Rectangle[]>,
-  imageUri: string
+  image: ImageType
 }) => {
-  const [image, setImage] = useState<SkImage | null>(null);
+  const [skImage, setImage] = useState<SkImage | null>(null);
   
   useEffect(() => {
-    Skia.Data.fromURI(props.imageUri)
+    Skia.Data.fromURI(getImageSource(props.image).uri)
       .then(data => {
-        console.log('fetched data', props.imageUri)
+        console.log('fetched data', props.image.uri)
         setImage(Skia.Image.MakeImageFromEncoded(data))
       })
       .catch(err => console.error(err))
@@ -41,7 +43,7 @@ export const EditorItem = observer((props: {
   })
 
   return (
-      image === null 
+    skImage === null 
       ? <Rect
         x={x}
         y={y}
@@ -51,7 +53,7 @@ export const EditorItem = observer((props: {
         origin={origin}
       />
       : <Image
-          image={image}
+          image={skImage}
           x={x}
           y={y}
           width={width}

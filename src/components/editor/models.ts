@@ -1,3 +1,5 @@
+import { ImageType } from "../../models"
+
 export interface RectangleProps {
     x: number,
     y: number,
@@ -10,5 +12,5 @@ export interface RectangleProps {
 export interface Rectangle extends RectangleProps{
     halfWidth: number,
     halfHeight: number,
-    imageUri: string
+    image: ImageType
 }

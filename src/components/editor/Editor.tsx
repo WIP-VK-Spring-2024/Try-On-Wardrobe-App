@@ -10,6 +10,7 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
 
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { Rectangle } from "./models";
 import { garmentKit } from "../../stores/GarmentKitStore";
@@ -19,12 +20,12 @@ import { RotateHandle } from "./RotateHandle";
 import { ScaleHandle } from "./ScaleHandle";
 import { GestureDetectorView } from "./GestureDetectorView";
 import { RobotoText } from "../common";
-import { EditorMenu } from "./Menu";
+import { EditorMenu } from "./EditorMenu";
 
 export const KitEditor = observer(() => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
-  const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), imageUri: item.image.uri})))
+  const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)})))
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);
@@ -405,7 +406,7 @@ export const KitEditor = observer(() => {
                 key={i} 
                 id={i} 
                 positions={positions}
-                imageUri={positions.value[i].imageUri}
+                image={positions.value[i].image}
               />
             ))
           }
@@ -454,7 +455,7 @@ export const KitEditor = observer(() => {
         </GestureDetector>
       </View>
 
-      <EditorMenu/>
+      <EditorMenu selectedId={activeId}/>
 
     </View>
   );

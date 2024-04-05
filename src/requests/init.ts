@@ -28,7 +28,7 @@ export const initStores = () => {
         data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
     
-            console.log(clothes[0])
+            console.log(clothes)
     
             const garmentCards = clothes.map(convertGarmentResponse);
     

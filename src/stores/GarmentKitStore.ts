@@ -97,10 +97,10 @@ export class GarmentKit {
     }
 }
 
-const item = new GarmentKitItem({
+const item1 = new GarmentKitItem({
     image: {
         type: 'remote',
-        uri: staticEndpoint + 'cut/6366006a-b909-4381-a741-9e6fe0cbbf74',
+        uri: 'cut/6366006a-b909-4381-a741-9e6fe0cbbf74',
     },
     rect: new GarmentKitItemRect({
         x: 200,
@@ -112,4 +112,19 @@ const item = new GarmentKitItem({
     })
 })
 
-export const garmentKit = new GarmentKit([item]);
+const item2 = new GarmentKitItem({
+    image: {
+        type: 'remote',
+        uri: 'cut/0208edd3-5dcc-4543-993c-f8da2764bb03'
+    },
+    rect: new GarmentKitItemRect({
+        x: 200,
+        y: 200,
+        angle: Math.PI / 16,
+        width: 100,
+        height: 100,
+        scale: 1
+    })
+})
+
+export const garmentKit = new GarmentKit([item1, item2]);
