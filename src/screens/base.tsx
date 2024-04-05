@@ -9,7 +9,6 @@ import { Icon } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import { AddMenu } from '../components/AddMenu';
 
-
 export const ConnectionErrorAlert = observer(() => {
   return (
     <Alert mx="$2.5" action="error" variant="solid" w="100%">
@@ -24,7 +23,7 @@ export const ConnectionErrorAlert = observer(() => {
   )
 })
 
-const SuccesAlert = observer((props: {msg: string}) => {
+const SuccessAlert = observer((props: {msg: string}) => {
   return (
     <Alert mx="$2.5" action="success" variant="solid" w="100%">
       <AlertIcon as={CheckIcon} mr="$3" />
@@ -40,12 +39,21 @@ const SuccesAlert = observer((props: {msg: string}) => {
 
 export const BaseScreen = observer((props: any) => {
   const footer = props.footer || <Footer navigation={props.navigation} />;
+
   return (
     <>
       <View height="100%" {...props}>
       { appState.error==='network' && <ConnectionErrorAlert/> }
-      { appState.successMessage!==undefined && <SuccesAlert msg={appState.successMessage}/> }
-        <ScrollView showsVerticalScrollIndicator={false}>{props.children}</ScrollView>
+      { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
+      <ScrollView
+        style={{
+          flex: 1
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        >
+          {props.children}
+      </ScrollView>
         {footer}
       </View>
       { appState.createMenuVisible && <AddMenu navigation={props.navigation}/>}

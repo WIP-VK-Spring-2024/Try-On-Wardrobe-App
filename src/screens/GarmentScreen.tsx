@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useContext, useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { garmentScreenGarmentSelectionStore } from '../store';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView } from '@gluestack-ui/themed';
+import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
@@ -363,9 +363,10 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
           }
         </Box>
         <Input
+          w="100%"
+          flex={1}
           variant="outline"
           size="md"
-          w="100%"
           isDisabled={false}
           isInvalid={false}
           isReadOnly={false}
@@ -380,9 +381,10 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
           <Button
             bg={active_color}
             onPress={() => {
-              props.setTagInputValue(tagInputValue)
-              garment.addTag(props.tagInputValue);
+              const value = tagInputValue;
+              // props.setTagInputValue(value);
               setTagInputValue('');
+              garment.addTag(value);
             }}
           >
             <RobotoText color='#ffffff'>
@@ -401,15 +403,13 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }
     >
-      <KeyboardAvoidingView
-        behavior="position"
-        keyboardVerticalOffset={100}
+      <View
         display="flex" 
         flexDirection='column' 
         gap={20}
         alignContent='center'
-        marginLeft={40}
-        marginRight={40}
+        marginLeft={20}
+        marginRight={20}
         marginBottom={100}
       >
         <GarmentImage/>
@@ -424,7 +424,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
         />
 
         <CloseAlertDialog />
-      </KeyboardAvoidingView>
+      </View>
     </BaseScreen>
   );
 });
