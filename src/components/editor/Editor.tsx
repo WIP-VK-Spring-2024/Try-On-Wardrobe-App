@@ -19,7 +19,6 @@ import { EditorItem } from "./EditorItem";
 import { RotateHandle } from "./RotateHandle";
 import { ScaleHandle } from "./ScaleHandle";
 import { GestureDetectorView } from "./GestureDetectorView";
-import { RobotoText } from "../common";
 import { EditorMenu } from "./EditorMenu";
 
 export const KitEditor = observer(() => {
@@ -370,8 +369,6 @@ export const KitEditor = observer(() => {
 
       width: scaleHandleSize,
       height: scaleHandleSize,
-
-      // backgroundColor: "#ff0000",
 
       transform: [
         {translateX: -scaleHandleHalfSize},
