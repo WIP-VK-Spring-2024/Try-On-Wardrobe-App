@@ -20,6 +20,8 @@ import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
 import { active_color } from './consts';
 import { appState } from './stores/AppState';
+import { KitEditor } from './screens/KitEditor';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const Stack = createNativeStackNavigator();
 
@@ -47,7 +49,7 @@ const App = observer((): JSX.Element => {
       return "#000000";
     }
     return (
-      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}}>
+      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='Editor'>
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
@@ -66,6 +68,12 @@ const App = observer((): JSX.Element => {
             {header: GarmentHeader}
           }
         />
+
+        <Stack.Screen
+          name="Editor"
+          component={KitEditor}
+          
+        />
       </Stack.Navigator>
   )
   })
@@ -77,9 +85,11 @@ const App = observer((): JSX.Element => {
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <GluestackUIProvider config={config}>
-        <NavigationContainer>
-          <ScreenStack/>
-        </NavigationContainer>
+        <GestureHandlerRootView>
+          <NavigationContainer>
+            <ScreenStack/>
+          </NavigationContainer>
+        </GestureHandlerRootView>
       </GluestackUIProvider>
     </SafeAreaView>
   );
