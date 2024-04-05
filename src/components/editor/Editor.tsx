@@ -1,262 +1,30 @@
 import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import type { SkPicture } from "@shopify/react-native-skia";
 import {
   Group,
   Fill,
   Canvas,
-  Picture,
-  Skia,
-  PaintStyle,
-  Circle,
-  Rect,
   vec,
-  Line,
   Points,
 } from "@shopify/react-native-skia";
-import type { NativeGesture, TouchData } from "react-native-gesture-handler";
-import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
 
-import { Title } from "./components/Title";
-import { runOnJS, runOnUI, useDerivedValue } from "@shopify/react-native-skia/src/external/reanimated/moduleWrapper";
-import { SharedValue } from "react-native-gesture-handler/lib/typescript/handlers/gestures/reanimatedWrapper";
+import { observer } from "mobx-react-lite";
+import { Rectangle } from "./models";
+import { garmentKit } from "../../stores/GarmentKitStore";
+import { boundsExtra, rotateHandleHalfSize, rotateHandleLength, rotateHandleSize, scaleHandleHalfSize, scaleHandleSize } from "./consts";
+import { EditorItem } from "./EditorItem";
+import { RotateHandle } from "./RotateHandle";
+import { ScaleHandle } from "./ScaleHandle";
+import { GestureDetectorView } from "./GestureDetectorView";
+import { RobotoText } from "../common";
+import { EditorMenu } from "./Menu";
 
-// const rectW = 100;
-// const rectH = 100;
-
-// const rectHalfW = rectW / 2;
-// const rectHalfH = rectH / 2;
-
-const rotateHandleLength = 20;
-// const boundsLength = Math.max(rectHalfW, rectHalfH) + 10;
-
-const boundsExtra = 10;
-
-const rotateHandleSize = 25;
-const rotateHandleHalfSize = rotateHandleSize / 2;
-
-const scaleHandleSize = rotateHandleSize;
-const scaleHandleHalfSize = scaleHandleSize / 2;
-
-interface RectangleProps {
-  x: number,
-  y: number,
-  angle: number,
-  width: number,
-  height: number,
-  scale: number
-}
-
-interface Rectangle extends RectangleProps{
-  halfWidth: number,
-  halfHeight: number
-}
-
-class RectangleClass {
-  x: number = 0;
-  y: number = 0;
-  angle: number = 0;
-  width: number = 0;
-  height: number = 0;
-
-  halfWidth: number = 0;
-  halfHeight: number = 0;
-
-  scale: number = 1;
-
-  constructor(props: RectangleProps) {
-    this.x = props.x;
-    this.y = props.y;
-    this.angle = props.angle;
-    this.width = props.width;
-    this.height = props.height;
-
-    this.halfWidth = props.width / 2;
-    this.halfHeight = props.height / 2;
-
-    this.scale = props.scale;
-  }
-
-  getParams() {
-    return {
-      x: this.x,
-      y: this.y,
-      angle: this.angle,
-      width: this.width,
-      height: this.height,
-      halfWidth: this.halfWidth,
-      halfHeight: this.halfHeight,
-      scale: this.scale,
-    }
-  }
-}
-
-const rectangles = [
-  new RectangleClass({
-    x: 0,
-    y: 0,
-    angle: 0,
-    width: 60,
-    height: 40,
-    scale: 3,
-  }),
-  new RectangleClass({
-    x: 200,
-    y: 40,
-    angle: Math.PI / 4,
-    width: 100,
-    height: 100,
-    scale: 1
-  }),
-  new RectangleClass({
-    x: 50,
-    y: 200,
-    angle: Math.PI / 3,
-    width: 100,
-    height: 120,
-    scale: 1
-  }),
-]
-
-interface RotateHandleCoordsType {
-  x: number,
-  y: number,
-  rx: number,
-  ry: number
-}
-
-interface RotateHandleProps {
-  rotateHandleCoords: SharedValue<RotateHandleCoordsType>,
-  activeId: SharedValue<number | undefined>
-}
-const RotateHandle = (props: RotateHandleProps) => {
-  const rotateHandleX = useDerivedValue(() => {
-    return props.rotateHandleCoords.value.x;
-  })
-
-  const rotateHandleY = useDerivedValue(() => {
-    return props.rotateHandleCoords.value.y
-  })
-
-  const rotateLineP1 = useDerivedValue(() => {
-    return vec(
-      props.rotateHandleCoords.value.x + rotateHandleHalfSize, 
-      props.rotateHandleCoords.value.y + rotateHandleHalfSize
-    )
-  })
-
-  const rotateLineP2 = useDerivedValue(() => {
-    return vec(
-      props.rotateHandleCoords.value.rx, 
-      props.rotateHandleCoords.value.ry
-    )
-  })
-
-  return (
-    <>
-      <Rect 
-        x={rotateHandleX}
-        y={rotateHandleY}
-        width={rotateHandleSize}
-        height={rotateHandleSize}
-        color="lightblue"
-      />
-      <Line
-        p1={rotateLineP1}
-        p2={rotateLineP2}
-        color="lightblue"
-        strokeWidth={4}
-      />
-    </>
-  )
-}
-
-interface ScaleHandleProps {
-  coords: SharedValue<{x: number, y: number, rx: number, ry: number}>
-}
-const ScaleHandle = (props: ScaleHandleProps) => {
-  const x = useDerivedValue(() => props.coords.value.x + props.coords.value.rx - scaleHandleHalfSize);
-  const y = useDerivedValue(() => props.coords.value.y + props.coords.value.ry - scaleHandleHalfSize);
-
-  return (
-    <Rect
-      x={x}
-      y={y}
-      width={scaleHandleSize}
-      height={scaleHandleSize}
-      color="lightblue"
-  />
-  )
-}
-
-const GestureDetectorView = (props: {gesture: NativeGesture, positions: SharedValue<Rectangle[]>, id: number}) => {
-  const style = useAnimatedStyle(() => {
-    return {
-      position: "absolute",
-
-      // backgroundColor: "red",
-
-      top: props.positions.value[props.id].y,
-      left: props.positions.value[props.id].x,
-
-      width: props.positions.value[props.id].width,
-      height: props.positions.value[props.id].height,
-
-      transform: [
-        {"rotate": `${props.positions.value[props.id].angle}rad`},
-        {"scale": props.positions.value[props.id].scale},
-      ]
-    }
-  }
-  );
-
-  return (
-    <GestureDetector gesture={props.gesture}>
-      <Animated.View style={style}/>
-    </GestureDetector>
-  )
-}
-
-const MyRect = (props: {id: number, positions: SharedValue<Rectangle[]>}) => {
-  const x = useDerivedValue(() => props.positions.value[props.id].x);
-  const y = useDerivedValue(() => props.positions.value[props.id].y);
-
-  const width = useDerivedValue(() => props.positions.value[props.id].width);
-  const height = useDerivedValue(() => props.positions.value[props.id].height);
-
-  const origin = useDerivedValue(() => {
-    return vec(
-      x.value + props.positions.value[props.id].halfWidth, 
-      y.value + props.positions.value[props.id].halfHeight,
-    )
-  })
-
-  const tranforms = useDerivedValue(() => {
-    return [
-      {rotate: props.positions.value[props.id].angle},
-      {scale: props.positions.value[props.id].scale},
-    ]
-  })
-
-  return (
-    <Rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      transform={tranforms}
-      origin={origin}
-    />
-  )
-}
-
-export const KitEditor = () => {
+export const KitEditor = observer(() => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
-  // const positions = useSharedValue<Rectangle[]>([{x: 100, y: 20, angle: 0}, {x: 200, y: 400, angle: Math.PI / 4}]);
-
-  const positions = useSharedValue<Rectangle[]>(rectangles.map(rect => rect.getParams()))
+  const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), imageUri: item.image.uri})))
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);
@@ -373,13 +141,13 @@ export const KitEditor = () => {
       };
 
       const diag = Math.sqrt(d.x * d.x + d.y * d.y);
+      
+      const newScale = diag / cDiag;
 
       const c = {
-        x: scaleFixedCorner.value.x + d.x,
-        y: scaleFixedCorner.value.y + d.y
+        x: scaleFixedCorner.value.x + p.halfWidth * newScale,
+        y: scaleFixedCorner.value.y + p.halfHeight * newScale
       }
-
-      const newScale = diag / cDiag;
 
       const oldPositions = [...positions.value];
 
@@ -632,7 +400,14 @@ export const KitEditor = () => {
         <Canvas style={styles.container}>
           <Fill color="white" />
           {
-            positions.value.map((_, i) => <MyRect key={i} id={i} positions={positions}/>)
+            positions.value.map((_, i) => (
+              <EditorItem 
+                key={i} 
+                id={i} 
+                positions={positions}
+                imageUri={positions.value[i].imageUri}
+              />
+            ))
           }
 
           <Group
@@ -678,12 +453,16 @@ export const KitEditor = () => {
           <Animated.View style={scaleHandleStyle}/>
         </GestureDetector>
       </View>
+
+      <EditorMenu/>
+
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%"
   },
 });

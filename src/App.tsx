@@ -20,7 +20,7 @@ import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
 import { active_color } from './consts';
 import { appState } from './stores/AppState';
-import { KitEditor } from './screens/KitEditor';
+import { KitEditorScreen } from './screens/KitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const Stack = createNativeStackNavigator();
@@ -71,7 +71,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen
           name="Editor"
-          component={KitEditor}
+          component={KitEditorScreen}
           
         />
       </Stack.Navigator>

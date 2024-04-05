@@ -37,6 +37,7 @@ export const GarmentHeader = (props: {navigation: any}) => {
   return (
     <BackHeader
       navigation={props.navigation}
+      text="Карточка"
       rightMenu={
       <Pressable
         onPress={async ()=>{

@@ -57,7 +57,13 @@ export const Header = (props: HeaderProps) => {
   );
 };
 
-export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
+interface BackHeaderProps {
+  navigation: any
+  rightMenu: ReactNode
+  text: string
+}
+
+export const BackHeader = (props: BackHeaderProps) => {
   return (
     <HeaderBase>
       <Pressable
@@ -79,7 +85,7 @@ export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
         textAlign='center'
         fontSize={32}
       >
-        Толстовка
+        {props.text}
       </RobotoText>
       <View flex={1}>
         {props.rightMenu}
