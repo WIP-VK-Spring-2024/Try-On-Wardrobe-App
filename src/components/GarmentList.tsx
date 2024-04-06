@@ -1,6 +1,6 @@
 import React from 'react';
-
-import { Box, Image, Pressable } from '@gluestack-ui/themed';
+import { BaseList } from './BaseList';
+import { Image, Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { base_color, windowHeight, windowWidth } from '../consts';
 
@@ -9,19 +9,6 @@ import { observer } from 'mobx-react-lite';
 import { garmentScreenGarmentSelectionStore, tryOnScreenGarmentSelectionStore, userPhotoSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
-
-const divideIntoPairs = (items: any[]) => {
-  let item_pairs = [];
-  for (let i = 0; i < items.length; i++) {
-    if (i % 2 === 0) {
-      item_pairs.push([items[i]]);
-    } else {
-      item_pairs[item_pairs.length - 1].push(items[i]);
-    }
-  }
-
-  return item_pairs;
-};
 
 const ListImage = observer((props: { source: string | ImageSourcePropType, uuid: string }) => {
   return (
@@ -93,23 +80,7 @@ const PersonListCard = observer(
       </Pressable>)
   })
 
-export const BaseList = observer((props: { items: any }) => {
-  const pairs = divideIntoPairs(props.items);
-  return (
-    <Box bg={base_color} display='flex' flexDirection='column' gap={10} padding={10}>
-      {
-        pairs.map((item_pair, i) => {
-          return (
-            <Box key={i} display='flex' flexDirection='row' gap={10}>
-              {item_pair[0]}
-              {item_pair[1]}
-            </Box>
-          )
-        })
-      }
-    </Box>
-  )
-})
+
 
 export const StaticGarmentList = observer((props: any) => {
   const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (

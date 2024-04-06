@@ -44,7 +44,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         stroke={footer_icon_color}
         width={normalSize}
         height={normalSize}
-        onPress={() => navigation.navigate('Person')}
+        onPress={() => navigation.navigate('TryOn')}
       />
     </Box>
   );

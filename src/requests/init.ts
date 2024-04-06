@@ -1,6 +1,7 @@
 import { apiEndpoint } from "../../config";
 import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
+import { TryOnResultCard, TryOnResultCardProps, tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse } from "../utils";
 
@@ -46,6 +47,13 @@ export const initStores = () => {
                     uri: `/photos/${photo.uuid}`
                 }
             })))
+        }).catch(err => console.error(err))
+    }).catch(err => console.error(err))
+
+    fetch(apiEndpoint + '/try-on').then(async data => {
+        data.json().then(async results => {
+            console.log('try-on results', results)
+            tryOnStore.setResults(results.map((props: TryOnResultCardProps) => new TryOnResultCard(props)));
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
 }

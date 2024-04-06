@@ -4,6 +4,7 @@ import { ButtonFooter, Footer } from "../components/Footer";
 import { resultStore, tryOnScreenGarmentSelectionStore, tryOnScreenStyleSelectionStore, tryOnScreenSubtypeSelectionStore, tryOnScreenTagsSelectionStore, tryOnScreenTypeSelectionStore, userPhotoSelectionStore } from "../store";
 import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./base";
+import { TryOnResultList } from "../components/TryOnResultList";
 import { TypeFilter } from "../components/FilterBlock";
 import { GarmentList, PeopleList } from "../components/GarmentList";
 import { FilterModal } from "../components/FilterModal";
@@ -68,6 +69,18 @@ export const PersonSelectionScreen = observer(({navigation}: {navigation: any}) 
         styleSelectionStore={tryOnScreenStyleSelectionStore}
         tagsSelectionStore={tryOnScreenTagsSelectionStore}
       />
+    </>
+  );
+});
+
+export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
+  const footer = <Footer navigation={navigation} />;
+
+  return (
+    <>
+      <BaseScreen navigation={navigation} footer={footer}>
+        <TryOnResultList />
+      </BaseScreen>
     </>
   );
 });

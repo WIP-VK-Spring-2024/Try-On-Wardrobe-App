@@ -15,7 +15,7 @@ import RNFS from 'react-native-fs';
 import { GarmentHeader, GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
-import { GarmentSelectionScreen, PersonSelectionScreen } from './screens/TryOnScreens';
+import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
 import { active_color } from './consts';
@@ -51,6 +51,8 @@ const App = observer((): JSX.Element => {
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
+
+        <Stack.Screen name="TryOn" component={TryOnMainScreen} />
 
         <Stack.Screen 
           name="Clothes" 
