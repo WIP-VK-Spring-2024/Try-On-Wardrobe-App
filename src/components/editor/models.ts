@@ -12,5 +12,5 @@ export interface RectangleProps {
 export interface Rectangle extends RectangleProps{
     halfWidth: number,
     halfHeight: number,
-    image: ImageType
+    image?: ImageType
 }

@@ -40,11 +40,13 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
               <Animated.View
                 style={getStyle(i)}
               >
-                <Image
-                  alt="img"
-                  size="xs"
-                  source={getImageSource(garment.image)}
-                />
+                { 
+                  garment.image && <Image
+                    alt="img"
+                    size="xs"
+                    source={getImageSource(garment.image)}
+                  /> 
+                }
               </Animated.View>
             </Pressable>
           )

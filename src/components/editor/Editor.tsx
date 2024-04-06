@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Group,
@@ -10,7 +10,7 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
 
-import { toJS } from "mobx";
+import { autorun, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { Rectangle } from "./models";
 import { garmentKit } from "../../stores/GarmentKitStore";
@@ -25,6 +25,12 @@ export const KitEditor = observer(() => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
   const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)})))
+
+  useEffect(() => {
+    autorun(() => {
+      positions.value = garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)}));
+    })
+  }, [])
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);

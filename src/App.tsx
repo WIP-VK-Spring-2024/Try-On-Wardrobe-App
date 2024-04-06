@@ -22,6 +22,7 @@ import { active_color } from './consts';
 import { appState } from './stores/AppState';
 import { KitEditorHeader, KitEditorScreen } from './screens/KitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GarmentKitScreen } from './screens/GarmentKitScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -49,7 +50,7 @@ const App = observer((): JSX.Element => {
       return "#000000";
     }
     return (
-      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='Editor'>
+      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='GarmentKit'>
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
@@ -67,6 +68,11 @@ const App = observer((): JSX.Element => {
           options={
             {header: GarmentHeader}
           }
+        />
+
+        <Stack.Screen
+          name="GarmentKit"
+          component={GarmentKitScreen}
         />
 
         <Stack.Screen

@@ -1,6 +1,7 @@
 import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
 import { staticEndpoint } from '../../config';
+import { garmentStore } from './GarmentStore';
 
 interface GarmentKitItemRectProps {
     x?: number
@@ -49,28 +50,38 @@ export class GarmentKitItemRect {
 }
 
 interface GarmentKitItemProps {
-    image: ImageType
+    garmentUUID: string
     rect: GarmentKitItemRect
 }
 
 export class GarmentKitItem {
-    image: ImageType
+    garmentUUID: string
     rect: GarmentKitItemRect
 
     constructor(props: GarmentKitItemProps) {
-        this.image = props.image;
+        this.garmentUUID = props.garmentUUID;
         this.rect = props.rect;
 
         makeObservable(this, {
-            image: observable,
             rect: observable,
 
-            setRect: action
+            setRect: action,
+
+            garment: computed,
+            image: computed,
         })
     }
 
     setRect(rect: GarmentKitItemRect) {
         this.rect = rect
+    }
+
+    get garment() {
+        return garmentStore.getGarmentByUUID(this.garmentUUID);
+    }
+
+    get image() {
+        return this.garment?.image;
     }
 }
 
@@ -98,10 +109,7 @@ export class GarmentKit {
 }
 
 const item1 = new GarmentKitItem({
-    image: {
-        type: 'remote',
-        uri: 'cut/6366006a-b909-4381-a741-9e6fe0cbbf74',
-    },
+    garmentUUID: '6366006a-b909-4381-a741-9e6fe0cbbf74',
     rect: new GarmentKitItemRect({
         x: 200,
         y: 40,
@@ -113,10 +121,7 @@ const item1 = new GarmentKitItem({
 })
 
 const item2 = new GarmentKitItem({
-    image: {
-        type: 'remote',
-        uri: 'cut/0208edd3-5dcc-4543-993c-f8da2764bb03'
-    },
+    garmentUUID: '0208edd3-5dcc-4543-993c-f8da2764bb03',
     rect: new GarmentKitItemRect({
         x: 200,
         y: 200,
