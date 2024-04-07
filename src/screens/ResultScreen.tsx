@@ -6,10 +6,19 @@ import { Spinner } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Image } from "@gluestack-ui/themed";
 import { resultStore } from "../store";
+import { ACTIVE_COLOR } from "../consts";
+import { RatingButtons } from "../components/TryOnRating";
+import { StyleSheet } from 'react-native'
 
-import LikeIcon from '../../assets/icons/like.svg';
-import DislikeIcon from '../../assets/icons/dislike.svg';
-import { active_color } from "../consts";
+const style = StyleSheet.create({
+    overlay: {
+      width: 3,
+      height: 3,
+      position: 'absolute',
+      right: 10,
+      bottom: 10,
+    },
+  });
 
 export const ResultScreen = observer(({navigation}: {navigation: any}) => {
   return (
@@ -22,7 +31,7 @@ export const ResultScreen = observer(({navigation}: {navigation: any}) => {
         alignItems="center">
         {resultStore.resultUrl === undefined ? (
           <HStack>
-            <Spinner size="large" color={active_color} />
+            <Spinner size="large" color={ACTIVE_COLOR} />
             <RobotoText>Загрузка...</RobotoText>
           </HStack>
         ) : (
@@ -33,15 +42,12 @@ export const ResultScreen = observer(({navigation}: {navigation: any}) => {
               source={resultStore.resultUrl}
               alt="result"
             />
-            <Box
-              w="100%"
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-around"
-              alignItems="center">
-              <DislikeIcon width={50} height={50} />
-              <LikeIcon width={50} height={50} />
-            </Box>
+            <RatingButtons
+                style={style.overlay}
+                buttonWidth={50}
+                buttonHeight={50}
+                uuid={resultStore.resultUUID || ''}
+                rating={resultStore.resultRating || 0} />
           </Box>
         )}
       </Box>

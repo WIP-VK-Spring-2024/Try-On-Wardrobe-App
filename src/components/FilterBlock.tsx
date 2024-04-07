@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React, { PropsWithChildren } from 'react';
-import { active_color } from '../consts';
+import { ACTIVE_COLOR } from '../consts';
 import { Pressable, ScrollView, View } from '@gluestack-ui/themed';
 import { RobotoText } from './common';
 import { SingleSelectionStore } from '../stores/SelectionStore';
@@ -19,7 +19,7 @@ export const GarmentFilterBase = observer((props: FilterTabProps & PropsWithChil
     }
     if (props.isSelected) {
       Object.assign(style, {
-        borderBottomColor: active_color,
+        borderBottomColor: ACTIVE_COLOR,
         borderBottomWidth: 2
       })
     }
@@ -34,7 +34,7 @@ export const GarmentFilterBase = observer((props: FilterTabProps & PropsWithChil
     >
       <RobotoText
         fontSize={24}
-        color={props.isSelected ? active_color : "#000000"}
+        color={props.isSelected ? ACTIVE_COLOR : "#000000"}
       >
         {props.text}
       </RobotoText>
@@ -46,7 +46,7 @@ const GarmentFilterSpecific = observer((props: FilterTabProps) => {
   return (
     <Pressable
       borderRadius={15}
-      bgColor={props.isSelected ? active_color : '#ffffff'}
+      bgColor={props.isSelected ? ACTIVE_COLOR : '#ffffff'}
       onPress={props.onPress}
       padding={2}
       paddingLeft={15}

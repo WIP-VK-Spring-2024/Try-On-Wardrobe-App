@@ -52,10 +52,11 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         method: 'POST',
         body: formData
     }).then(resp => resp.json().then(res => {
+        console.log(res)
         userPhotoStore.addPhoto({
             uuid: res.uuid,
             image: {
-                uri: `/photos/${res.uuid}`,
+                uri: '/'+res.image,
                 type: 'remote'
             }
         })

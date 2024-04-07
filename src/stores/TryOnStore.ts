@@ -77,6 +77,14 @@ export class TryOnStore {
       this.results.splice(index, 1);
     }
   }
+
+  rateResult(result_uuid: string, rating: Rating) {
+    const index = this.results.findIndex(r => r.uuid === result_uuid);
+
+    if (index !== -1) {
+      this.results[index].setRating(rating);
+    }
+  }
 }
 
 export const tryOnStore = new TryOnStore();

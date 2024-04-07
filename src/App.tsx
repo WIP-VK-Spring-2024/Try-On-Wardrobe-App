@@ -18,7 +18,7 @@ import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
-import { active_color } from './consts';
+import { ACTIVE_COLOR } from './consts';
 import { appState } from './stores/AppState';
 
 export const Stack = createNativeStackNavigator();
@@ -41,7 +41,7 @@ const App = observer((): JSX.Element => {
     console.log('rerender')
     const getFilterColor = () => {
       if (appState.filterModalVisible) {
-        return active_color;
+        return ACTIVE_COLOR;
       }
 
       return "#000000";
@@ -54,10 +54,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="TryOn" component={TryOnMainScreen} />
 
-        <Stack.Screen 
-          name="Clothes" 
-          component={GarmentSelectionScreen} 
-        />
+        <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
 
         <Stack.Screen name="Result" component={ResultScreen} />
 

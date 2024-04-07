@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
-import {active_color, header_color, header_icon_color, text_color} from '../consts';
+import {ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
 import { StackActions } from '@react-navigation/native';
 
@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite';
 const HeaderBase = (props: PropsWithChildren) => {
   return (
     <Box
-      bg={header_color}
+      bg={HEADER_COLOR}
       $base-height={60}
       display="flex"
       flexDirection="row"
@@ -33,14 +33,14 @@ interface HeaderProps {
   filterColor: string
 }
 export const Header = (props: HeaderProps) => {
-  const filter_icon_color = appState.filterModalVisible ? active_color : header_icon_color
+  const filter_icon_color = appState.filterModalVisible ? ACTIVE_COLOR : HEADER_ICON_COLOR
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
-        <Avatar bg={active_color} borderRadius="$full">
+        <Avatar bg={ACTIVE_COLOR} borderRadius="$full">
           <AvatarFallbackText>nikstarling</AvatarFallbackText>
         </Avatar>
-        <RobotoText color={text_color} fontSize="$2xl">
+        <RobotoText color={TEXT_COLOR} fontSize="$2xl">
           Try-On
         </RobotoText>
       </Box>
@@ -50,8 +50,8 @@ export const Header = (props: HeaderProps) => {
           }}>
           <FilterIcon stroke={props.filterColor}/>
         </Pressable>
-        <SettingsIcon stroke={header_icon_color}/>
-        <SearchIcon stroke={header_icon_color}/>
+        <SettingsIcon stroke={HEADER_ICON_COLOR}/>
+        <SearchIcon stroke={HEADER_ICON_COLOR}/>
       </Box>
     </HeaderBase>
   );
@@ -71,7 +71,7 @@ export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
           props.navigation.dispatch(StackActions.pop(1));
         }}
       >
-        <ChevronLeftIcon size="xl" color={active_color}/>
+        <ChevronLeftIcon size="xl" color={ACTIVE_COLOR}/>
       </Pressable>
       <RobotoText
         color="#000"

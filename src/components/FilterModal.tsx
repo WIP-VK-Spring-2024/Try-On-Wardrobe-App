@@ -13,7 +13,7 @@ import { RadioLabel } from "@gluestack-ui/themed";
 import { RadioIcon } from "@gluestack-ui/themed";
 import { View } from "@gluestack-ui/themed";
 import { garmentStore } from "../stores/GarmentStore";
-import { active_color, secondary_color } from "../consts";
+import { ACTIVE_COLOR, SECONDARY_COLOR } from "../consts";
 import { Checkbox as GlueStackCheckbox } from "@gluestack-ui/themed";
 import { CheckboxIndicator } from "@gluestack-ui/themed";
 import { CheckboxIcon } from "@gluestack-ui/themed";
@@ -35,7 +35,7 @@ export const FilterModal = observer(({
     return (
       <GlueStackCheckbox size="md" isInvalid={false} isDisabled={false} value={props.value} aria-label="tag">
         <CheckboxIndicator mr="$2">
-          <CheckboxIcon as={CheckIcon} color={active_color}/>
+          <CheckboxIcon as={CheckIcon} color={ACTIVE_COLOR}/>
         </CheckboxIndicator>
         <CheckboxLabel>{props.label}</CheckboxLabel>
       </GlueStackCheckbox>
@@ -119,14 +119,14 @@ export const FilterModal = observer(({
               tagsSelectionStore.clearSelectedItems();
               appState.setFilterModalVisible(false);
             }}
-            bg={secondary_color}
+            bg={SECONDARY_COLOR}
           >
             <ButtonText>Сбросить</ButtonText>
           </Button>
           <Button
             size="lg"
             action="primary"
-            bg={active_color}
+            bg={ACTIVE_COLOR}
             onPress={() => {
               appState.setFilterModalVisible(false);
             }}

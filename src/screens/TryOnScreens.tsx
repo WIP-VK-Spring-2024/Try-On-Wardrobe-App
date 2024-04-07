@@ -6,15 +6,25 @@ import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./base";
 import { TryOnResultList } from "../components/TryOnResultList";
 import { TypeFilter } from "../components/FilterBlock";
-import { GarmentList, PeopleList } from "../components/GarmentList";
+import { GarmentList } from "../components/GarmentList";
+import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
 
+interface TryOnRequest {
+  clothes_id: string[];
+  user_image_id: string;
+}
+
 export const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
-  const footer = true ? (
+  React.useEffect(() => {
+      return () => tryOnScreenGarmentSelectionStore.clearSelectedItems();
+      }, [navigation]);
+
+  const footer = tryOnScreenGarmentSelectionStore.selectedItems.length > 0 ? (
     <ButtonFooter
       onPress={() => {
-        const tryOnBody = {
-          clothes_id: tryOnScreenGarmentSelectionStore.selectedItem.uuid,
+        const tryOnBody: TryOnRequest = {
+          clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(item => item.uuid),
           user_image_id: userPhotoSelectionStore.selectedItem.uuid
         }
 
@@ -54,16 +64,10 @@ const ForwardFooter = observer(
 );
 
 export const PersonSelectionScreen = observer(({navigation}: {navigation: any}) => {
-  const footer = userPhotoSelectionStore.somethingIsSelected ? (
-    <ForwardFooter navigation={navigation} destination="Clothes" />
-  ) : (
-    <Footer navigation={navigation} />
-  );
-
   return (
     <>
-      <BaseScreen navigation={navigation} footer={footer}>
-        <PeopleList />
+      <BaseScreen navigation={navigation}>
+        <PeopleList navigation={navigation} />
       </BaseScreen>
       <FilterModal
         styleSelectionStore={tryOnScreenStyleSelectionStore}
@@ -79,7 +83,7 @@ export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   return (
     <>
       <BaseScreen navigation={navigation} footer={footer}>
-        <TryOnResultList />
+        <TryOnResultList navigation={navigation} />
       </BaseScreen>
     </>
   );
