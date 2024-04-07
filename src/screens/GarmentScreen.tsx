@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { active_color, windowHeight } from '../consts';
+import { ACTIVE_COLOR, WINDOW_HEIGHT } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
 import { BaseScreen } from './base';
@@ -143,7 +143,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
                 <ButtonText>Сбросить</ButtonText>
               </Button>
               <Button
-                bg={active_color}
+                bg={ACTIVE_COLOR}
                 onPress={() => {
                   garment.saveChanges();
                   closeDialog();
@@ -163,7 +163,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
       <Image 
         source={getImageSource(garment.image)}
         w="100%"
-        height={windowHeight / 2}
+        height={WINDOW_HEIGHT / 2}
         resizeMode="contain"
         alt=""
       />
@@ -214,7 +214,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     const getFill = (season: Season) => {
       if (garment.seasons.includes(season)) {
-        return active_color;
+        return ACTIVE_COLOR;
       }
   
       return '#000';
@@ -378,7 +378,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
             onEndEditing={()=>props.setTagInputValue(tagInputValue)}
           />
           <Button
-            bg={active_color}
+            bg={ACTIVE_COLOR}
             onPress={() => {
               const value = tagInputValue;
               setTagInputValue('');

@@ -2,6 +2,7 @@ import { ImageType } from "./models";
 import RNFS from 'react-native-fs';
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
+import { Rating, TryOnResultCard} from "./stores/TryOnStore";
 
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
@@ -48,5 +49,28 @@ export const convertGarmentResponse = (cloth: GarmentResponse) => {
     tags: cloth.tags,
     seasons: cloth.seasons,
     tryOnAble: cloth.tryonable
+  })
+}
+
+interface TryOnResultResponse {
+  uuid: string;
+  created_at: string;
+  image: string;
+  rating: Rating;
+  user_image_id: string;
+  clothes_id: string;
+}
+
+export const convertTryOnResponse = (result: TryOnResultResponse) => {
+  return new TryOnResultCard({
+    uuid: result.uuid,
+    created_at: result.created_at,
+    image: {
+      uri: result.image,
+      type: 'remote',
+    },
+    rating: result.rating,
+    user_image_id: result.user_image_id,
+    clothes_id: result.clothes_id
   })
 }

@@ -3,16 +3,26 @@ import { GarmentCard, garmentStore } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
 import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
+import { Rating } from './stores/TryOnStore';
 
 class ResultStore {
   resultUrl: string | undefined;
+  resultUUID: string | undefined;
+  resultRating: Rating;
 
   constructor() {
     this.resultUrl = undefined;
+    this.resultUUID = undefined;
+    this.resultRating = Rating.None;
+
     makeObservable(this, {
       resultUrl: observable,
+      resultUUID: observable,
+      resultRating: observable,
 
       setResultUrl: action,
+      setResultUUID: action,
+      setResultRating: action,
       clearResult: action
     });
   }
@@ -21,14 +31,24 @@ class ResultStore {
     this.resultUrl = url;
   }
 
+  setResultUUID(uuid: string) {
+    this.resultUUID = uuid;
+  }
+
+  setResultRating(rating: Rating) {
+    this.resultRating = rating;
+  }
+
   clearResult() {
     this.resultUrl = undefined;
+    this.resultUUID = undefined;
+    this.resultRating = Rating.None;
   }
 }
 
 const makeGarmentFilter = (): [
   FilterStore,
-  SingleSelectionStore,
+  MultipleSelectionStore,
   SingleSelectionStore,
   SingleSelectionStore,
   MultipleSelectionStore,
@@ -38,7 +58,7 @@ const makeGarmentFilter = (): [
     origin: garmentStore.garments
   });
   
-  const garmentSelectionStore = new SingleSelectionStore(filteredGarmentStore.items);
+  const garmentSelectionStore = new MultipleSelectionStore(filteredGarmentStore.items);
 
   autorun(() => {
     filteredGarmentStore.setOrigin(garmentStore.garments);

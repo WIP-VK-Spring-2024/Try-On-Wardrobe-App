@@ -67,16 +67,31 @@ export class MultipleSelectionStore {
             selectedItems: observable,
 
             select: action,
+            deselect: action,
+            toggle: action,
             setItems: action,
             setSelectedItems: action,
             clearSelectedItems: action,
         })
     }
 
-    select(item: any) {
+    select(item: any) : boolean {
         if (this.items.includes(item) && !this.selectedItems.includes(item)) {
             this.selectedItems.push(item);
+            return true;
         }
+        return false;
+    }
+
+    deselect(toRemove: any) {
+        this.selectedItems = this.selectedItems.filter(item => item.uuid !== toRemove.uuid)
+    }
+
+    toggle(item: any) {
+        if (this.select(item)) {
+            return
+        }
+        this.deselect(item)
     }
 
     setItems(items: any[]) {

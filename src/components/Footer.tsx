@@ -1,6 +1,7 @@
 import React from 'react';
 import {Box, Button, Center} from '@gluestack-ui/themed';
-import {active_color, add_btn_color, base_color, footer_color, footer_icon_color, windowWidth} from '../consts';
+import {ACTIVE_COLOR, ADD_BTN_COLOR, BASE_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH} from '../consts';
+import { useRoute } from '@react-navigation/native';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
@@ -13,38 +14,48 @@ import RNFS from 'react-native-fs';
 import { RobotoText } from './common';
 import { appState } from '../stores/AppState';
 
-
 export const Footer = observer(({navigation}: {navigation: any}) => {
-  const normalSize = windowWidth / 8;
+  const normalSize = WINDOW_WIDTH / 8;
   const addBtnSize = normalSize + 20;
+
+  const route = useRoute();
+
   return (
     <Box
-      bg={footer_color}
+      bg={FOOTER_COLOR}
       display="flex"
       flexDirection="row"
       justifyContent="space-around"
       alignItems="center">
-      <NewsPaperIcon width={normalSize} height={normalSize} stroke={footer_icon_color}/>
+      <NewsPaperIcon width={normalSize} height={normalSize} stroke={FOOTER_ICON_COLOR}/>
+
       <GarmentIcon
-        stroke={footer_icon_color}
+        stroke={FOOTER_ICON_COLOR}
         width={normalSize}
         height={normalSize}
+        fill={route.name === 'Home' ? ACTIVE_COLOR : FOOTER_COLOR}
         onPress={() => navigation.navigate('Home')}
       />
 
       <AddBtnIcon
-        stroke={add_btn_color}
+        stroke={ADD_BTN_COLOR}
         width={addBtnSize}
         height={addBtnSize}
         onPress={() => appState.toggleCreateMenuVisible()}
       />
 
-      <OutfitIcon width={normalSize} height={normalSize} stroke={footer_icon_color}/>
-      <HangerIcon
-        stroke={footer_icon_color}
+      <OutfitIcon
         width={normalSize}
         height={normalSize}
-        onPress={() => navigation.navigate('Person')}
+        stroke={FOOTER_ICON_COLOR}
+       />
+    
+      <HangerIcon
+        stroke={FOOTER_ICON_COLOR}
+        width={normalSize}
+        height={normalSize}
+        onPress={() => navigation.navigate('TryOn')}
+        fill={route.name=== 'TryOn' ? ACTIVE_COLOR : FOOTER_COLOR}
       />
     </Box>
   );
@@ -52,7 +63,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
 
 export const ButtonFooter = observer(({text, onPress}: {text?: string, onPress: () => void}) => {
   return (
-    <Button onPress={() => onPress()} bgColor={active_color} h={65}>
+    <Button onPress={() => onPress()} bgColor={ACTIVE_COLOR} h={65}>
       <Center>
         <RobotoText color="white" fontSize="$3xl">
           {text || 'Выбрать'}

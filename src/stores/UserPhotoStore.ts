@@ -6,7 +6,6 @@ interface UserPhoto {
     image: ImageType
 }
 
-
 class UserPhotoStore {
     photos: UserPhoto[]
 

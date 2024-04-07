@@ -5,7 +5,8 @@ import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
-import { active_color } from '../consts';
+import { ACTIVE_COLOR } from '../consts';
+import { garmentScreenGarmentSelectionStore } from '../store';
 import { Box } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from '../requests/imageCreation';
@@ -52,12 +53,10 @@ export const AddMenu = observer((props: {navigation: any}) => {
   const iconProps = {
     width: seasonIconSize,
     height: seasonIconSize,
-    fill: active_color
+    fill: ACTIVE_COLOR
   };
 
   const openCreatedGarment = () => {
-    // const index = garmentScreenSelectionStore.items.length - 1;
-    // garmentScreenSelectionStore.select(index);
     props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
   }
 
@@ -100,7 +99,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
           onPress={async () => {
             const created = await createUserPhotoFromGallery();
             if (!created) {
-              console.log('not created')
+              console.log('user photo not created')
             }
           }}
         >

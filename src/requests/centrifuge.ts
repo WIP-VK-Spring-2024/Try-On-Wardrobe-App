@@ -83,10 +83,11 @@ const loginFunc = async () => {
     });
     
     try_on_sub.on('publication', function(ctx) {
-      console.log(ctx.data);
-  
-        console.log(staticEndpoint + ctx.data.imgae)
+        console.log(ctx.data);
+        console.log(staticEndpoint + ctx.data.image)
+
         resultStore.setResultUrl(staticEndpoint + ctx.data.image);
+        resultStore.setResultUUID(ctx.data.uuid);
     });
   
     processing_sub.on('error', function(ctx) {

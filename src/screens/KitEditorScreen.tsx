@@ -5,7 +5,7 @@ import { BackHeader } from "../components/Header";
 import { Pressable, View } from "@gluestack-ui/themed";
 
 import SaveIcon from '../../assets/icons/save.svg';
-import { active_color } from "../consts";
+import { ACTIVE_COLOR } from "../consts";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { Rectangle, RectangleWithPayload } from "../components/editor/models";
 import { GarmentKitItem, GarmentKitItemRect, garmentKit } from "../stores/GarmentKitStore";
@@ -29,7 +29,7 @@ export const KitEditorHeader = (props: KitEditorHeaderProps) => {
           width={30}
           height={30}
 
-          fill={active_color}
+          fill={ACTIVE_COLOR}
         />
       </Pressable>}
     />

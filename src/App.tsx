@@ -15,10 +15,10 @@ import RNFS from 'react-native-fs';
 import { GarmentHeader, GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
-import { GarmentSelectionScreen, PersonSelectionScreen } from './screens/TryOnScreens';
+import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
-import { active_color } from './consts';
+import { ACTIVE_COLOR } from './consts';
 import { appState } from './stores/AppState';
 import { KitEditorHeader, KitEditorScreen } from './screens/KitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -69,10 +69,9 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
-        <Stack.Screen 
-          name="Clothes" 
-          component={GarmentSelectionScreen} 
-        />
+        <Stack.Screen name="TryOn" component={TryOnMainScreen} />
+
+        <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
 
         <Stack.Screen name="Result" component={ResultScreen} />
         <Stack.Screen name="Garment" component={GarmentScreen} />

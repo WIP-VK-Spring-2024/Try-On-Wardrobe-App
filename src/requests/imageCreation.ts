@@ -58,7 +58,7 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         userPhotoStore.addPhoto({
             uuid: res.uuid,
             image: {
-                uri: `/photos/${res.uuid}`,
+                uri: '/'+res.image,
                 type: 'remote'
             }
         })

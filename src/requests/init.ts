@@ -1,8 +1,9 @@
 import { apiEndpoint } from "../../config";
 import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
+import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
-import { convertGarmentResponse } from "../utils";
+import { convertGarmentResponse, convertTryOnResponse } from "../utils";
 
 const processNetworkError = (err: any) => {
     console.log(err);
@@ -39,13 +40,20 @@ export const initStores = () => {
     fetch(apiEndpoint + '/photos').then(async data => {
         data.json().then(async photos => {
             console.log('photos', photos)
-            userPhotoStore.setPhotos(photos.map((photo: { uuid: string }) => ({
+            userPhotoStore.setPhotos(photos.map((photo: { uuid: string, image: string }) => ({
                 uuid: photo.uuid,
                 image: {
                     type: 'remote',
-                    uri: `/photos/${photo.uuid}`
+                    uri: '/'+photo.image
                 }
             })))
+        }).catch(err => console.error(err))
+    }).catch(err => console.error(err))
+
+    fetch(apiEndpoint + '/try-on').then(async data => {
+        data.json().then(async results => {
+            console.log('try-on results', results)
+            tryOnStore.setResults(results.map(convertTryOnResponse));
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
 }
