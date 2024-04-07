@@ -6,23 +6,20 @@ import {
   GluestackUIProvider,
 } from '@gluestack-ui/themed';
 import {NavigationContainer} from '@react-navigation/native';
-import {Header, BackHeader} from './components/Header';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {observer} from 'mobx-react-lite';
 
 import RNFS from 'react-native-fs';
-import { GarmentHeader, GarmentScreen } from './screens/GarmentScreen';
+import { GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
-import { ACTIVE_COLOR } from './consts';
-import { appState } from './stores/AppState';
 import { KitEditorHeader, KitEditorScreen } from './screens/KitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { GarmentKitScreen } from './screens/GarmentKitScreen';
+import { KitGarmentSelectionScreen, KitScreen } from './screens/KitScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -76,7 +73,8 @@ const App = observer((): JSX.Element => {
         <Stack.Screen name="Result" component={ResultScreen} />
         <Stack.Screen name="Garment" component={GarmentScreen} />
 
-        <Stack.Screen name="GarmentKit" component={GarmentKitScreen} />
+        <Stack.Screen name="GarmentKit" component={KitScreen} />
+        <Stack.Screen name="GarmentKit/Garment" component={KitGarmentSelectionScreen}/>
 
         <Stack.Screen
           name="Editor"

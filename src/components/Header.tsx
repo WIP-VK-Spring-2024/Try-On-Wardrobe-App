@@ -57,7 +57,7 @@ export const Header = observer(() => {
 
 interface BackHeaderProps {
   navigation: any
-  rightMenu: ReactNode
+  rightMenu?: ReactNode
   text: string
 }
 

@@ -48,6 +48,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         width={normalSize}
         height={normalSize}
         stroke={FOOTER_ICON_COLOR}
+        onPress={() => navigation.navigate('GarmentKit')}
        />
     
       <HangerIcon

@@ -4,10 +4,15 @@ import { BaseScreen } from './base';
 import { GarmentCard } from "../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
+import { getImageSource } from "../utils";
+import { garmentKit } from "../stores/GarmentKitStore";
 
 import TrashIcon from '../../assets/icons/trash.svg';
-import { garmentKit } from "../stores/GarmentKitStore";
-import { getImageSource } from "../utils";
+import AddBtnIcon from '../../assets/icons/add-btn.svg';
+import { MultipleSelectionGarmentList } from "../components/GarmentList";
+import { kitScreenFilteredGarmentStore, kitScreenGarmentSelectionStore } from "../store";
+import { BackHeader } from "../components/Header";
+import { ButtonFooter } from "../components/Footer";
 
 const TryOnAbleBadge = () => {
   return (
@@ -73,30 +78,85 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => 
   )
 })
 
-const AddHGarmentScreen = observer((props: {navigation: any}) => {
+interface HAddItemCardProps {
+  text: string
+  onPress?: () => void
+}
+
+const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => {
   return (
     <Pressable
       backgroundColor="white"
       flexDirection="row"
-      justifyContent="space-between"
+      justifyContent="center"
+      alignItems="center"
+      gap={20}
       borderRadius={20}
       overflow="hidden"
-      // onPress={() => {
-      //   props.navigation.navigate('Garment', {garment: props.garment})
-      // }}
+      height={100}
       {...props}
     >
-      <RobotoText>Добавить одежду</RobotoText>
+      <AddBtnIcon width={50} height={50}/>
+      <RobotoText fontSize={24}>{props.text}</RobotoText>
     </Pressable>
   )
 })
 
-export const GarmentKitScreen = observer(({navigation}: {navigation: any}) => {
+interface KitGarmentSelectionScreenProps {
+  navigation: any
+
+}
+
+export const KitGarmentSelectionScreen = observer(
+  (props: KitGarmentSelectionScreenProps) => {
+
+    const header = (
+      <BackHeader
+        navigation={props.navigation}
+        text="Одежда"
+      />
+    )
+
+    const footer = kitScreenGarmentSelectionStore.somethingIsSelected
+      ? <ButtonFooter
+        onPress={()=>{
+          garmentKit.addGarments(kitScreenGarmentSelectionStore.selectedItems);
+          console.log(garmentKit.items)
+          props.navigation.navigate("GarmentKit");
+        }}
+      />
+      : undefined
+
+    return (
+      <BaseScreen 
+        navigation={props.navigation}
+        header={header}
+        footer={footer}
+      >
+        <MultipleSelectionGarmentList 
+          store={kitScreenGarmentSelectionStore}
+        />
+      </BaseScreen>
+    )
+});
+
+export const KitScreen = observer((props: {navigation: any, route: any}) => {
   const garments: GarmentCard[] = garmentKit.items.map(item => item.garment).filter(item => item !== undefined) as GarmentCard[]
+  
+  const header = (
+    <BackHeader
+      navigation={props.navigation}
+      text="Комплект"
+    />
+  )
+
   return (
-    <BaseScreen navigation={navigation}>
+    <BaseScreen 
+      navigation={props.navigation} 
+      header={header}
+    >
       <Pressable
-        onPress={() => navigation.navigate('Editor')}
+        onPress={() => props.navigation.navigate('Editor')}
       >
         <View
           width="100%"
@@ -112,9 +172,13 @@ export const GarmentKitScreen = observer(({navigation}: {navigation: any}) => {
       >
         {
           garments.map((garment, i) => (
-            <HGarmentCard key={i} garment={garment} navigation={navigation}/>
+            <HGarmentCard key={i} garment={garment} navigation={props.navigation}/>
           ))
         }
+        <HAddItemCard
+          text="добавить одежду"
+          onPress={()=>props.navigation.navigate("GarmentKit/Garment")} 
+        />
       </View>
     </BaseScreen>
   )

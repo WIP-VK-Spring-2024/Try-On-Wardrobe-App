@@ -24,7 +24,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
     <ButtonFooter
       onPress={() => {
         const tryOnBody: TryOnRequest = {
-          clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(item => item.uuid),
+          clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(item => item.uuid) as string[],
           user_image_id: userPhotoSelectionStore.selectedItem.uuid
         }
 
@@ -52,7 +52,9 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
         typeStore={tryOnScreenTypeSelectionStore}
         subtypeStore={tryOnScreenSubtypeSelectionStore}
       />
-      <MultipleSelectionGarmentList store={tryOnScreenGarmentSelectionStore}/>
+      <MultipleSelectionGarmentList 
+        store={tryOnScreenGarmentSelectionStore}
+      />
     </BaseScreen>
   );
 });

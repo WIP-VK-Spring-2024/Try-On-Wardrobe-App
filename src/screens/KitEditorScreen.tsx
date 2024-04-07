@@ -10,6 +10,7 @@ import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { Rectangle, RectangleWithPayload } from "../components/editor/models";
 import { GarmentKitItem, GarmentKitItemRect, garmentKit } from "../stores/GarmentKitStore";
 import { autorun, toJS } from "mobx";
+import { itemFromRect, rectFromItem } from "../components/editor/utils";
 
 interface KitEditorHeaderProps {
   navigation: any
@@ -39,28 +40,6 @@ export const KitEditorHeader = (props: KitEditorHeaderProps) => {
 export type GarmentRect = RectangleWithPayload<string>;
 
 export const KitEditorScreen = observer(({navigation}: {navigation: any}) => {
-  const rectFromItem = (item: GarmentKitItem) => {
-    return {
-      ...item.rect.getParams(),
-      image: toJS(item.image),
-      payload: item.garmentUUID
-    }
-  }
-
-  const itemFromRect = (r: GarmentRect) => {
-    return new GarmentKitItem({
-      garmentUUID: r.payload,
-      rect: new GarmentKitItemRect({
-        x: r.x,
-        y: r.y,
-        width: r.width,
-        height: r.height,
-        angle: r.angle,
-        scale: r.scale
-      })
-    })
-  }
-
   const positions = useSharedValue<GarmentRect[]>(garmentKit.items.map(rectFromItem));
 
   useEffect(() => {

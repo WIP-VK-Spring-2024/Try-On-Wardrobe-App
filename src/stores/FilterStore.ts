@@ -1,18 +1,18 @@
 import { makeObservable, observable, action, computed, autorun } from 'mobx';
 
-type FilterPredicateType = (item: any) => boolean
-type FilterPredicatesType = {[key: string]: FilterPredicateType}
+type FilterPredicateType<T> = (item: T) => boolean
+type FilterPredicatesType<T> = {[key: string]: FilterPredicateType<T>}
 
-interface FilterStoreProps {
-    origin: any[],
-    filterPredicates?: FilterPredicatesType
+interface FilterStoreProps<T> {
+    origin: T[],
+    filterPredicates?: FilterPredicatesType<T>
 }
 
-export class FilterStore {
+export class FilterStore<T> {
     origin: any[]
-    filterPredicates: FilterPredicatesType
+    filterPredicates: FilterPredicatesType<T>
 
-    constructor(props: FilterStoreProps) {
+    constructor(props: FilterStoreProps<T>) {
         this.origin = props.origin;
         this.filterPredicates = props.filterPredicates || {}
 
@@ -32,7 +32,7 @@ export class FilterStore {
         this.origin = origin;
     }
 
-    setFilter(key: string, filter: FilterPredicateType) {
+    setFilter(key: string, filter: FilterPredicateType<T>) {
         this.filterPredicates[key] = filter;
     }
 

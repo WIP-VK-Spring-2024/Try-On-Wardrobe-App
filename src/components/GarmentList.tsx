@@ -10,6 +10,7 @@ import { garmentScreenGarmentSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
 import { MultipleSelectionStore } from '../stores/SelectionStore';
+import { GarmentCard } from '../stores/GarmentStore';
 
 const style = StyleSheet.create({
   overlay: {
@@ -49,13 +50,12 @@ export const StaticGarmentList = observer((props: any) => {
   const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (
     <Pressable
       onPress={()=>{
-        garmentScreenGarmentSelectionStore.select(i);
         props.navigation.navigate('Garment', {garment: item});
       }}
     >
       <ListImage
         source={getImageSource(item.image)}
-        uuid={item.uuid}
+        uuid={item.uuid!}
       />
     </Pressable>
   ))
@@ -64,7 +64,7 @@ export const StaticGarmentList = observer((props: any) => {
 })
 
 interface MultipleSelectionGarmentListProps {
-  store: MultipleSelectionStore
+  store: MultipleSelectionStore<GarmentCard>
 }
 
 export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
@@ -76,7 +76,7 @@ export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGa
       id={i}
       onPress={() => props.store.toggle(item)}
     />
-})
+  })
 
   return <BaseList items={clothes} />
 })

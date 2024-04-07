@@ -1,7 +1,7 @@
 import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
 import { staticEndpoint } from '../../config';
-import { garmentStore } from './GarmentStore';
+import { GarmentCard, garmentStore } from './GarmentStore';
 
 interface GarmentKitItemRectProps {
     x?: number
@@ -96,6 +96,8 @@ export class GarmentKit {
 
             setItems: action,
             addItem: action,
+            addItems: action,
+            addGarments: action,
         })
     }
 
@@ -105,6 +107,26 @@ export class GarmentKit {
 
     addItem(item: GarmentKitItem) {
         this.items.push(item);
+    }
+
+    addItems(items: GarmentKitItem[]) {
+        this.items = this.items.concat(items);
+    }
+
+    addGarments(garments: GarmentCard[]) {
+        const cardToItem = (garment: GarmentCard) => {
+            return new GarmentKitItem({
+                garmentUUID: garment.uuid!,
+                rect: new GarmentKitItemRect({
+                    x: 300,
+                    y: 300,
+                    width: 100,
+                    height: 100,
+                })
+            })
+        }
+
+        this.addItems(garments.map(cardToItem));
     }
 }
 
