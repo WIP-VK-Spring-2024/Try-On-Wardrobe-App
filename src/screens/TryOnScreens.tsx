@@ -6,9 +6,9 @@ import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./base";
 import { TryOnResultList } from "../components/TryOnResultList";
 import { TypeFilter } from "../components/FilterBlock";
-import { GarmentList } from "../components/GarmentList";
 import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
+import { MultipleSelectionGarmentList } from "../components/GarmentList";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -52,7 +52,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
         typeStore={tryOnScreenTypeSelectionStore}
         subtypeStore={tryOnScreenSubtypeSelectionStore}
       />
-      <GarmentList navigation={navigation}/>
+      <MultipleSelectionGarmentList store={tryOnScreenGarmentSelectionStore}/>
     </BaseScreen>
   );
 });
