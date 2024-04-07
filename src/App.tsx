@@ -63,16 +63,8 @@ const App = observer((): JSX.Element => {
   };
 
   const ScreenStack = observer(() => {
-    console.log('rerender')
-    const getFilterColor = () => {
-      if (appState.filterModalVisible) {
-        return active_color;
-      }
-
-      return "#000000";
-    }
     return (
-      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='Home'>
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Home'>
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
@@ -83,19 +75,9 @@ const App = observer((): JSX.Element => {
         />
 
         <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="Garment" component={GarmentScreen} />
 
-        <Stack.Screen
-          name="Garment" 
-          component={GarmentScreen} 
-          options={
-            {header: GarmentHeader}
-          }
-        />
-
-        <Stack.Screen
-          name="GarmentKit"
-          component={GarmentKitScreen}
-        />
+        <Stack.Screen name="GarmentKit" component={GarmentKitScreen} />
 
         <Stack.Screen
           name="Editor"

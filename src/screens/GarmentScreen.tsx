@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useContext, useEffect, useState } from 'react';
-import RNFS from 'react-native-fs';
-// import { garmentScreenGarmentSelectionStore } from '../store';
+import React, { useEffect, useState } from 'react';
 import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { active_color, windowHeight } from '../consts';
@@ -41,7 +39,6 @@ export const GarmentHeader = (props: {route: any, navigation: any}) => {
       rightMenu={
       <Pressable
         onPress={async ()=>{
-          // const garment = garmentScreenGarmentSelectionStore.selectedItem;
           const { garment } = props.route.params;
           const deleteSuccess = await deleteGarment(garment);
 
@@ -60,12 +57,11 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
-  // const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenGarmentSelectionStore.selectedItem as GarmentCard));
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(props.route.params.garment as GarmentCard));
   const [tagInputValue, setTagInputValue] = useState('');
 
   useEffect(() => {
-    props.navigation.addListener('beforeRemove', (e: any) => {
+    return props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
 
@@ -385,7 +381,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
             bg={active_color}
             onPress={() => {
               const value = tagInputValue;
-              // props.setTagInputValue(value);
               setTagInputValue('');
               garment.addTag(value);
             }}
@@ -402,6 +397,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   return (
     <BaseScreen 
       navigation={props.navigation}
+      header={<GarmentHeader route={props.route} navigation={props.navigation}/>}
       footer={
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }

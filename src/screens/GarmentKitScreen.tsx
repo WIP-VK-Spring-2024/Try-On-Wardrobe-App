@@ -94,7 +94,7 @@ export const GarmentKitScreen = observer(({navigation}: {navigation: any}) => {
       >
         {
           garments.map((garment, i) => (
-            <HGarmentCard key={i} garment={garment}/>
+            <HGarmentCard key={i} garment={garment} navigation={navigation}/>
           ))
         }
       </View>

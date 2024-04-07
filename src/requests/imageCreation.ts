@@ -20,7 +20,7 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
     return fetch(apiEndpoint + 'clothes', {
         method: 'POST',
         body: formData
-    }).then(resp => {resp.json().then(res => {
+    }).then(resp => {return resp.json().then(res => {
         garmentStore.addGarment(new GarmentCard({
             uuid: res.uuid,
             name: 'Без названия',
