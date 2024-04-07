@@ -9,8 +9,12 @@ export interface RectangleProps {
     scale: number
 }
   
-export interface Rectangle extends RectangleProps{
+export interface Rectangle extends RectangleProps {
     halfWidth: number,
     halfHeight: number,
-    image?: ImageType
+    image?: ImageType,
+}
+
+export interface RectangleWithPayload<T> extends Rectangle {
+    payload: T
 }

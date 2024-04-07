@@ -41,7 +41,7 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => 
       borderRadius={20}
       overflow="hidden"
       onPress={() => {
-        props.navigation.navigate('Garment')
+        props.navigation.navigate('Garment', {garment: props.garment})
       }}
       {...props}
     >
@@ -69,6 +69,24 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => 
       >
         <TrashIcon width={60} height={60} fill="#fe0000"/>
       </Pressable>
+    </Pressable>
+  )
+})
+
+const AddHGarmentScreen = observer((props: {navigation: any}) => {
+  return (
+    <Pressable
+      backgroundColor="white"
+      flexDirection="row"
+      justifyContent="space-between"
+      borderRadius={20}
+      overflow="hidden"
+      // onPress={() => {
+      //   props.navigation.navigate('Garment', {garment: props.garment})
+      // }}
+      {...props}
+    >
+      <RobotoText>Добавить одежду</RobotoText>
     </Pressable>
   )
 })

@@ -8,11 +8,10 @@ import {
   Points,
 } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
 
 import { autorun, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { Rectangle } from "./models";
 import { garmentKit } from "../../stores/GarmentKitStore";
 import { boundsExtra, rotateHandleHalfSize, rotateHandleLength, rotateHandleSize, scaleHandleHalfSize, scaleHandleSize } from "./consts";
 import { EditorItem } from "./EditorItem";
@@ -20,17 +19,22 @@ import { RotateHandle } from "./RotateHandle";
 import { ScaleHandle } from "./ScaleHandle";
 import { GestureDetectorView } from "./GestureDetectorView";
 import { EditorMenu } from "./EditorMenu";
+import { GarmentRect } from "../../screens/KitEditorScreen";
 
-export const KitEditor = observer(() => {
+interface KitEditorProps {
+  positions: SharedValue<GarmentRect[]>
+}
+
+export const KitEditor = observer(({positions}: KitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
-  const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)})))
+  // const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)})))
 
-  useEffect(() => {
-    autorun(() => {
-      positions.value = garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)}));
-    })
-  }, [])
+  // useEffect(() => {
+  //   autorun(() => {
+  //     positions.value = garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)}));
+  //   })
+  // }, [])
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);

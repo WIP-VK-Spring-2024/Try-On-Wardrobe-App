@@ -89,5 +89,5 @@ export const createUserPhotoFromGallery = async () => {
       cropping: true,
     })
         .then(uploadUserPhoto)
-        .catch(reason => console.log(reason))
+        .catch(reason => {console.log(reason); return false})
 }

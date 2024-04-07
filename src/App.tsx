@@ -64,7 +64,7 @@ const App = observer((): JSX.Element => {
 
   const ScreenStack = observer(() => {
     return (
-      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Home'>
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='GarmentKit'>
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
