@@ -116,7 +116,7 @@ export const StaticGarmentList = observer((props: any) => {
     <Pressable
       onPress={()=>{
         garmentScreenGarmentSelectionStore.select(i);
-        props.navigation.navigate('Garment');
+        props.navigation.navigate('Garment', {garment: item});
       }}
     >
       <ListImage

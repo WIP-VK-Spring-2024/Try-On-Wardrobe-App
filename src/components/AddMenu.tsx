@@ -6,7 +6,6 @@ import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
 import { active_color } from '../consts';
-import { garmentScreenSelectionStore } from '../store';
 import { Box } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from '../requests/imageCreation';
@@ -14,6 +13,7 @@ import { RobotoText } from './common';
 
 import CameraIcon from '../../assets/icons/camera.svg';
 import GalleryIcon from '../../assets/icons/gallery.svg';
+import { garmentStore } from '../stores/GarmentStore';
 
 export const AddMenu = observer((props: {navigation: any}) => {
   const floatingStyle = StyleSheet.create({
@@ -56,9 +56,9 @@ export const AddMenu = observer((props: {navigation: any}) => {
   };
 
   const openCreatedGarment = () => {
-    const index = garmentScreenSelectionStore.items.length - 1;
-    garmentScreenSelectionStore.select(index);
-    props.navigation.navigate('Garment');   
+    // const index = garmentScreenSelectionStore.items.length - 1;
+    // garmentScreenSelectionStore.select(index);
+    props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
   }
 
   return (

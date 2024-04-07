@@ -1,5 +1,5 @@
-import React from 'react';
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import React, { useEffect } from 'react';
+import {PermissionsAndroid, SafeAreaView, StatusBar, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {
@@ -33,10 +33,32 @@ RNFS.mkdir(pictures_path);
 initStores();
 
 const App = observer((): JSX.Element => {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    requestPermission()
+  }, [])
+
+  const requestPermission = async () => {
+    try {
+      console.log('asking for permission')
+      const granted = await PermissionsAndroid.requestMultiple(
+        [
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        ]
+      )
+      if (granted['android.permission.CAMERA'] && granted['android.permission.WRITE_EXTERNAL_STORAGE'] && granted['android.permission.READ_MEDIA_IMAGES']) {
+        console.log("You can use the camera");
+      } else {
+        console.log("Camera permission denied");
+      }
+    } catch (error) {
+      console.log('permission error', error)
+    }
+  }
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: Colors.lighter,
     flex: 1,
   };
 
@@ -50,7 +72,7 @@ const App = observer((): JSX.Element => {
       return "#000000";
     }
     return (
-      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='GarmentKit'>
+      <Stack.Navigator screenOptions={{header: () => <Header filterColor={getFilterColor()}/>}} initialRouteName='Home'>
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
@@ -89,7 +111,7 @@ const App = observer((): JSX.Element => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        barStyle={'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <GluestackUIProvider config={config}>

@@ -9,10 +9,6 @@ import TrashIcon from '../../assets/icons/trash.svg';
 import { garmentKit } from "../stores/GarmentKitStore";
 import { getImageSource } from "../utils";
 
-interface HGarmentCardProps {
-  garment: GarmentCard
-}
-
 const TryOnAbleBadge = () => {
   return (
     <Badge size="md" variant="solid" borderRadius="$none" action="success">
@@ -31,17 +27,26 @@ const NonTryOnAbleBadge = () => {
   )
 }
 
+interface HGarmentCardProps {
+  garment: GarmentCard
+  navigation: any
+}
+
 const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => {
   return (
-    <View
+    <Pressable
       backgroundColor="white"
       flexDirection="row"
       justifyContent="space-between"
       borderRadius={20}
+      overflow="hidden"
+      onPress={() => {
+        props.navigation.navigate('Garment')
+      }}
       {...props}
     >
       <Image
-        alt="img"
+        alt={props.garment.name}
         width={100}
         height={100}
         source={getImageSource(props.garment.image)}
@@ -64,12 +69,12 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => 
       >
         <TrashIcon width={60} height={60} fill="#fe0000"/>
       </Pressable>
-    </View>
+    </Pressable>
   )
 })
 
 export const GarmentKitScreen = observer(({navigation}: {navigation: any}) => {
-  const garments = garmentKit.items.map(item => item.garment).filter(item => item !== undefined)
+  const garments: GarmentCard[] = garmentKit.items.map(item => item.garment).filter(item => item !== undefined) as GarmentCard[]
   return (
     <BaseScreen navigation={navigation}>
       <Pressable

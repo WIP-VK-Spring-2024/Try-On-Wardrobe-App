@@ -5,6 +5,7 @@ import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {
+    console.log('upload')
     const image_p = image.path.split('/');
     const image_name = image_p[image_p.length - 1];
 
@@ -16,10 +17,10 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
         uri: image.path
     });
 
-    return fetch(apiEndpoint + '/clothes', {
+    return fetch(apiEndpoint + 'clothes', {
         method: 'POST',
         body: formData
-    }).then(resp => resp.json().then(res => {
+    }).then(resp => {resp.json().then(res => {
         garmentStore.addGarment(new GarmentCard({
             uuid: res.uuid,
             name: 'Без названия',
@@ -32,11 +33,13 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
         }))
         appState.setCreateMenuVisible(false);
         return true;
-    }))
+    }).catch(err => console.error(err))
+})
     .catch(err => console.error(err));
 }
 
 const uploadUserPhoto = (image: ImageOrVideo) => {
+    console.log('uploading')
     const image_p = image.path.split('/');
     const image_name = image_p[image_p.length - 1];
 
@@ -51,7 +54,7 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
     return fetch(apiEndpoint + '/photos', {
         method: 'POST',
         body: formData
-    }).then(resp => resp.json().then(res => {
+    }).then(resp => {console.log(resp), resp.json().then(res => {
         userPhotoStore.addPhoto({
             uuid: res.uuid,
             image: {
@@ -61,7 +64,7 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         })
         appState.setCreateMenuVisible(false);
         return true;
-    }))
+    })})
     .catch(err => console.error(err));
 }
 
