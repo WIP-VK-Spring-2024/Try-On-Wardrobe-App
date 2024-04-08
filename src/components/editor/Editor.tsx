@@ -6,6 +6,7 @@ import {
   Canvas,
   vec,
   Points,
+  SkiaDomView,
 } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
@@ -23,18 +24,11 @@ import { GarmentRect } from "../../screens/KitEditorScreen";
 
 interface KitEditorProps {
   positions: SharedValue<GarmentRect[]>
+  canvasRef: React.RefObject<SkiaDomView>
 }
 
-export const KitEditor = observer(({positions}: KitEditorProps) => {
+export const KitEditor = observer(({positions, canvasRef}: KitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
-
-  // const positions = useSharedValue<Rectangle[]>(garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)})))
-
-  // useEffect(() => {
-  //   autorun(() => {
-  //     positions.value = garmentKit.items.map(item => ({...item.rect.getParams(), image: toJS(item.image)}));
-  //   })
-  // }, [])
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);
@@ -405,7 +399,7 @@ export const KitEditor = observer(({positions}: KitEditorProps) => {
           })
         }}
       >
-        <Canvas style={styles.container}>
+        <Canvas style={styles.container} ref={canvasRef}>
           <Fill color="white" />
           {
             positions.value.map((_, i) => (

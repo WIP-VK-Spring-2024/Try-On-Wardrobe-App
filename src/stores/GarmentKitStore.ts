@@ -85,21 +85,34 @@ export class GarmentKitItem {
     }
 }
 
+interface GarmentKitProps {
+    items?: GarmentKitItem[]
+    image?: ImageType
+}
+
 export class GarmentKit {
+    image: ImageType | undefined
     items: GarmentKitItem[]
 
-    constructor(items?: GarmentKitItem[]) {
-        this.items = items || [];
+    constructor(props: GarmentKitProps) {
+        this.image = props.image;
+        this.items = props.items || [];
 
         makeObservable(this, {
+            image: observable,
             items: observable,
 
+            setImage: action,
             setItems: action,
             addItem: action,
             addItems: action,
             addGarments: action,
             removeGarment: action,
         })
+    }
+
+    setImage(image: ImageType) {
+        this.image = image;
     }
 
     setItems(items: GarmentKitItem[]) {
@@ -159,4 +172,4 @@ const item2 = new GarmentKitItem({
     })
 })
 
-export const garmentKit = new GarmentKit([item1, item2]);
+export const garmentKit = new GarmentKit({image: {type: 'local', uri: '/outfit/1.png'}, items: [item1, item2]});

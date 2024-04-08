@@ -6,11 +6,14 @@ import { Pressable, View } from "@gluestack-ui/themed";
 
 import SaveIcon from '../../assets/icons/save.svg';
 import { ACTIVE_COLOR } from "../consts";
-import { SharedValue, useSharedValue } from "react-native-reanimated";
-import { Rectangle, RectangleWithPayload } from "../components/editor/models";
-import { GarmentKitItem, GarmentKitItemRect, garmentKit } from "../stores/GarmentKitStore";
-import { autorun, toJS } from "mobx";
+import { useSharedValue } from "react-native-reanimated";
+import { RectangleWithPayload } from "../components/editor/models";
+import { garmentKit } from "../stores/GarmentKitStore";
+import { autorun } from "mobx";
 import { itemFromRect, rectFromItem } from "../components/editor/utils";
+import { useCanvasRef } from "@shopify/react-native-skia";
+
+import RNFS from 'react-native-fs';
 
 interface KitEditorHeaderProps {
   navigation: any
@@ -42,6 +45,8 @@ export type GarmentRect = RectangleWithPayload<string>;
 export const KitEditorScreen = observer(({navigation}: {navigation: any}) => {
   const positions = useSharedValue<GarmentRect[]>(garmentKit.items.map(rectFromItem));
 
+  const canvasRef = useCanvasRef();
+
   useEffect(() => {
     autorun(() => {
       positions.value = garmentKit.items.map(rectFromItem);
@@ -50,6 +55,23 @@ export const KitEditorScreen = observer(({navigation}: {navigation: any}) => {
 
   const onSave = () => {
     garmentKit.setItems(positions.value.map(itemFromRect));
+
+    canvasRef.current?.makeImageSnapshotAsync()
+      .then(image => {
+        const bytes = image.encodeToBase64();
+        RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
+
+        const fileName = `${Date.now()}.png`
+
+        RNFS.writeFile(RNFS.DocumentDirectoryPath + `/outfit/${fileName}`, bytes, 'base64');
+
+        garmentKit.setImage({
+          type: 'local',
+          uri: `/outfit/${fileName}`
+        });
+
+      })
+      .catch(reason => console.error(reason))
   }
 
   return (
@@ -57,7 +79,7 @@ export const KitEditorScreen = observer(({navigation}: {navigation: any}) => {
       height="100%"
     >
       <KitEditorHeader navigation={navigation} onSave={onSave}/>
-      <KitEditor positions={positions}/>
+      <KitEditor positions={positions} canvasRef={canvasRef}/>
     </View>
   )
 });

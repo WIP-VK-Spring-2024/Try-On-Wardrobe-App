@@ -13,6 +13,7 @@ import { MultipleSelectionGarmentList } from "../components/GarmentList";
 import { kitScreenFilteredGarmentStore, kitScreenGarmentSelectionStore } from "../store";
 import { BackHeader } from "../components/Header";
 import { ButtonFooter } from "../components/Footer";
+import { WINDOW_HEIGHT } from "../consts";
 
 const TryOnAbleBadge = () => {
   return (
@@ -37,7 +38,7 @@ interface HGarmentCardProps {
   navigation: any
 }
 
-const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): React.JSX => {
+const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): React.ReactNode => {
   return (
     <Pressable
       backgroundColor="white"
@@ -159,12 +160,21 @@ export const KitScreen = observer((props: {navigation: any, route: any}) => {
       <Pressable
         onPress={() => props.navigation.navigate('Editor')}
       >
-        <View
-          width="100%"
-          height={300}
-          backgroundColor="#fefefe"
-        >
-        </View>
+        { garmentKit.image === undefined
+          ? <View
+            width="100%"
+            height={300}
+            backgroundColor="#fefefe"
+          >
+          </View>
+          : <Image
+            source={getImageSource(garmentKit.image)}
+            w="100%"
+            height={WINDOW_HEIGHT / 2}
+            resizeMode="contain"
+            alt="outfit"
+          />
+        }
       </Pressable>
       <View
         margin={20}
