@@ -91,22 +91,27 @@ export class OutfitItem {
 }
 
 interface OutfitProps {
+    uuid?: string
     items?: OutfitItem[]
     image?: ImageType
 }
 
 export class Outfit {
+    uuid: string | undefined
     image: ImageType | undefined
     items: OutfitItem[]
 
     constructor(props?: OutfitProps) {
+        this.uuid = props?.uuid
         this.image = props?.image;
         this.items = props?.items || [];
 
         makeObservable(this, {
+            uuid: observable,
             image: observable,
             items: observable,
 
+            setUUID: action,
             setImage: action,
             setItems: action,
             addItem: action,
@@ -114,6 +119,10 @@ export class Outfit {
             addGarments: action,
             removeGarment: action,
         })
+    }
+
+    setUUID(uuid: string) {
+        this.uuid = uuid;
     }
 
     setImage(image: ImageType) {
@@ -168,6 +177,7 @@ export class OutfitStore {
 
             setOutfits: action,
             addOutfit: action,
+            removeOutfit: action,
         })
     }
 
@@ -181,6 +191,10 @@ export class OutfitStore {
         } else {
             this.outfits.push(outfit);
         }
+    }
+
+    removeOutfit(outfitUUID: string) {
+        this.outfits = this.outfits.filter(outfit => outfit.uuid !== outfitUUID);
     }
 };
 

@@ -1,6 +1,7 @@
 import { apiEndpoint } from "../../config";
 import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
+import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
@@ -10,14 +11,14 @@ const processNetworkError = (err: any) => {
     appState.setError('network')
 }
 
-const typesRequest = fetch(apiEndpoint + '/types').then(data => {
+const typesRequest = fetch(apiEndpoint + 'types').then(data => {
     return data.json().then(types => {
         garmentStore.setTypes(types)
         return true;
     }).catch(err => processNetworkError(err))
 }).catch(err => processNetworkError(err))
 
-const stylesRequest = fetch(apiEndpoint + '/styles').then(data => {
+const stylesRequest = fetch(apiEndpoint + 'styles').then(data => {
     return data.json().then(styles => {
         garmentStore.setStyles(styles);
         return true;
@@ -25,11 +26,9 @@ const stylesRequest = fetch(apiEndpoint + '/styles').then(data => {
 }).catch(err => processNetworkError(err))
 
 export const initStores = () => {
-    fetch(apiEndpoint + '/clothes').then(async data => {
+    fetch(apiEndpoint + 'clothes').then(async data => {
         data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
-    
-            console.log(clothes)
     
             const garmentCards = clothes.map(convertGarmentResponse);
     
@@ -37,9 +36,8 @@ export const initStores = () => {
         }).catch(err => processNetworkError(err))
     }).catch(err => processNetworkError(err))
     
-    fetch(apiEndpoint + '/photos').then(async data => {
+    fetch(apiEndpoint + 'photos').then(async data => {
         data.json().then(async photos => {
-            console.log('photos', photos)
             userPhotoStore.setPhotos(photos.map((photo: { uuid: string, image: string }) => ({
                 uuid: photo.uuid,
                 image: {
@@ -50,10 +48,54 @@ export const initStores = () => {
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
 
-    fetch(apiEndpoint + '/try-on').then(async data => {
+    fetch(apiEndpoint + 'try-on').then(async data => {
         data.json().then(async results => {
-            console.log('try-on results', results)
+            // console.log('try-on results', results)
             tryOnStore.setResults(results.map(convertTryOnResponse));
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
+
+    interface OutfitResponse {
+        created_at: string
+        image: string
+        public: boolean
+        uuid: string
+        user_id: string
+        transforms: {
+            [uuid: string]: {
+                x: number
+                y: number
+                width: number
+                height: number
+                scale: number
+                angle: number
+            }
+        }
+    }
+
+    fetch(apiEndpoint + 'outfits').then(async data => {
+        const json = await data.json();
+
+        const outfits = json.map((outfit: OutfitResponse) => {
+            const items = Object.entries(outfit.transforms)
+                .map(([uuid, transform]) => {
+                    return new OutfitItem({
+                        garmentUUID: uuid,
+                        rect: new OutfitItemRect(transform)
+                    })
+                })
+
+            return new Outfit({
+                uuid: outfit.uuid,
+                image: {
+                    type: 'remote',
+                    uri: outfit.image
+                },
+                items: items
+            })
+        })
+
+        outfitStore.setOutfits(outfits);
+    })
+
 }

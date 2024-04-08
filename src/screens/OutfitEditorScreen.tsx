@@ -15,6 +15,8 @@ import { useCanvasRef } from "@shopify/react-native-skia";
 import RNFS from 'react-native-fs';
 import { Outfit } from "../stores/OutfitStore";
 import { StackActions } from "@react-navigation/native";
+import { updateOutfit, uploadOutfit } from "../requests/outfit";
+
 
 interface OutfitEditorHeaderProps {
   navigation: any
@@ -25,7 +27,7 @@ export const OutfitEditorHeader = (props: OutfitEditorHeaderProps) => {
   return (
     <BackHeader
       navigation={props.navigation}
-      text="Карточка"
+      text="Комплект"
       rightMenu={
       <Pressable
         onPress={props.onSave}
@@ -37,9 +39,6 @@ export const OutfitEditorHeader = (props: OutfitEditorHeaderProps) => {
           fill={ACTIVE_COLOR}
         />
       </Pressable>}
-      onBackPress={()=>{
-        props.navigation.dispatch(StackActions.pop(2));
-      }}
     />
   )
 }
@@ -80,6 +79,12 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
           type: 'local',
           uri: `/outfit/${fileName}`
         });
+
+        if (outfit.uuid === undefined) {
+          uploadOutfit(outfit);
+        } else {
+          updateOutfit(outfit);
+        }
 
       })
       .catch(reason => console.error(reason))

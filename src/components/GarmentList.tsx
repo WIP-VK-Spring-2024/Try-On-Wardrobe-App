@@ -34,7 +34,7 @@ const ClothesListCard = observer(
         onPress={onPress}
         w="49%" h={WINDOW_HEIGHT / 3}
       >
-        <Image source={source} w="100%" h="100%" alt="" />
+        <ListImage source={source}/>
         {selected && <SelectedIcon
           // position='absolute'
           style={style.overlay}

@@ -5,12 +5,16 @@ import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
 import { Outfit } from '../stores/OutfitStore';
 
+import RNFS from 'react-native-fs';
+
 const uploadGarmentImage = (image: ImageOrVideo) => {
     console.log('upload')
     const image_p = image.path.split('/');
     const image_name = image_p[image_p.length - 1];
 
     let formData = new FormData();
+
+    console.log(image)
 
     formData.append('img', {
         type: "image/png",
@@ -51,7 +55,7 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         uri: image.path
     });
 
-    return fetch(apiEndpoint + '/photos', {
+    return fetch(apiEndpoint + 'photos', {
         method: 'POST',
         body: formData
     }).then(resp => {console.log(resp), resp.json().then(res => {
@@ -66,42 +70,6 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         return true;
     })})
     .catch(err => console.error(err));
-}
-
-export const uploadOutfit = async (Outfit: Outfit) => {
-    if (Outfit.image === undefined) {
-        console.error('no outfit image');
-        return false;
-    }
-
-    const image_p = Outfit.image.uri.split('/');
-    const image_name = image_p[image_p.length - 1];
-
-    let formData = new FormData();
-
-    formData.append('img', {
-        type: "image.png",
-        name: image_name,
-        uri: Outfit.image.uri
-    });
-
-    const transforms =  Object.fromEntries(Outfit.items
-        .map(item => ([item.garmentUUID, item.rect.getTransforms()])));
-
-    formData.append('transforms', transforms);
-
-    return fetch(apiEndpoint + '/outfits', {
-        method: 'POST',
-        body: formData
-    }).then(resp => {
-        console.log(resp);
-
-        return resp.json()
-            .then(res => {
-                res.uuid
-            })
-            .catch(reason => console.error(reason))
-    })
 }
 
 export const createGarmentFromGallery = async () => {

@@ -14,6 +14,8 @@ import { BackHeader } from "../components/Header";
 import { ButtonFooter } from "../components/Footer";
 import { WINDOW_HEIGHT } from "../consts";
 import { outfitScreenGarmentSelectionStore } from "../store";
+import { StackActions } from "@react-navigation/native";
+import { deleteOutfit } from "../requests/outfit";
 
 const TryOnAbleBadge = () => {
   return (
@@ -127,6 +129,7 @@ export const OutfitGarmentSelectionScreen = observer(
       ? <ButtonFooter
         onPress={()=>{
           outfit.addGarments(outfitScreenGarmentSelectionStore.selectedItems);
+          props.navigation.dispatch(StackActions.pop(1));
           props.navigation.navigate("Editor", {outfit: outfit});
         }}
       />
@@ -155,6 +158,23 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     <BackHeader
       navigation={props.navigation}
       text="Комплект"
+      rightMenu={
+        <Pressable
+          onPress={async () => {
+            if (outfit.uuid === undefined) {
+              return false;
+            }
+
+            const deleteSuccess = await deleteOutfit(outfit.uuid);
+            if (deleteSuccess) {
+              props.navigation.dispatch(StackActions.pop(1));
+              props.navigation.navigate('OutfitSelection');
+            }
+          }}
+        >
+          <TrashIcon width={25} height={25} fill="#ff0000"/>
+        </Pressable>
+      }
     />
   )
 
