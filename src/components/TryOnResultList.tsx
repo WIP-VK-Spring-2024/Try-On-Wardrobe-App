@@ -64,8 +64,6 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
         />
     ));
 
-    console.log("try on image paths", tryOnStore.results.map((item) => item.image.uri))
-    
     cards.unshift(<AddItemCard text="Новая примерка" onPress={() => navigation.navigate('Person')}/>)
 
     return <BaseList items={cards} />;

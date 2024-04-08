@@ -30,8 +30,6 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
       return () => subscription.remove();
     }, [appState.createMenuVisible])
   )
-
-  console.log("Home screen rerender")
   
   return (
     <>

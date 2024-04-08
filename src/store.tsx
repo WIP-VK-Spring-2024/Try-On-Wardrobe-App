@@ -153,6 +153,8 @@ const [
   tryOnScreenTagsSelectionStore,
 ] = makeGarmentFilter();
 
+tryOnScreenFilteredGarmentStore.setFilter('tryonable', item => item.tryOnAble)
+
 const [
   kitScreenFilteredGarmentStore,
   kitScreenGarmentSelectionStore,
