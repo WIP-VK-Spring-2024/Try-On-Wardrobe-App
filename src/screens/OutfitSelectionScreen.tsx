@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseScreen } from './base';
+import { BaseScreen } from './BaseScreen';
 import { observer } from 'mobx-react-lite';
 import { Pressable } from 'react-native';
 import { AddItemCard, BaseList, ListImage } from '../components/BaseList';
@@ -30,6 +30,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
     <AddItemCard
       text="Новый комплект"
       onPress={() => {
+
         outfitStore.addOutfit();
         const newOutfit = outfitStore.outfits[outfitStore.outfits.length - 1];
         props.navigation.navigate('Outfit', {outfit: newOutfit});
@@ -48,6 +49,7 @@ export const OutfitSelectionScreen = observer((props: OutfitSelectionScreenProps
   return (
     <BaseScreen
       navigation={props.navigation}
+      screen="OutfitSelection"
     >
       <OutfitList navigation={props.navigation}/>
     </BaseScreen>

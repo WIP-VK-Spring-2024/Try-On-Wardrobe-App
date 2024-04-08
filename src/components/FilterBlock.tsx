@@ -4,7 +4,7 @@ import { ACTIVE_COLOR } from '../consts';
 import { Pressable, ScrollView, View } from '@gluestack-ui/themed';
 import { RobotoText } from './common';
 import { SingleSelectionStore } from '../stores/SelectionStore';
-import { GarmentType } from '../stores/GarmentStore';
+import { GarmentType, Updateable } from '../stores/GarmentStore';
 
 interface FilterTabProps {
     text: string
@@ -63,8 +63,8 @@ const GarmentFilterSpecific = observer((props: FilterTabProps) => {
 })
 
 interface TypeFilterProps {
-  typeStore: SingleSelectionStore
-  subtypeStore: SingleSelectionStore
+  typeStore: SingleSelectionStore<GarmentType>
+  subtypeStore: SingleSelectionStore<Updateable>
 }
 
 export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) => {
@@ -111,7 +111,7 @@ export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) 
             marginRight={10}
           >
             {
-              typeStore.selectedItem.subtypes.map((subtype: any, i: number) => (
+              typeStore.selectedItem?.subtypes.map((subtype: any, i: number) => (
                 <GarmentFilterSpecific
                   key={i}
                   text={subtype.name}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseList, AddItemCard, ListImage } from './BaseList';
-import { Pressable } from '@gluestack-ui/themed';
+import { Pressable, Image } from '@gluestack-ui/themed';
 import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
 import { observer } from 'mobx-react-lite';
 import { tryOnStore, Rating } from '../stores/TryOnStore';
@@ -11,7 +11,6 @@ import { RatingButtons } from './TryOnRating';
 const style = StyleSheet.create({
     overlay: {
       position: 'absolute',
-    //   right: 5,
       bottom: 5,
     },
   });
@@ -30,15 +29,22 @@ const TryOnResultCard = observer(
     }) => {
         return (
             <Pressable
-                bg={BASE_COLOR}
+                borderRadius={20}
+                backgroundColor="#ffffff"
                 onPress={onPress}
                 w="49%"
                 h={WINDOW_HEIGHT / 3}>
-                <ListImage source={source} />
+                <Image
+                  source={source}
+                  borderTopLeftRadius={20}
+                  borderTopRightRadius={20}
+                  w="100%"
+                  h="85%"
+                  alt=""
+                />
                 <RatingButtons
-                    style={style.overlay}
-                    buttonWidth={50}
-                    buttonHeight={50}
+                    buttonWidth={40}
+                    buttonHeight={40}
                     uuid={uuid}
                     rating={rating} />
             </Pressable>
@@ -56,8 +62,6 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
         />
     ));
 
-    console.log("try on image paths", tryOnStore.results.map((item) => item.image.uri))
-    
     cards.unshift(<AddItemCard text="Новая примерка" onPress={() => navigation.navigate('Person')}/>)
 
     return <BaseList items={cards} />;

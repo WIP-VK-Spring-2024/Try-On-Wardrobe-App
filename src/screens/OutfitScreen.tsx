@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { observer } from "mobx-react-lite";
-import { BaseScreen } from './base';
+import { BaseScreen } from './BaseScreen';
 import { GarmentCard } from "../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";

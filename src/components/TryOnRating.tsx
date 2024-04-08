@@ -9,7 +9,7 @@ import {
     removeTryOnResultRating,
 } from '../requests/rate';
 import {Pressable, Box} from '@gluestack-ui/themed';
-import { ACTIVE_COLOR } from '../consts';
+import { ACTIVE_COLOR, PRIMARY_COLOR } from '../consts';
 
 export const RatingButtons = observer(
     ({
@@ -32,12 +32,12 @@ export const RatingButtons = observer(
               flexDirection="row"
               justifyContent="space-around"
               alignItems="center">
-              <DislikeButton
+              <LikeButton
                 width={buttonWidth}
                 height={buttonHeight}
                 uuid={uuid}
                 rating={rating}/>
-              <LikeButton
+              <DislikeButton
                 width={buttonWidth}
                 height={buttonHeight}
                 uuid={uuid}
@@ -57,6 +57,9 @@ export const DislikeButton = observer(
         uuid: string;
         rating: Rating;
     }) => {
+        const strokeColor = rating == Rating.Dislike
+                        ? ACTIVE_COLOR
+                        : PRIMARY_COLOR
         return (
             <Pressable
                 onPress={
@@ -67,11 +70,7 @@ export const DislikeButton = observer(
                 <DislikeIcon
                     width={width}
                     height={height}
-                    stroke={ACTIVE_COLOR}
-                    fill={rating == Rating.Dislike
-                        ? ACTIVE_COLOR
-                        : "transparent"
-                    }/>
+                    stroke={strokeColor}/>
             </Pressable>
         );
     },
@@ -89,6 +88,9 @@ export const LikeButton = observer(
         uuid: string;
         rating: Rating;
     }) => {
+      const strokeColor = rating == Rating.Like
+                      ? ACTIVE_COLOR
+                      : PRIMARY_COLOR
         return (
             <Pressable
                 onPress={
@@ -99,11 +101,7 @@ export const LikeButton = observer(
                 <LikeIcon
                     width={width}
                     height={height}
-                    stroke={ACTIVE_COLOR}
-                    fill={rating == Rating.Like
-                        ? ACTIVE_COLOR
-                        : "transparent"
-                    }/>
+                    stroke={strokeColor}/>
             </Pressable>
         );
     },

@@ -1,5 +1,7 @@
 import {makeObservable, observable, action, computed} from 'mobx';
 
+export type Screen = 'Home' | 'TryOn' | 'Feed' | 'OutfitSelection'
+
 class AppStateStore {
     error: string | undefined
     successMessage: string | undefined
@@ -8,18 +10,22 @@ class AppStateStore {
 
     JWTToken: string | undefined
     userID: string | undefined
+
+    screen: Screen
   
     constructor() {
       this.error = undefined
       this.successMessage = undefined
       this.createMenuVisible = false
       this.filterModalVisible = false;
+      this.screen = 'Home'
       
       makeObservable(this, {
         error: observable,
         successMessage: observable,
         createMenuVisible: observable,
         filterModalVisible: observable,
+        screen: observable,
   
         setError: action,
         setSuccessMessage: action,
@@ -28,6 +34,7 @@ class AppStateStore {
         setCreateMenuVisible: action,
         setFilterModalVisible: action,
         toggleCreateMenuVisible: action,
+        setScreen: action,
   
         hasError: computed
       })
@@ -40,6 +47,10 @@ class AppStateStore {
     
     setError(error: string | undefined) {
       this.error = error;
+    }
+
+    setScreen(screen: Screen) {
+      this.screen = screen;
     }
 
     setSuccessMessage(msg: string | undefined) {

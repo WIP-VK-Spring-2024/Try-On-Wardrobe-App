@@ -13,7 +13,7 @@ import { RadioLabel } from "@gluestack-ui/themed";
 import { RadioIcon } from "@gluestack-ui/themed";
 import { View } from "@gluestack-ui/themed";
 import { garmentStore } from "../stores/GarmentStore";
-import { ACTIVE_COLOR, SECONDARY_COLOR } from "../consts";
+import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../consts";
 import { Checkbox as GlueStackCheckbox } from "@gluestack-ui/themed";
 import { CheckboxIndicator } from "@gluestack-ui/themed";
 import { CheckboxIcon } from "@gluestack-ui/themed";
@@ -22,8 +22,8 @@ import { CheckIcon } from "@gluestack-ui/themed";
 import { MultipleSelectionStore } from "../stores/SelectionStore";
 
 interface FilterModalProps {
-  styleSelectionStore: MultipleSelectionStore,
-  tagsSelectionStore: MultipleSelectionStore,
+  styleSelectionStore: MultipleSelectionStore<string>,
+  tagsSelectionStore: MultipleSelectionStore<string>,
 }
 export const FilterModal = observer(({
   styleSelectionStore,
@@ -35,7 +35,7 @@ export const FilterModal = observer(({
     return (
       <GlueStackCheckbox size="md" isInvalid={false} isDisabled={false} value={props.value} aria-label="tag">
         <CheckboxIndicator mr="$2">
-          <CheckboxIcon as={CheckIcon} color={ACTIVE_COLOR}/>
+          <CheckboxIcon as={CheckIcon} color={PRIMARY_COLOR}/>
         </CheckboxIndicator>
         <CheckboxLabel>{props.label}</CheckboxLabel>
       </GlueStackCheckbox>
@@ -113,16 +113,18 @@ export const FilterModal = observer(({
         >
           <Button
             size="lg"
+            variant="outline"
             action="secondary"
             onPress={() => {
               styleSelectionStore.clearSelectedItems();
               tagsSelectionStore.clearSelectedItems();
               appState.setFilterModalVisible(false);
             }}
-            bg={SECONDARY_COLOR}
+            // bg={PRIMARY_COLOR}
           >
             <ButtonText>Сбросить</ButtonText>
           </Button>
+
           <Button
             size="lg"
             action="primary"

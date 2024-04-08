@@ -55,30 +55,34 @@ export const BaseList = observer((props: BaseListProps) => {
 
 export const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
     return (
-      <Image {...props} 
-              width={(WINDOW_WIDTH - 30) / 2} 
-              height={(WINDOW_WIDTH - 30) / 2 * 3 / 2} 
-              alt="" 
-              borderRadius={20}
-              backgroundColor='#ffffff'
-        />
+      <Image
+        {...props}
+        width={(WINDOW_WIDTH - 30) / 2}
+        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
+        alt=""
+        borderRadius={20}
+        backgroundColor="#ffffff"
+      />
     );
-  });
+  },
+);
 
 export const AddItemCard = observer(
-    ({text, onPress}: {text: string; onPress: () => void}) => {
-        return (
-            <Pressable
-                borderRadius={20}
-                backgroundColor='#ffffff'
-                onPress={onPress}
-                w="49%"
-                h={WINDOW_HEIGHT / 3}>
-                <Box h="100%" w="100%" display="flex" flexDirection="row" alignItems='center'>
-                    <AddBtnIcon width={50} height={50}></AddBtnIcon>
-                    <RobotoText fontSize={16}>{text}</RobotoText>
-                </Box>
-            </Pressable>
-        );
-    },
+  ({ text, onPress }: { text: string; onPress: () => void }) => {
+    return (
+      <Pressable
+        borderRadius={20}
+        backgroundColor="#ffffff"
+        onPress={onPress}
+        w="49%"
+        h={WINDOW_HEIGHT / 3}
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-around">
+        <AddBtnIcon width={45} height={45}></AddBtnIcon>
+        <RobotoText fontSize={16}>{text}</RobotoText>
+      </Pressable>
+    );
+  },
 );
