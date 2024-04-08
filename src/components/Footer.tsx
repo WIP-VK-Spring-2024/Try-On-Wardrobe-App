@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Button, Center} from '@gluestack-ui/themed';
-import {ACTIVE_COLOR, ADD_BTN_COLOR, BASE_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH} from '../consts';
+import {ACTIVE_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH} from '../consts';
 import { useRoute } from '@react-navigation/native';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
@@ -8,11 +8,52 @@ import GarmentIcon from '../../assets/icons/garment.svg';
 import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import OutfitIcon from '../../assets/icons/outfit.svg';
 import HangerIcon from '../../assets/icons/hanger.svg';
-import {observer} from 'mobx-react-lite';
 
-import RNFS from 'react-native-fs';
+import { observer } from 'mobx-react-lite';
+import { SvgProps } from 'react-native-svg'
 import { RobotoText } from './common';
 import { appState } from '../stores/AppState';
+
+interface NavigationButtonProps {
+  Icon: React.FC<SvgProps>;
+  size: number;
+  text: string;
+  navigation?: any;
+  targetScreen: string;
+  route: any;
+}
+
+const NavigationButton = observer(
+  ({
+    Icon,
+    size,
+    text,
+    navigation,
+    targetScreen,
+    route
+  } : NavigationButtonProps) => {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        width="16%"
+        paddingBottom={5}
+        >
+        <Icon
+          stroke={FOOTER_ICON_COLOR}
+          width={size}
+          height={size}
+          fill={route.name === targetScreen ? ACTIVE_COLOR : FOOTER_COLOR}
+          onPress={() => navigation?.navigate(targetScreen)}
+        />
+        <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
+          {text}
+        </RobotoText>
+      </Box>
+    );
+  },
+);
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
   const normalSize = WINDOW_WIDTH / 8;
@@ -26,15 +67,26 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
       display="flex"
       flexDirection="row"
       justifyContent="space-around"
-      alignItems="center">
-      <NewsPaperIcon width={normalSize} height={normalSize} stroke={FOOTER_ICON_COLOR}/>
+      alignItems="center"
+      paddingHorizontal={5}
+      // paddingBottom={3}
+      >
 
-      <GarmentIcon
-        stroke={FOOTER_ICON_COLOR}
-        width={normalSize}
-        height={normalSize}
-        fill={route.name === 'Home' ? ACTIVE_COLOR : FOOTER_COLOR}
-        onPress={() => navigation.navigate('Home')}
+      <NavigationButton
+        Icon={NewsPaperIcon}
+        targetScreen=''
+        route={route}
+        size={normalSize}
+        text='Лента'
+      />
+
+      <NavigationButton
+        Icon={GarmentIcon}
+        targetScreen='Home'
+        route={route}
+        navigation={navigation}
+        size={normalSize}
+        text='Одежда'
       />
 
       <AddBtnIcon
@@ -44,18 +96,21 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         onPress={() => appState.toggleCreateMenuVisible()}
       />
 
-      <OutfitIcon
-        width={normalSize}
-        height={normalSize}
-        stroke={FOOTER_ICON_COLOR}
-       />
-    
-      <HangerIcon
-        stroke={FOOTER_ICON_COLOR}
-        width={normalSize}
-        height={normalSize}
-        onPress={() => navigation.navigate('TryOn')}
-        fill={route.name=== 'TryOn' ? ACTIVE_COLOR : FOOTER_COLOR}
+      <NavigationButton
+        Icon={OutfitIcon}
+        targetScreen=''
+        route={route}
+        size={normalSize}
+        text='Образы'
+      />
+
+      <NavigationButton
+        Icon={HangerIcon}
+        targetScreen='TryOn'
+        route={route}
+        navigation={navigation}
+        size={normalSize}
+        text='Примерка'
       />
     </Box>
   );
