@@ -2,7 +2,7 @@ import React from 'react';
 import { BaseList, ListImage } from './BaseList';
 import { Image, Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
-import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from '../consts';
+import { BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
@@ -45,10 +45,10 @@ const ClothesListCard = observer(
         <ListImage source={source} />
         {selected && (
           <SelectedIcon
+            stroke={PRIMARY_COLOR}
             style={style.overlay}
             width={overlaySize}
             height={overlaySize}
-            color="blue"
           />
         )}
       </Pressable>

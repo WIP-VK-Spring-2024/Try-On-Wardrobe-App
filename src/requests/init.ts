@@ -96,5 +96,4 @@ export const initStores = () => {
 
         outfitStore.setOutfits(outfits);
     })
-
 }
