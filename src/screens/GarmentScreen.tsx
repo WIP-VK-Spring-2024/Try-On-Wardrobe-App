@@ -2,10 +2,10 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, WINDOW_HEIGHT } from '../consts';
+import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, WINDOW_HEIGHT } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
-import { BaseScreen } from './base';
+import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';
 import { AlertDialogFooter } from '@gluestack-ui/themed';
@@ -214,7 +214,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     const getFill = (season: Season) => {
       if (garment.seasons.includes(season)) {
-        return ACTIVE_COLOR;
+        return PRIMARY_COLOR;
       }
   
       return '#000';
@@ -361,35 +361,39 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
             })
           }
         </Box>
-        <Input
-          w="100%"
-          flex={1}
-          variant="outline"
-          size="md"
-          isDisabled={false}
-          isInvalid={false}
-          isReadOnly={false}
-        >
-          <InputField
-            flex={1}
-            type="text" 
-            value={tagInputValue}
-            onChangeText={(text: string) => setTagInputValue(text)}
-            onEndEditing={()=>props.setTagInputValue(tagInputValue)}
-          />
-          <Button
-            bg={ACTIVE_COLOR}
-            onPress={() => {
-              const value = tagInputValue;
-              setTagInputValue('');
-              garment.addTag(value);
-            }}
+        <Box display='flex' flexDirection='row' justifyContent='space-between'>
+          <Input
+            w="67%"
+            variant="outline"
+            size="md"
+            isDisabled={false}
+            isInvalid={false}
+            isReadOnly={false}
+            justifyContent='space-between'
           >
-            <RobotoText color='#ffffff'>
-              Добавить
-            </RobotoText>
+            <InputField
+              type="text"
+              value={tagInputValue}
+              onChangeText={(text: string) => setTagInputValue(text)}
+              onEndEditing={()=>props.setTagInputValue(tagInputValue)}
+            />
+          </Input>
+          <Button
+              bg={SECONDARY_COLOR}
+              onPress={() => {
+                const value = tagInputValue.trim()
+                if (tagInputValue == '' || garment.tags.includes(value)) {
+                  return;
+                }
+                setTagInputValue('');
+                garment.addTag(value);
+              }}
+            >
+              <RobotoText color='#ffffff'>
+                Добавить
+              </RobotoText>
           </Button>
-        </Input>
+        </Box>
       </Box>
     )
   });

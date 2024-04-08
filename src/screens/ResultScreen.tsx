@@ -1,12 +1,12 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { BaseScreen } from "./base";
+import { BaseScreen } from "./BaseScreen";
 import { Box, HStack } from "@gluestack-ui/themed";
 import { Spinner } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Image } from "@gluestack-ui/themed";
 import { resultStore } from "../store";
-import { ACTIVE_COLOR } from "../consts";
+import { PRIMARY_COLOR } from "../consts";
 import { RatingButtons } from "../components/TryOnRating";
 import { StyleSheet } from 'react-native'
 
@@ -31,7 +31,7 @@ export const ResultScreen = observer(({navigation}: {navigation: any}) => {
         alignItems="center">
         {resultStore.resultUrl === undefined ? (
           <HStack>
-            <Spinner size="large" color={ACTIVE_COLOR} />
+            <Spinner size="large" color={PRIMARY_COLOR} />
             <RobotoText>Загрузка...</RobotoText>
           </HStack>
         ) : (

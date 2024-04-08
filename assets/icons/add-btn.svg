@@ -1,18 +1,5 @@
-<svg width="72" height="70" viewBox="0 0 72 70" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="none">
-<g filter="url(#filter0_d_80_434)">
-<rect x="8" y="5" width="56" height="56" rx="28" fill="#E46B6F"/>
-<path d="M18 33H53" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M36 16V51" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<filter id="filter0_d_80_434" x="0" y="0" width="72" height="72" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="3"/>
-<feGaussianBlur stdDeviation="4"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.14902 0 0 0 0 0.14902 0 0 0 0 0.14902 0 0 0 0.5 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_80_434"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_80_434" result="shape"/>
-</filter>
-</defs>
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M56 28C56 12.5417 43.4583 0 28 0C12.5417 0 0 12.5417 0 28C0 43.4583 12.5417 56 28 56C43.4583 56 56 43.4583 56 28Z" fill="#9C6644"/>
+<path d="M28 15.5556V40.4444ZM40.4444 28H15.5555Z" fill="#9C6644"/>
+<path d="M28 15.5556V40.4444M40.4444 28H15.5555" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

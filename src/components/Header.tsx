@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
-import {ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
+import {PRIMARY_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
 import { StackActions } from '@react-navigation/native';
 
@@ -10,7 +10,6 @@ import SettingsIcon from '../../assets/icons/settings.svg';
 import SearchIcon from '../../assets/icons/search.svg';
 import { appState } from '../stores/AppState';
 import { observer } from 'mobx-react-lite';
-
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -31,11 +30,11 @@ const HeaderBase = (props: PropsWithChildren) => {
 
 
 export const Header = observer(() => {
-  const filterIconColor = appState.filterModalVisible ? ACTIVE_COLOR : HEADER_ICON_COLOR
+  const filterIconColor = appState.filterModalVisible ? PRIMARY_COLOR : HEADER_ICON_COLOR
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
-        <Avatar bg={ACTIVE_COLOR} borderRadius="$full">
+        <Avatar bg={PRIMARY_COLOR} borderRadius="$full">
           <AvatarFallbackText>nikstarling</AvatarFallbackText>
         </Avatar>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
@@ -75,7 +74,7 @@ export const BackHeader = (props: BackHeaderProps) => {
           props.navigation.dispatch(StackActions.pop(1));
         }}
       >
-        <ChevronLeftIcon size="xl" color={ACTIVE_COLOR}/>
+        <ChevronLeftIcon size="xl" color={PRIMARY_COLOR}/>
       </Pressable>
       <RobotoText
         color="#000"

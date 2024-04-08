@@ -5,8 +5,7 @@ import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
-import { ACTIVE_COLOR } from '../consts';
-import { garmentScreenGarmentSelectionStore } from '../store';
+import { SECONDARY_COLOR } from '../consts';
 import { Box } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from '../requests/imageCreation';
@@ -53,7 +52,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
   const iconProps = {
     width: seasonIconSize,
     height: seasonIconSize,
-    fill: ACTIVE_COLOR
+    fill: SECONDARY_COLOR
   };
 
   const openCreatedGarment = () => {

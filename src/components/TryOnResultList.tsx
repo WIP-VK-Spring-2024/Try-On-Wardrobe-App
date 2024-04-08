@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseList, AddItemCard, ListImage } from './BaseList';
-import { Pressable } from '@gluestack-ui/themed';
+import { Pressable, Image } from '@gluestack-ui/themed';
 import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
 import { observer } from 'mobx-react-lite';
 import { tryOnStore, Rating } from '../stores/TryOnStore';
@@ -30,15 +30,23 @@ const TryOnResultCard = observer(
     }) => {
         return (
             <Pressable
-                bg={BASE_COLOR}
+                borderRadius={20}
+                backgroundColor="#ffffff"
                 onPress={onPress}
                 w="49%"
                 h={WINDOW_HEIGHT / 3}>
-                <ListImage source={source} uuid={uuid}  />
+                <Image
+                  source={source}
+                  borderTopLeftRadius={20}
+                  borderTopRightRadius={20}
+                  w="100%"
+                  h="85%"
+                  alt=""
+                />
                 <RatingButtons
-                    style={style.overlay}
-                    buttonWidth={50}
-                    buttonHeight={50}
+                    // style={style.overlay}
+                    buttonWidth={40}
+                    buttonHeight={40}
                     uuid={uuid}
                     rating={rating} />
             </Pressable>

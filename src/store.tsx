@@ -1,5 +1,5 @@
-import { makeObservable, observable, action, computed, autorun } from 'mobx';
-import { GarmentCard, garmentStore } from './stores/GarmentStore';
+import { makeObservable, observable, action, autorun } from 'mobx';
+import { GarmentCard, GarmentType, garmentStore, Updateable } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
 import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
@@ -49,8 +49,8 @@ class ResultStore {
 const makeGarmentFilter = (): [
   FilterStore<GarmentCard>,
   MultipleSelectionStore<GarmentCard>,
-  SingleSelectionStore,
-  SingleSelectionStore,
+  SingleSelectionStore<GarmentType>,
+  SingleSelectionStore<Updateable>,
   MultipleSelectionStore<string>,
   MultipleSelectionStore<string>
 ] => {
@@ -69,7 +69,7 @@ const makeGarmentFilter = (): [
   })
 
   const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.types);
-  const garmentSubtypeSelectionStore = new SingleSelectionStore([]);
+  const garmentSubtypeSelectionStore = new SingleSelectionStore<Updateable>([]);
 
   autorun(() => {
     garmentTypeSelectionStore.setItems(garmentStore.types);
@@ -77,8 +77,8 @@ const makeGarmentFilter = (): [
 
   autorun(() => {
     if (garmentTypeSelectionStore.somethingIsSelected) {
-      garmentSubtypeSelectionStore.setItems(garmentTypeSelectionStore.selectedItem.subtypes);
-      filteredGarmentStore.setFilter('type_filter', (item: GarmentCard) => item.type?.uuid === garmentTypeSelectionStore.selectedItem.uuid);
+      garmentSubtypeSelectionStore.setItems(garmentTypeSelectionStore.selectedItem?.subtypes || []);
+      filteredGarmentStore.setFilter('type_filter', (item: GarmentCard) => item.type?.uuid === garmentTypeSelectionStore.selectedItem?.uuid);
     } else {
       garmentSubtypeSelectionStore.setItems([]);
       garmentSubtypeSelectionStore.unselect();
@@ -89,7 +89,7 @@ const makeGarmentFilter = (): [
   autorun(() => {
     if (garmentTypeSelectionStore.somethingIsSelected && 
         garmentSubtypeSelectionStore.somethingIsSelected) {
-      filteredGarmentStore.setFilter('subtype_filter', (item: GarmentCard) => item.subtype?.uuid === garmentSubtypeSelectionStore.selectedItem.uuid);
+      filteredGarmentStore.setFilter('subtype_filter', (item: GarmentCard) => item.subtype?.uuid === garmentSubtypeSelectionStore.selectedItem?.uuid);
     } else {
       filteredGarmentStore.removeFilter('subtype_filter');
     }

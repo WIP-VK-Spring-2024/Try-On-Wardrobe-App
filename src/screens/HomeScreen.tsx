@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { appState } from "../stores/AppState";
 import { BackHandler } from "react-native";
-import { BaseScreen } from "./base";
+import { BaseScreen } from "./BaseScreen";
 import { TypeFilter } from "../components/FilterBlock";
 import { garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
@@ -30,10 +30,12 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
       return () => subscription.remove();
     }, [appState.createMenuVisible])
   )
+
+  console.log("Home screen rerender")
   
   return (
     <>
-      <BaseScreen navigation={navigation}>
+      <BaseScreen navigation={navigation} screen='Home'>
         <TypeFilter
           typeStore={garmentScreenTypeSelectionStore}
           subtypeStore={garmentScreenSubtypeSelectionStore}

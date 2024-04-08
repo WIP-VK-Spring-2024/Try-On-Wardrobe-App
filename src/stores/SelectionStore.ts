@@ -1,10 +1,10 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
-export class SingleSelectionStore {
-    items: any[];
+export class SingleSelectionStore<T> {
+    items: T[];
     selectedItemId: number | undefined;
   
-    constructor(items: any[]) {
+    constructor(items: T[]) {
       this.items = items;
       this.selectedItemId = undefined;
   
@@ -22,7 +22,7 @@ export class SingleSelectionStore {
       });
     }
   
-    setItems(items: any) {
+    setItems(items: T[]) {
       this.items = items;
     }
   
@@ -42,11 +42,11 @@ export class SingleSelectionStore {
       this.selectedItemId = undefined;
     }
   
-    get somethingIsSelected() {
+    get somethingIsSelected() : boolean {
       return this.selectedItemId !== undefined;
     }
   
-    get selectedItem() {
+    get selectedItem() : T | undefined {
       if (this.selectedItemId === undefined)
         return undefined;
   

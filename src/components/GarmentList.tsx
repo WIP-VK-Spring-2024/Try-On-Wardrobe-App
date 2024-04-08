@@ -22,29 +22,39 @@ const style = StyleSheet.create({
   },
 });
 
+interface ClothesListCardProps {
+  source: string | ImageSourcePropType;
+  selected: boolean;
+  onPress: () => void;
+}
+
 const ClothesListCard = observer(
-  ({ source, selected, id, onPress }:
-    { source: string | ImageSourcePropType, selected: boolean, id: number, onPress: ()=>void }
-  ) => {
+  ({
+    source,
+    selected,
+    onPress,
+  } : ClothesListCardProps) => {
     const overlaySize = WINDOW_WIDTH / 4;
 
     return (
       <Pressable
         bg={BASE_COLOR}
         onPress={onPress}
-        w="49%" h={WINDOW_HEIGHT / 3}
-      >
-        <Image source={source} w="100%" h="100%" alt="" />
-        {selected && <SelectedIcon
-          // position='absolute'
-          style={style.overlay}
-          width={overlaySize}
-          height={overlaySize}
-          color="blue"
-        />
-        }
-      </Pressable>)
-  })
+        w="49%"
+        h={WINDOW_HEIGHT / 3}>
+        <ListImage source={source} />
+        {selected && (
+          <SelectedIcon
+            style={style.overlay}
+            width={overlaySize}
+            height={overlaySize}
+            color="blue"
+          />
+        )}
+      </Pressable>
+    );
+  },
+);
 
 export const StaticGarmentList = observer((props: any) => {
   const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (
@@ -55,7 +65,6 @@ export const StaticGarmentList = observer((props: any) => {
     >
       <ListImage
         source={getImageSource(item.image)}
-        uuid={item.uuid!}
       />
     </Pressable>
   ))
@@ -68,12 +77,11 @@ interface MultipleSelectionGarmentListProps {
 }
 
 export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
-  const clothes = props.store.items.map((item, i) => {
+  const clothes = props.store.items.map((item) => {
     const selected = props.store.selectedItems.includes(item)
     return <ClothesListCard
       source={getImageSource(item.image)}
       selected={selected}
-      id={i}
       onPress={() => props.store.toggle(item)}
     />
   })

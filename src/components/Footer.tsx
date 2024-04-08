@@ -1,7 +1,6 @@
 import React from 'react';
 import {Box, Button, Center, Pressable} from '@gluestack-ui/themed';
-import {ACTIVE_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH} from '../consts';
-import { useRoute } from '@react-navigation/native';
+import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR} from '../consts';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
@@ -12,15 +11,14 @@ import HangerIcon from '../../assets/icons/hanger.svg';
 import { observer } from 'mobx-react-lite';
 import { SvgProps } from 'react-native-svg'
 import { RobotoText } from './common';
-import { appState } from '../stores/AppState';
+import { appState, Screen } from '../stores/AppState';
 
 interface NavigationButtonProps {
   Icon: React.FC<SvgProps>;
   size: number;
   text: string;
   navigation?: any;
-  targetScreen: string;
-  route: any;
+  targetScreen: Screen;
 }
 
 const NavigationButton = observer(
@@ -29,9 +27,10 @@ const NavigationButton = observer(
     size,
     text,
     navigation,
-    targetScreen,
-    route
+    targetScreen
   } : NavigationButtonProps) => {
+    const color = appState.screen === targetScreen ? ACTIVE_COLOR : FOOTER_ICON_COLOR;
+
     return (
       <Pressable
           onPress={() => navigation?.navigate(targetScreen)}
@@ -41,10 +40,10 @@ const NavigationButton = observer(
           width="16%"
           paddingBottom={5}>
           <Icon
-            stroke={FOOTER_ICON_COLOR}
+            stroke={color}
+            fill={color}
             width={size}
             height={size}
-            fill={route.name === targetScreen ? ACTIVE_COLOR : FOOTER_COLOR}
           />
           <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
             {text}
@@ -56,9 +55,7 @@ const NavigationButton = observer(
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
   const normalSize = WINDOW_WIDTH / 8;
-  const addBtnSize = normalSize + 20;
-
-  const route = useRoute();
+  const addBtnSize = normalSize + 10;
 
   return (
     <Box
@@ -73,23 +70,22 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
 
       <NavigationButton
         Icon={NewsPaperIcon}
-        targetScreen=''
-        route={route}
-        size={normalSize}
+        targetScreen='Feed'
         text='Лента'
+        size={normalSize}
       />
 
       <NavigationButton
         Icon={GarmentIcon}
         targetScreen='Home'
-        route={route}
+        text='Одежда'
         navigation={navigation}
         size={normalSize}
-        text='Одежда'
       />
 
       <AddBtnIcon
-        stroke={ADD_BTN_COLOR}
+        // stroke={ADD_BTN_COLOR}
+        fill={ADD_BTN_COLOR}
         width={addBtnSize}
         height={addBtnSize}
         onPress={() => appState.toggleCreateMenuVisible()}
@@ -97,19 +93,18 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
 
       <NavigationButton
         Icon={OutfitIcon}
-        targetScreen=''
-        route={route}
-        size={normalSize}
+        targetScreen='GarmentKit'
         text='Образы'
+        navigation={navigation}
+        size={normalSize}
       />
 
       <NavigationButton
         Icon={HangerIcon}
         targetScreen='TryOn'
-        route={route}
+        text='Примерка'
         navigation={navigation}
         size={normalSize}
-        text='Примерка'
       />
     </Box>
   );
@@ -117,7 +112,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
 
 export const ButtonFooter = observer(({text, onPress}: {text?: string, onPress: () => void}) => {
   return (
-    <Button onPress={() => onPress()} bgColor={ACTIVE_COLOR} h={65}>
+    <Button onPress={() => onPress()} bgColor={SECONDARY_COLOR} h={65}>
       <Center>
         <RobotoText color="white" fontSize="$3xl">
           {text || 'Выбрать'}
