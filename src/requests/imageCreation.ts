@@ -3,7 +3,7 @@ import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
-import { GarmentKit } from '../stores/GarmentKitStore';
+import { Outfit } from '../stores/OutfitStore';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {
     console.log('upload')
@@ -68,13 +68,13 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
     .catch(err => console.error(err));
 }
 
-export const uploadOutfit = async (garmentKit: GarmentKit) => {
-    if (garmentKit.image === undefined) {
+export const uploadOutfit = async (Outfit: Outfit) => {
+    if (Outfit.image === undefined) {
         console.error('no outfit image');
         return false;
     }
 
-    const image_p = garmentKit.image.uri.split('/');
+    const image_p = Outfit.image.uri.split('/');
     const image_name = image_p[image_p.length - 1];
 
     let formData = new FormData();
@@ -82,10 +82,10 @@ export const uploadOutfit = async (garmentKit: GarmentKit) => {
     formData.append('img', {
         type: "image.png",
         name: image_name,
-        uri: garmentKit.image.uri
+        uri: Outfit.image.uri
     });
 
-    const transforms =  Object.fromEntries(garmentKit.items
+    const transforms =  Object.fromEntries(Outfit.items
         .map(item => ([item.garmentUUID, item.rect.getTransforms()])));
 
     formData.append('transforms', transforms);

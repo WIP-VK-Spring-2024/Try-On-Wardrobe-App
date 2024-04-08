@@ -3,7 +3,7 @@ import { ImageType } from '../models';
 import { staticEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from './GarmentStore';
 
-interface GarmentKitItemRectProps {
+interface OutfitItemRectProps {
     x?: number
     y?: number
     width?: number
@@ -12,7 +12,7 @@ interface GarmentKitItemRectProps {
     scale?: number 
 }
 
-export class GarmentKitItemRect {
+export class OutfitItemRect {
     x: number
     y: number
     width: number
@@ -23,7 +23,7 @@ export class GarmentKitItemRect {
     halfWidth: number;
     halfHeight: number;
 
-    constructor(props: GarmentKitItemRectProps) {
+    constructor(props: OutfitItemRectProps) {
         this.x = props.x || 0;
         this.y = props.y || 0;
         this.width = props.width || 0;
@@ -54,16 +54,16 @@ export class GarmentKitItemRect {
     }
 }
 
-interface GarmentKitItemProps {
+interface OutfitItemProps {
     garmentUUID: string
-    rect: GarmentKitItemRect
+    rect: OutfitItemRect
 }
 
-export class GarmentKitItem {
+export class OutfitItem {
     garmentUUID: string
-    rect: GarmentKitItemRect
+    rect: OutfitItemRect
 
-    constructor(props: GarmentKitItemProps) {
+    constructor(props: OutfitItemProps) {
         this.garmentUUID = props.garmentUUID;
         this.rect = props.rect;
 
@@ -77,7 +77,7 @@ export class GarmentKitItem {
         })
     }
 
-    setRect(rect: GarmentKitItemRect) {
+    setRect(rect: OutfitItemRect) {
         this.rect = rect
     }
 
@@ -90,18 +90,18 @@ export class GarmentKitItem {
     }
 }
 
-interface GarmentKitProps {
-    items?: GarmentKitItem[]
+interface OutfitProps {
+    items?: OutfitItem[]
     image?: ImageType
 }
 
-export class GarmentKit {
+export class Outfit {
     image: ImageType | undefined
-    items: GarmentKitItem[]
+    items: OutfitItem[]
 
-    constructor(props: GarmentKitProps) {
-        this.image = props.image;
-        this.items = props.items || [];
+    constructor(props?: OutfitProps) {
+        this.image = props?.image;
+        this.items = props?.items || [];
 
         makeObservable(this, {
             image: observable,
@@ -120,23 +120,23 @@ export class GarmentKit {
         this.image = image;
     }
 
-    setItems(items: GarmentKitItem[]) {
+    setItems(items: OutfitItem[]) {
         this.items = items;
     }
 
-    addItem(item: GarmentKitItem) {
+    addItem(item: OutfitItem) {
         this.items.push(item);
     }
 
-    addItems(items: GarmentKitItem[]) {
+    addItems(items: OutfitItem[]) {
         this.items = this.items.concat(items);
     }
 
     addGarments(garments: GarmentCard[]) {
         const cardToItem = (garment: GarmentCard) => {
-            return new GarmentKitItem({
+            return new OutfitItem({
                 garmentUUID: garment.uuid!,
-                rect: new GarmentKitItemRect({
+                rect: new OutfitItemRect({
                     x: 300,
                     y: 300,
                     width: 100,
@@ -154,11 +154,11 @@ export class GarmentKit {
 }
 
 interface OutfitStoreProps {
-    outfits?: GarmentKit[];
+    outfits?: Outfit[];
 }
 
 export class OutfitStore {
-    outfits: GarmentKit[];
+    outfits: Outfit[];
 
     constructor(props: OutfitStoreProps) {
         this.outfits = props.outfits || [];
@@ -171,18 +171,22 @@ export class OutfitStore {
         })
     }
 
-    setOutfits(outfits: GarmentKit[]) {
+    setOutfits(outfits: Outfit[]) {
         this.outfits = outfits;
     }
 
-    addOutfit(outfit: GarmentKit) {
-        this.outfits.push(outfit);
+    addOutfit(outfit?: Outfit) {
+        if (outfit === undefined) {
+            this.outfits.push(new Outfit());
+        } else {
+            this.outfits.push(outfit);
+        }
     }
 };
 
-const item1 = new GarmentKitItem({
+const item1 = new OutfitItem({
     garmentUUID: '6366006a-b909-4381-a741-9e6fe0cbbf74',
-    rect: new GarmentKitItemRect({
+    rect: new OutfitItemRect({
         x: 200,
         y: 40,
         angle: Math.PI / 4,
@@ -192,9 +196,9 @@ const item1 = new GarmentKitItem({
     })
 })
 
-const item2 = new GarmentKitItem({
+const item2 = new OutfitItem({
     garmentUUID: '0208edd3-5dcc-4543-993c-f8da2764bb03',
-    rect: new GarmentKitItemRect({
+    rect: new OutfitItemRect({
         x: 200,
         y: 200,
         angle: Math.PI / 16,
@@ -204,6 +208,6 @@ const item2 = new GarmentKitItem({
     })
 })
 
-export const garmentKit = new GarmentKit({image: {type: 'local', uri: '/outfit/1.png'}, items: [item1, item2]});
+const outfit = new Outfit({image: {type: 'local', uri: '/outfit/1.png'}, items: [item1, item2]});
 
-export const outfitStore = new OutfitStore({outfits: [garmentKit]});
+export const outfitStore = new OutfitStore({outfits: [outfit]});

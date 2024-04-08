@@ -34,7 +34,7 @@ const TryOnResultCard = observer(
                 onPress={onPress}
                 w="49%"
                 h={WINDOW_HEIGHT / 3}>
-                <ListImage source={source} uuid={uuid}  />
+                <ListImage source={source} />
                 <RatingButtons
                     style={style.overlay}
                     buttonWidth={50}

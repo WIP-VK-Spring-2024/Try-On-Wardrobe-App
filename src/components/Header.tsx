@@ -59,9 +59,12 @@ interface BackHeaderProps {
   navigation: any
   rightMenu?: ReactNode
   text: string
+  onBackPress?: ()=>void
 }
 
 export const BackHeader = (props: BackHeaderProps) => {
+  const onBackPress = props.onBackPress || (() => {props.navigation.dispatch(StackActions.pop(1));})
+
   return (
     <HeaderBase>
       <Pressable
@@ -71,9 +74,7 @@ export const BackHeader = (props: BackHeaderProps) => {
         alignItems='flex-end'
         flex={1}
         gap={3}
-        onPress={() => {
-          props.navigation.dispatch(StackActions.pop(1));
-        }}
+        onPress={onBackPress}
       >
         <ChevronLeftIcon size="xl" color={ACTIVE_COLOR}/>
       </Pressable>

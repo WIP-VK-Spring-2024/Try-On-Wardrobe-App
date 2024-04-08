@@ -2,16 +2,17 @@ import { Image, Pressable, View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { RobotoText } from "../common";
-import { garmentKit } from "../../stores/GarmentKitStore";
 import { getImageSource } from "../../utils";
 import Animated, { SharedValue, useAnimatedStyle } from "react-native-reanimated";
+import { Outfit } from "../../stores/OutfitStore";
 
 interface EditorMenuProps {
   selectedId: SharedValue<number | undefined>
+  outfit: Outfit
 }
 
 export const EditorMenu = observer((props: EditorMenuProps) => {
-  const garments = garmentKit.items;
+  const garments = props.outfit.items;
 
   const getStyle = (i: number) => useAnimatedStyle(() => {
     return {

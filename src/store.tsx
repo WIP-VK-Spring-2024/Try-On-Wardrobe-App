@@ -154,12 +154,12 @@ const [
 ] = makeGarmentFilter();
 
 const [
-  kitScreenFilteredGarmentStore,
-  kitScreenGarmentSelectionStore,
-  kitScreenTypeSelectionStore,
-  kitScreenSubtypeSelectionStore,
-  kitScreenStyleSelectionStore,
-  kitScreenTagsSelectionStore,
+  outfitScreenFilteredGarmentStore,
+  outfitScreenGarmentSelectionStore,
+  outfitScreenTypeSelectionStore,
+  outfitScreenSubtypeSelectionStore,
+  outfitScreenStyleSelectionStore,
+  outfitScreenTagsSelectionStore,
 ] = makeGarmentFilter();
 
 export {
@@ -177,12 +177,12 @@ export {
   tryOnScreenStyleSelectionStore,
   tryOnScreenTagsSelectionStore,
 
-  kitScreenFilteredGarmentStore,
-  kitScreenGarmentSelectionStore,
-  kitScreenTypeSelectionStore,
-  kitScreenSubtypeSelectionStore,
-  kitScreenStyleSelectionStore,
-  kitScreenTagsSelectionStore,
+  outfitScreenFilteredGarmentStore,
+  outfitScreenGarmentSelectionStore,
+  outfitScreenTypeSelectionStore,
+  outfitScreenSubtypeSelectionStore,
+  outfitScreenStyleSelectionStore,
+  outfitScreenTagsSelectionStore,
 }
 
 export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.photos);

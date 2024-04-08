@@ -13,21 +13,22 @@ import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValu
 
 import { autorun, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { garmentKit } from "../../stores/GarmentKitStore";
 import { boundsExtra, rotateHandleHalfSize, rotateHandleLength, rotateHandleSize, scaleHandleHalfSize, scaleHandleSize } from "./consts";
 import { EditorItem } from "./EditorItem";
 import { RotateHandle } from "./RotateHandle";
 import { ScaleHandle } from "./ScaleHandle";
 import { GestureDetectorView } from "./GestureDetectorView";
 import { EditorMenu } from "./EditorMenu";
-import { GarmentRect } from "../../screens/KitEditorScreen";
+import { GarmentRect } from "../../screens/OutfitEditorScreen";
+import { Outfit } from "../../stores/OutfitStore";
 
-interface KitEditorProps {
+interface OutfitEditorProps {
   positions: SharedValue<GarmentRect[]>
   canvasRef: React.RefObject<SkiaDomView>
+  outfit: Outfit
 }
 
-export const KitEditor = observer(({positions, canvasRef}: KitEditorProps) => {
+export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);
@@ -456,8 +457,7 @@ export const KitEditor = observer(({positions, canvasRef}: KitEditorProps) => {
         </GestureDetector>
       </View>
 
-      <EditorMenu selectedId={activeId}/>
-
+      <EditorMenu selectedId={activeId} outfit={outfit}/>
     </View>
   );
 });

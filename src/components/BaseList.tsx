@@ -20,8 +20,20 @@ const divideIntoPairs = (items: any[]) => {
     return item_pairs;
 };
 
-export const BaseList = observer((props: {items: any}) => {
-    const pairs = divideIntoPairs(props.items);
+interface BaseListProps {
+    items: any
+    addItemCard?: React.ReactNode
+}
+
+export const BaseList = observer((props: BaseListProps) => {
+    const getItemsWithAddItemCard = () => {
+        if (props.addItemCard === undefined) {
+            return props.items;
+        }
+        return [props.addItemCard, ...props.items];
+    }
+
+    const pairs = divideIntoPairs(getItemsWithAddItemCard());
     return (
         <Box
             bg={BASE_COLOR}

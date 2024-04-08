@@ -1,8 +1,8 @@
 import { toJS } from "mobx"
-import { GarmentKitItem, GarmentKitItemRect } from "../../stores/GarmentKitStore"
-import { GarmentRect } from "../../screens/KitEditorScreen"
+import { GarmentRect } from "../../screens/OutfitEditorScreen"
+import { OutfitItem, OutfitItemRect } from "../../stores/OutfitStore"
 
-export const rectFromItem = (item: GarmentKitItem) => {
+export const rectFromItem = (item: OutfitItem) => {
     return {
       ...item.rect.getParams(),
       image: toJS(item.image),
@@ -11,9 +11,9 @@ export const rectFromItem = (item: GarmentKitItem) => {
 }
 
 export const itemFromRect = (r: GarmentRect) => {
-    return new GarmentKitItem({
+    return new OutfitItem({
         garmentUUID: r.payload,
-        rect: new GarmentKitItemRect({
+        rect: new OutfitItemRect({
         x: r.x,
         y: r.y,
         width: r.width,
