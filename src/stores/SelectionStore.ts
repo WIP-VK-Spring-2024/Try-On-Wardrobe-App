@@ -54,11 +54,11 @@ export class SingleSelectionStore {
     }
 }
 
-export class MultipleSelectionStore {
-    items: any[]
-    selectedItems: any[]
+export class MultipleSelectionStore<T> {
+    items: T[]
+    selectedItems: T[]
 
-    constructor(items: any[]) {
+    constructor(items: T[]) {
         this.items = items;
         this.selectedItems = [];
 
@@ -72,10 +72,12 @@ export class MultipleSelectionStore {
             setItems: action,
             setSelectedItems: action,
             clearSelectedItems: action,
+
+            somethingIsSelected: computed,
         })
     }
 
-    select(item: any) : boolean {
+    select(item: T) : boolean {
         if (this.items.includes(item) && !this.selectedItems.includes(item)) {
             this.selectedItems.push(item);
             return true;
@@ -83,18 +85,18 @@ export class MultipleSelectionStore {
         return false;
     }
 
-    deselect(toRemove: any) {
-        this.selectedItems = this.selectedItems.filter(item => item.uuid !== toRemove.uuid)
+    deselect(toRemove: T) {
+        this.selectedItems = this.selectedItems.filter(item => (item as any).uuid !== (toRemove as any).uuid)
     }
 
-    toggle(item: any) {
+    toggle(item: T) {
         if (this.select(item)) {
             return
         }
         this.deselect(item)
     }
 
-    setItems(items: any[]) {
+    setItems(items: T[]) {
         const selected = this.selectedItems;
 
         this.items = items;
@@ -108,5 +110,9 @@ export class MultipleSelectionStore {
 
     clearSelectedItems() {
         this.selectedItems = [];
+    }
+
+    get somethingIsSelected() {
+      return this.selectedItems.length > 0;
     }
 }

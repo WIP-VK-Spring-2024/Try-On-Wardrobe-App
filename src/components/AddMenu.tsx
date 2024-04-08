@@ -14,6 +14,7 @@ import { RobotoText } from './common';
 
 import CameraIcon from '../../assets/icons/camera.svg';
 import GalleryIcon from '../../assets/icons/gallery.svg';
+import { garmentStore } from '../stores/GarmentStore';
 
 export const AddMenu = observer((props: {navigation: any}) => {
   const floatingStyle = StyleSheet.create({
@@ -56,9 +57,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
   };
 
   const openCreatedGarment = () => {
-    const index = garmentScreenGarmentSelectionStore.items.length - 1;
-    garmentScreenGarmentSelectionStore.select(index);
-    props.navigation.navigate('Garment');   
+    props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
   }
 
   return (

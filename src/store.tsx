@@ -47,12 +47,12 @@ class ResultStore {
 }
 
 const makeGarmentFilter = (): [
-  FilterStore,
-  MultipleSelectionStore,
+  FilterStore<GarmentCard>,
+  MultipleSelectionStore<GarmentCard>,
   SingleSelectionStore,
   SingleSelectionStore,
-  MultipleSelectionStore,
-  MultipleSelectionStore
+  MultipleSelectionStore<string>,
+  MultipleSelectionStore<string>
 ] => {
   const filteredGarmentStore = new FilterStore({
     origin: garmentStore.garments
@@ -109,7 +109,8 @@ const makeGarmentFilter = (): [
 
   autorun(() => {
     if (styleFilterSelectionStore.selectedItems.length > 0) {
-      filteredGarmentStore.setFilter('style_filter', (item: GarmentCard) => styleFilterSelectionStore.selectedItems.includes(item.style?.uuid))
+      filteredGarmentStore.setFilter('style_filter', 
+        (item: GarmentCard) => styleFilterSelectionStore.selectedItems.includes(item.style?.uuid!))
     } else {
       filteredGarmentStore.removeFilter('style_filter');
     }
@@ -152,6 +153,15 @@ const [
   tryOnScreenTagsSelectionStore,
 ] = makeGarmentFilter();
 
+const [
+  kitScreenFilteredGarmentStore,
+  kitScreenGarmentSelectionStore,
+  kitScreenTypeSelectionStore,
+  kitScreenSubtypeSelectionStore,
+  kitScreenStyleSelectionStore,
+  kitScreenTagsSelectionStore,
+] = makeGarmentFilter();
+
 export {
   garmentScreenFilteredGarmentStore,
   garmentScreenGarmentSelectionStore,
@@ -166,6 +176,13 @@ export {
   tryOnScreenSubtypeSelectionStore,
   tryOnScreenStyleSelectionStore,
   tryOnScreenTagsSelectionStore,
+
+  kitScreenFilteredGarmentStore,
+  kitScreenGarmentSelectionStore,
+  kitScreenTypeSelectionStore,
+  kitScreenSubtypeSelectionStore,
+  kitScreenStyleSelectionStore,
+  kitScreenTagsSelectionStore,
 }
 
 export const userPhotoSelectionStore = new SingleSelectionStore(userPhotoStore.photos);

@@ -27,7 +27,8 @@ interface GarmentResponse {
   subtype_id: string,
   style_id: string,
   tags: string[],
-  seasons: Season[]
+  seasons: Season[],
+  tryonable: boolean,
 }
 
 export const convertGarmentResponse = (cloth: GarmentResponse) => {
@@ -46,7 +47,8 @@ export const convertGarmentResponse = (cloth: GarmentResponse) => {
       type: 'remote'
     },
     tags: cloth.tags,
-    seasons: cloth.seasons
+    seasons: cloth.seasons,
+    tryOnAble: cloth.tryonable
   })
 }
 

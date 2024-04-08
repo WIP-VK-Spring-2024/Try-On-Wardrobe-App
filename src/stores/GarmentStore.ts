@@ -27,7 +27,8 @@ export interface GarmentCardProps {
   subtype?: Updateable,
   style?: GarmentStyle,
   color?: string,
-  tags?: string[]
+  tags?: string[],
+  tryOnAble?: boolean
 }
 
 export class GarmentCard {
@@ -41,6 +42,7 @@ export class GarmentCard {
   style?: GarmentStyle
   color?: string
   tags: string[]
+  tryOnAble: boolean
 
   constructor(props: GarmentCardProps) {
     this.uuid = props.uuid;
@@ -52,6 +54,7 @@ export class GarmentCard {
     this.style = props.style;
     // this.color = props.color;
     this.tags = props.tags || [];
+    this.tryOnAble = props.tryOnAble || false;
 
     makeObservable(this, {
       uuid: observable,
@@ -63,6 +66,7 @@ export class GarmentCard {
       style: observable,
       // color: observable,
       tags: observable,
+      tryOnAble: observable,
 
       setUUID: action,
       setName: action,
@@ -74,7 +78,8 @@ export class GarmentCard {
       setStyle: action,
       setTags: action,
       addTag: action,
-      removeTag: action
+      removeTag: action,
+      setTryOnAble: action,
     })
   }
 
@@ -135,6 +140,10 @@ export class GarmentCard {
     if (index > -1) {
       this.tags.splice(index, 1);
     }
+  }
+
+  setTryOnAble(tryOnAble: boolean) {
+    this.tryOnAble = tryOnAble;
   }
 }
 
@@ -248,6 +257,10 @@ export class GarmentStore {
             color: garment.color,
         };
     });   
+  }
+
+  getGarmentByUUID(uuid: string) {
+    return this.garments.find(garment => garment.uuid === uuid);
   }
 
   get subtypes() {

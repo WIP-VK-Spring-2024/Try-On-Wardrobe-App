@@ -6,9 +6,11 @@ import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import { observer } from 'mobx-react-lite';
-import { garmentScreenGarmentSelectionStore, tryOnScreenGarmentSelectionStore } from '../store';
+import { garmentScreenGarmentSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
+import { MultipleSelectionStore } from '../stores/SelectionStore';
+import { GarmentCard } from '../stores/GarmentStore';
 
 const style = StyleSheet.create({
   overlay: {
@@ -48,13 +50,12 @@ export const StaticGarmentList = observer((props: any) => {
   const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (
     <Pressable
       onPress={()=>{
-        garmentScreenGarmentSelectionStore.select(i);
-        props.navigation.navigate('Garment');
+        props.navigation.navigate('Garment', {garment: item});
       }}
     >
       <ListImage
         source={getImageSource(item.image)}
-        uuid={item.uuid}
+        uuid={item.uuid!}
       />
     </Pressable>
   ))
@@ -62,16 +63,20 @@ export const StaticGarmentList = observer((props: any) => {
   return <BaseList items={clothes} />
 })
 
-export const GarmentList = observer((props: any) => {
-  const clothes = tryOnScreenGarmentSelectionStore.items.map((item, i) => {
-    const selected = tryOnScreenGarmentSelectionStore.selectedItems.includes(item)
+interface MultipleSelectionGarmentListProps {
+  store: MultipleSelectionStore<GarmentCard>
+}
+
+export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
+  const clothes = props.store.items.map((item, i) => {
+    const selected = props.store.selectedItems.includes(item)
     return <ClothesListCard
       source={getImageSource(item.image)}
       selected={selected}
       id={i}
-      onPress={() => tryOnScreenGarmentSelectionStore.toggle(item)}
+      onPress={() => props.store.toggle(item)}
     />
-})
+  })
 
   return <BaseList items={clothes} />
 })

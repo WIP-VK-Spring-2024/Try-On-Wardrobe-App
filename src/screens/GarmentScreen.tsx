@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { useContext, useEffect, useState } from 'react';
-import RNFS from 'react-native-fs';
-import { garmentScreenGarmentSelectionStore } from '../store';
+import React, { useEffect, useState } from 'react';
 import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { ACTIVE_COLOR, WINDOW_HEIGHT } from '../consts';
@@ -33,14 +31,15 @@ import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 
-export const GarmentHeader = (props: {navigation: any}) => {
+export const GarmentHeader = (props: {route: any, navigation: any}) => {
   return (
     <BackHeader
       navigation={props.navigation}
+      text="Карточка"
       rightMenu={
       <Pressable
         onPress={async ()=>{
-          const garment = garmentScreenGarmentSelectionStore.selectedItem;
+          const { garment } = props.route.params;
           const deleteSuccess = await deleteGarment(garment);
 
           if (deleteSuccess) {
@@ -54,15 +53,15 @@ export const GarmentHeader = (props: {navigation: any}) => {
   )
 };
 
-export const GarmentScreen = observer((props: {navigation: any}) => {
+export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
-  const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(garmentScreenGarmentSelectionStore.selectedItem as GarmentCard));
+  const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(props.route.params.garment as GarmentCard));
   const [tagInputValue, setTagInputValue] = useState('');
 
   useEffect(() => {
-    props.navigation.addListener('beforeRemove', (e: any) => {
+    return props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
 
@@ -382,7 +381,6 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
             bg={ACTIVE_COLOR}
             onPress={() => {
               const value = tagInputValue;
-              // props.setTagInputValue(value);
               setTagInputValue('');
               garment.addTag(value);
             }}
@@ -399,6 +397,7 @@ export const GarmentScreen = observer((props: {navigation: any}) => {
   return (
     <BaseScreen 
       navigation={props.navigation}
+      header={<GarmentHeader route={props.route} navigation={props.navigation}/>}
       footer={
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }

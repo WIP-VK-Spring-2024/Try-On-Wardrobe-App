@@ -29,11 +29,9 @@ const HeaderBase = (props: PropsWithChildren) => {
   )
 }
 
-interface HeaderProps {
-  filterColor: string
-}
-export const Header = (props: HeaderProps) => {
-  const filter_icon_color = appState.filterModalVisible ? ACTIVE_COLOR : HEADER_ICON_COLOR
+
+export const Header = observer(() => {
+  const filterIconColor = appState.filterModalVisible ? ACTIVE_COLOR : HEADER_ICON_COLOR
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
@@ -48,16 +46,22 @@ export const Header = (props: HeaderProps) => {
         <Pressable onPress={()=>{
             appState.setFilterModalVisible(true)
           }}>
-          <FilterIcon stroke={props.filterColor}/>
+          <FilterIcon stroke={filterIconColor}/>
         </Pressable>
         <SettingsIcon stroke={HEADER_ICON_COLOR}/>
         <SearchIcon stroke={HEADER_ICON_COLOR}/>
       </Box>
     </HeaderBase>
   );
-};
+});
 
-export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
+interface BackHeaderProps {
+  navigation: any
+  rightMenu?: ReactNode
+  text: string
+}
+
+export const BackHeader = (props: BackHeaderProps) => {
   return (
     <HeaderBase>
       <Pressable
@@ -79,7 +83,7 @@ export const BackHeader = (props: {navigation: any, rightMenu: ReactNode}) => {
         textAlign='center'
         fontSize={32}
       >
-        Толстовка
+        {props.text}
       </RobotoText>
       <View flex={1}>
         {props.rightMenu}
