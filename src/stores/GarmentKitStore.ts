@@ -98,6 +98,7 @@ export class GarmentKit {
             addItem: action,
             addItems: action,
             addGarments: action,
+            removeGarment: action,
         })
     }
 
@@ -127,6 +128,10 @@ export class GarmentKit {
         }
 
         this.addItems(garments.map(cardToItem));
+    }
+
+    removeGarment(garment: GarmentCard) {
+        this.items = this.items.filter(item => item.garmentUUID !== garment.uuid!);
     }
 }
 

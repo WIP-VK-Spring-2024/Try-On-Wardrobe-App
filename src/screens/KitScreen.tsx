@@ -37,7 +37,7 @@ interface HGarmentCardProps {
   navigation: any
 }
 
-const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => {
+const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): React.JSX => {
   return (
     <Pressable
       backgroundColor="white"
@@ -71,6 +71,7 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps) => 
       <Pressable
         justifyContent="center"
         alignItems="center"
+        onPress={()=>garmentKit.removeGarment(props.garment)}
       >
         <TrashIcon width={60} height={60} fill="#fe0000"/>
       </Pressable>
