@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button, Center} from '@gluestack-ui/themed';
+import {Box, Button, Center, Pressable} from '@gluestack-ui/themed';
 import {ACTIVE_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH} from '../consts';
 import { useRoute } from '@react-navigation/native';
 
@@ -33,24 +33,23 @@ const NavigationButton = observer(
     route
   } : NavigationButtonProps) => {
     return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        width="16%"
-        paddingBottom={5}
-        >
-        <Icon
-          stroke={FOOTER_ICON_COLOR}
-          width={size}
-          height={size}
-          fill={route.name === targetScreen ? ACTIVE_COLOR : FOOTER_COLOR}
+      <Pressable
           onPress={() => navigation?.navigate(targetScreen)}
-        />
-        <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
-          {text}
-        </RobotoText>
-      </Box>
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          width="16%"
+          paddingBottom={5}>
+          <Icon
+            stroke={FOOTER_ICON_COLOR}
+            width={size}
+            height={size}
+            fill={route.name === targetScreen ? ACTIVE_COLOR : FOOTER_COLOR}
+          />
+          <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
+            {text}
+          </RobotoText>
+      </Pressable>
     );
   },
 );
