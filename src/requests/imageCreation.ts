@@ -3,6 +3,7 @@ import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
+import { GarmentKit } from '../stores/GarmentKitStore';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {
     console.log('upload')
@@ -39,7 +40,6 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
 }
 
 const uploadUserPhoto = (image: ImageOrVideo) => {
-    console.log('uploading')
     const image_p = image.path.split('/');
     const image_name = image_p[image_p.length - 1];
 
@@ -66,6 +66,42 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         return true;
     })})
     .catch(err => console.error(err));
+}
+
+export const uploadOutfit = async (garmentKit: GarmentKit) => {
+    if (garmentKit.image === undefined) {
+        console.error('no outfit image');
+        return false;
+    }
+
+    const image_p = garmentKit.image.uri.split('/');
+    const image_name = image_p[image_p.length - 1];
+
+    let formData = new FormData();
+
+    formData.append('img', {
+        type: "image.png",
+        name: image_name,
+        uri: garmentKit.image.uri
+    });
+
+    const transforms =  Object.fromEntries(garmentKit.items
+        .map(item => ([item.garmentUUID, item.rect.getTransforms()])));
+
+    formData.append('transforms', transforms);
+
+    return fetch(apiEndpoint + '/outfits', {
+        method: 'POST',
+        body: formData
+    }).then(resp => {
+        console.log(resp);
+
+        return resp.json()
+            .then(res => {
+                res.uuid
+            })
+            .catch(reason => console.error(reason))
+    })
 }
 
 export const createGarmentFromGallery = async () => {

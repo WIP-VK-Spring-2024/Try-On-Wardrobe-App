@@ -41,7 +41,7 @@ export const BaseList = observer((props: {items: any}) => {
     );
 });
 
-export const ListImage = observer((props: { source: string | ImageSourcePropType, uuid: string }) => {
+export const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
     return (
       <Image {...props} 
               width={(WINDOW_WIDTH - 30) / 2} 

@@ -35,17 +35,22 @@ export class GarmentKitItemRect {
         this.halfHeight = this.height / 2;
     }
 
-    getParams() {
+    getTransforms() {
         return {
-          x: this.x,
-          y: this.y,
-          angle: this.angle,
-          width: this.width,
-          height: this.height,
-          halfWidth: this.halfWidth,
-          halfHeight: this.halfHeight,
-          scale: this.scale,
+            x: this.x,
+            y: this.y,
+            angle: this.angle,
+            width: this.width,
+            height: this.height,
+            scale: this.scale,     
         }
+    }
+
+    getParams() {
+        return Object.assign(this.getTransforms(), {
+            halfWidth: this.halfWidth,
+            halfHeight: this.halfHeight
+        })
     }
 }
 
@@ -148,6 +153,33 @@ export class GarmentKit {
     }
 }
 
+interface OutfitStoreProps {
+    outfits?: GarmentKit[];
+}
+
+export class OutfitStore {
+    outfits: GarmentKit[];
+
+    constructor(props: OutfitStoreProps) {
+        this.outfits = props.outfits || [];
+
+        makeObservable(this, {
+            outfits: observable,
+
+            setOutfits: action,
+            addOutfit: action,
+        })
+    }
+
+    setOutfits(outfits: GarmentKit[]) {
+        this.outfits = outfits;
+    }
+
+    addOutfit(outfit: GarmentKit) {
+        this.outfits.push(outfit);
+    }
+};
+
 const item1 = new GarmentKitItem({
     garmentUUID: '6366006a-b909-4381-a741-9e6fe0cbbf74',
     rect: new GarmentKitItemRect({
@@ -173,3 +205,5 @@ const item2 = new GarmentKitItem({
 })
 
 export const garmentKit = new GarmentKit({image: {type: 'local', uri: '/outfit/1.png'}, items: [item1, item2]});
+
+export const outfitStore = new OutfitStore({outfits: [garmentKit]});

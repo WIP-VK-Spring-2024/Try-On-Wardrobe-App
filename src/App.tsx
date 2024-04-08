@@ -20,6 +20,7 @@ import { initStores } from './requests/init';
 import { KitEditorHeader, KitEditorScreen } from './screens/KitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KitGarmentSelectionScreen, KitScreen } from './screens/KitScreen';
+import { OutfitSelectionScreen } from './screens/OutfitScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -73,6 +74,7 @@ const App = observer((): JSX.Element => {
         <Stack.Screen name="Result" component={ResultScreen} />
         <Stack.Screen name="Garment" component={GarmentScreen} />
 
+        <Stack.Screen name="OutfitSelection" component={OutfitSelectionScreen} />
         <Stack.Screen name="GarmentKit" component={KitScreen} />
         <Stack.Screen name="GarmentKit/Garment" component={KitGarmentSelectionScreen}/>
 

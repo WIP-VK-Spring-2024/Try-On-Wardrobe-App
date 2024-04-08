@@ -49,13 +49,13 @@ const ClothesListCard = observer(
 export const StaticGarmentList = observer((props: any) => {
   const clothes = garmentScreenGarmentSelectionStore.items.map((item, i) => (
     <Pressable
+      key={i}
       onPress={()=>{
         props.navigation.navigate('Garment', {garment: item});
       }}
     >
       <ListImage
         source={getImageSource(item.image)}
-        uuid={item.uuid!}
       />
     </Pressable>
   ))
