@@ -34,19 +34,7 @@ const TryOnResultCard = observer(
                 onPress={onPress}
                 w="49%"
                 h={WINDOW_HEIGHT / 3}>
-                <Image
-                  source={source}
-                  borderTopLeftRadius={20}
-                  borderTopRightRadius={20}
-                  w="100%"
-                  h="85%"
-                  alt=""
-                />
-                <RatingButtons
-                    buttonWidth={40}
-                    buttonHeight={40}
-                    uuid={uuid}
-                    rating={rating} />
+                <ListImage source={source} />
             </Pressable>
         );
     },

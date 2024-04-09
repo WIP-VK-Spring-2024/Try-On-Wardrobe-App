@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image, Box, Pressable} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
-import {BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH} from '../consts';
+import {BASE_COLOR, ADD_BTN_COLOR, FOOTER_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH} from '../consts';
 import { ImageSourcePropType} from 'react-native';
 import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import { RobotoText } from './common';
@@ -80,7 +80,11 @@ export const AddItemCard = observer(
         flexDirection="row"
         alignItems="center"
         justifyContent="space-around">
-        <AddBtnIcon width={45} height={45}></AddBtnIcon>
+        <AddBtnIcon
+          width={45}
+          height={45}
+          fill={ADD_BTN_COLOR}
+          stroke={FOOTER_COLOR} />
         <RobotoText fontSize={16}>{text}</RobotoText>
       </Pressable>
     );

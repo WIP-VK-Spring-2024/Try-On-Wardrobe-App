@@ -52,7 +52,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
   const iconProps = {
     width: seasonIconSize,
     height: seasonIconSize,
-    fill: SECONDARY_COLOR
+    fill: SECONDARY_COLOR,
   };
 
   const openCreatedGarment = () => {

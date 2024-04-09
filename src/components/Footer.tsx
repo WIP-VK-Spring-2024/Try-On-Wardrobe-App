@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Button, Center, Pressable} from '@gluestack-ui/themed';
-import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR} from '../consts';
+import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR, BASE_COLOR} from '../consts';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
@@ -85,6 +85,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
 
       <AddBtnIcon
         fill={ADD_BTN_COLOR}
+        stroke={FOOTER_COLOR}
         width={addBtnSize}
         height={addBtnSize}
         onPress={() => appState.toggleCreateMenuVisible()}
