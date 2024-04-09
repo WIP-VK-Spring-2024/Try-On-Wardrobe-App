@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button, Center, Pressable} from '@gluestack-ui/themed';
+import {Box, Button, Center, Pressable, View} from '@gluestack-ui/themed';
 import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR, BASE_COLOR} from '../consts';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
@@ -19,6 +19,7 @@ interface NavigationButtonProps {
   text: string;
   navigation?: any;
   targetScreen: Screen;
+  paddingTop?: number;
 }
 
 const NavigationButton = observer(
@@ -27,7 +28,8 @@ const NavigationButton = observer(
     size,
     text,
     navigation,
-    targetScreen
+    targetScreen,
+    paddingTop
   } : NavigationButtonProps) => {
     const color = appState.screen === targetScreen ? ACTIVE_COLOR : FOOTER_ICON_COLOR;
 
@@ -39,12 +41,14 @@ const NavigationButton = observer(
           alignItems="center"
           width="16%"
           paddingBottom={5}>
-          <Icon
-            stroke={color}
-            fill={color}
-            width={size}
-            height={size}
-          />
+          <View paddingTop={paddingTop || 0}>
+            <Icon
+              stroke={color}
+              fill={color}
+              width={size}
+              height={size}
+            />
+          </View>
           <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
             {text}
           </RobotoText>
@@ -104,7 +108,8 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         targetScreen='TryOn'
         text='Примерка'
         navigation={navigation}
-        size={normalSize}
+        size={normalSize - 5}
+        paddingTop={5}
       />
     </Box>
   );

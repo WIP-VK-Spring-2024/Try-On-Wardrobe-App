@@ -5,7 +5,7 @@ import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
 
 
-const loginFunc = async () => {
+export const loginFunc = async () => {
     const loginBody = {
         name: login,
         password: password
@@ -99,5 +99,3 @@ const loginFunc = async () => {
     
     centrifuge.connect();
 }
-  
-loginFunc();

@@ -18,7 +18,8 @@ const style = StyleSheet.create({
     height: 3,
     position: 'absolute',
     right: 10,
-    bottom: 10,
+    top: 10,
+    // bottom: 10,
   },
 });
 
@@ -34,7 +35,7 @@ const ClothesListCard = observer(
     selected,
     onPress,
   } : ClothesListCardProps) => {
-    const overlaySize = WINDOW_WIDTH / 4;
+    const overlaySize = WINDOW_WIDTH / 10;
 
     return (
       <Pressable
