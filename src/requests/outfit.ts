@@ -49,8 +49,14 @@ export const updateOutfit = async (outfit: Outfit) => {
                 console.log(res);
                 return true;
             })
-            .catch(reason => console.error(reason))
-    }).catch(reason => console.error(reason))
+            .catch(reason => {
+                console.error(reason);
+                return false;
+            })
+    }).catch(reason => {
+        console.error(reason);
+        return false;
+    })
 }
 
 export const uploadOutfit = async (outfit: Outfit) => {
@@ -59,9 +65,6 @@ export const uploadOutfit = async (outfit: Outfit) => {
         console.error('no outfit image');
         return false;
     }
-
-    const image_p = outfit.image.uri.split('/');
-    const image_name = image_p[image_p.length - 1];
 
     const formData = makeFormData(outfit);
 
@@ -76,8 +79,14 @@ export const uploadOutfit = async (outfit: Outfit) => {
                 outfit.setUUID(res.uuid);
                 return true;
             })
-            .catch(reason => console.error(reason))
-    }).catch(reason => console.error(reason))
+            .catch(reason => {
+                console.error(reason);
+                return false;
+            })
+    }).catch(reason => {
+        console.error(reason)
+        return false;
+    })
 };
 
 export const deleteOutfit = async (outfitUUID: string) => {

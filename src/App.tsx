@@ -21,6 +21,7 @@ import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorSc
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
 import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
+import { loginFunc } from './requests/centrifuge';
 
 export const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 RNFS.mkdir(pictures_path);
 
 initStores();
+loginFunc();
 
 const App = observer((): JSX.Element => {
   useEffect(() => {

@@ -30,6 +30,7 @@ import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
+import { autorun } from 'mobx';
 
 export const GarmentHeader = (props: {route: any, navigation: any}) => {
   return (
@@ -59,6 +60,16 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(props.route.params.garment as GarmentCard));
   const [tagInputValue, setTagInputValue] = useState('');
+
+  useEffect(() => {
+    garment.clearChanges();
+  }, [
+      props.route.params.garment.type,
+      props.route.params.garment.subtype,
+      props.route.params.garment.style,
+      props.route.params.garment.tags,
+      props.route.params.garment.seasons,
+    ])
 
   useEffect(() => {
     return props.navigation.addListener('beforeRemove', (e: any) => {
@@ -214,10 +225,10 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     const getFill = (season: Season) => {
       if (garment.seasons.includes(season)) {
-        return PRIMARY_COLOR;
+        return ACTIVE_COLOR;
       }
   
-      return '#000';
+      return PRIMARY_COLOR;
     }
   
     const seasonIconProps = (season: Season) => ({

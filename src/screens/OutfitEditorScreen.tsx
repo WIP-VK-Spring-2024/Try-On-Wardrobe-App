@@ -16,6 +16,8 @@ import RNFS from 'react-native-fs';
 import { Outfit } from "../stores/OutfitStore";
 import { StackActions } from "@react-navigation/native";
 import { updateOutfit, uploadOutfit } from "../requests/outfit";
+import { appState } from "../stores/AppState";
+import { ConnectionErrorAlert, SuccessAlert } from "../components/MessageAlert";
 
 
 interface OutfitEditorHeaderProps {
@@ -80,10 +82,19 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
           uri: `/outfit/${fileName}`
         });
 
+        const processSave = (status: boolean) => {
+          if (status) {
+            appState.setSuccessMessage('Изменения успешно сохранены');
+            setTimeout(()=>appState.closeSuccessMessage(), 2000);
+          } else {
+            appState.setError('network');
+          }
+        }
+
         if (outfit.uuid === undefined) {
-          uploadOutfit(outfit);
+          uploadOutfit(outfit).then(processSave);
         } else {
-          updateOutfit(outfit);
+          updateOutfit(outfit).then(processSave);
         }
 
       })
@@ -95,6 +106,8 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       height="100%"
     >
       <OutfitEditorHeader navigation={props.navigation} onSave={onSave}/>
+      { appState.error==='network' && <ConnectionErrorAlert/> }
+      { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
       <OutfitEditor positions={positions} outfit={outfit} canvasRef={canvasRef}/>
     </View>
   )

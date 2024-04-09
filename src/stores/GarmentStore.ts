@@ -1,4 +1,4 @@
-import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
+import {makeObservable, observable, action, computed, runInAction, observe, autorun} from 'mobx';
 import { ImageType } from '../models';
 import { deepEqualArr } from '../utils';
 
@@ -276,11 +276,12 @@ export class GarmentCardEdit extends GarmentCard {
     super(origin)
 
     this.origin = origin;
-
     this.clearChanges();
 
     makeObservable(this, {
       origin: observable,
+
+      setOrigin: action,
       clearChanges: action,
       saveChanges: action,
 
@@ -288,11 +289,16 @@ export class GarmentCardEdit extends GarmentCard {
     });
   }
 
+  setOrigin(origin: GarmentCard) {
+    this.origin = origin;
+  }
+
   get hasChanges() {
     return !(
       this.uuid === this.origin.uuid &&
       this.name === this.origin.name &&
       deepEqualArr(this.seasons, this.origin.seasons) &&
+      deepEqualArr(this.tags, this.origin.tags) &&
       this.type === this.origin.type &&
       this.subtype === this.origin.subtype &&
       this.style === this.origin.style &&
@@ -309,6 +315,8 @@ export class GarmentCardEdit extends GarmentCard {
     this.subtype = this.origin.subtype;
     this.style = this.origin.style;
     this.color = this.origin.color;
+
+    this.tags = this.origin.tags.slice();
   }
 
   saveChanges() {
@@ -320,6 +328,8 @@ export class GarmentCardEdit extends GarmentCard {
     this.origin.subtype = this.subtype;
     this.origin.style = this.style;
     this.origin.color = this.color;
+
+    this.origin.tags = this.tags.slice();
   }
 };
 

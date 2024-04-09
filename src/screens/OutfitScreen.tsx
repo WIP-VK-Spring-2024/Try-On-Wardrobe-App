@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react";
 import { observer } from "mobx-react-lite";
 import { BaseScreen } from './BaseScreen';
 import { GarmentCard } from "../stores/GarmentStore";
-import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
+import { Badge, BadgeIcon, BadgeText, ButtonText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { getImageSource } from "../utils";
 import { Outfit, OutfitItem, outfitStore } from "../stores/OutfitStore";
@@ -16,6 +16,10 @@ import { WINDOW_HEIGHT } from "../consts";
 import { outfitScreenGarmentSelectionStore } from "../store";
 import { StackActions } from "@react-navigation/native";
 import { deleteOutfit } from "../requests/outfit";
+import { MenuItemLabel } from "@gluestack-ui/themed";
+
+import DotsIcon from '../../assets/icons/dots-vertical.svg';
+import HangerIcon from '../../assets/icons/hanger.svg';
 
 const TryOnAbleBadge = () => {
   return (
@@ -35,6 +39,30 @@ const NonTryOnAbleBadge = () => {
   )
 }
 
+interface DeleteMenuProps {
+  onPress: () => void;
+}
+
+const DeleteMenu = (props: DeleteMenuProps) => {
+  return (
+    <Menu
+      placement="bottom right"
+      trigger={({ ...triggerProps }) => {
+        return (
+          <Pressable {...triggerProps}>
+              <DotsIcon width={40} height={40}/>
+          </Pressable>
+        )
+      }}
+    >
+      <MenuItem key="Delete" textValue="Delete" gap={10} onPress={props.onPress}>
+        <TrashIcon width={25} height={25}/>
+        <RobotoText>удалить</RobotoText>
+      </MenuItem>
+    </Menu>
+  )
+}
+
 interface HGarmentCardProps {
   garment: GarmentCard
   navigation: any
@@ -47,7 +75,7 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): Re
       backgroundColor="white"
       flexDirection="row"
       justifyContent="space-between"
-      borderRadius={20}
+      borderRadius={15}
       overflow="hidden"
       onPress={() => {
         props.navigation.navigate('Garment', {garment: props.garment})
@@ -63,9 +91,9 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): Re
       <View
         flexDirection="column"
         justifyContent="center"
-        gap={40}
+        gap={15}
       >
-        <RobotoText>{props.garment.name}</RobotoText>
+        <RobotoText fontWeight="bold">{props.garment.name}</RobotoText>
         {
           props.garment.tryOnAble
           ? <TryOnAbleBadge/>
@@ -75,9 +103,8 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): Re
       <Pressable
         justifyContent="center"
         alignItems="center"
-        onPress={()=>props.outfit.removeGarment(props.garment)}
       >
-        <TrashIcon width={60} height={60} fill="#fe0000"/>
+        <DeleteMenu onPress={()=>props.outfit.removeGarment(props.garment)}/>
       </Pressable>
     </Pressable>
   )
@@ -96,7 +123,7 @@ const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => 
       justifyContent="center"
       alignItems="center"
       gap={20}
-      borderRadius={20}
+      borderRadius={15}
       overflow="hidden"
       height={100}
       {...props}
@@ -148,6 +175,35 @@ export const OutfitGarmentSelectionScreen = observer(
     )
 });
 
+interface HeaderMenuProps {
+  onDelete: () => void
+  onTryOn: () => void
+}
+
+const HeaderMenu = (props: HeaderMenuProps) => {
+  return (
+    <Menu
+      placement="bottom right"
+      trigger={({ ...triggerProps }) => {
+        return (
+          <Pressable {...triggerProps}>
+              <DotsIcon width={25} height={25}/>
+          </Pressable>
+        )
+      }}
+    >
+      <MenuItem key="TryOn" textValue="TryOn" gap={10} onPress={props.onTryOn}>
+        <HangerIcon width={25} height={25} fill="#000000"/>
+        <RobotoText>примерить</RobotoText>
+      </MenuItem>
+      <MenuItem key="Delete" textValue="Delete" gap={10} onPress={props.onDelete}>
+        <TrashIcon width={25} height={25}/>
+        <RobotoText>удалить</RobotoText>
+      </MenuItem>
+    </Menu>
+  )
+}
+
 export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const outfit: Outfit = props.route.params.outfit;
   const garments: GarmentCard[] = outfit.items
@@ -159,8 +215,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       navigation={props.navigation}
       text="Комплект"
       rightMenu={
-        <Pressable
-          onPress={async () => {
+        <HeaderMenu
+          onDelete={async () => {
             if (outfit.uuid === undefined) {
               return false;
             }
@@ -171,9 +227,11 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
               props.navigation.navigate('OutfitSelection');
             }
           }}
-        >
-          <TrashIcon width={25} height={25} fill="#ff0000"/>
-        </Pressable>
+          onTryOn={()=>{
+            // props.navigation.navigate('Result');
+            console.error('Not implemented error');
+          }}
+        />
       }
     />
   )

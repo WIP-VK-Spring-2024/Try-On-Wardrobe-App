@@ -3,9 +3,10 @@ import { apiEndpoint, centrifugeEndpoint, login, password, staticEndpoint } from
 import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
+import { runInAction } from "mobx";
 
 
-const loginFunc = async () => {
+export const loginFunc = async () => {
     const loginBody = {
         name: login,
         password: password
@@ -48,7 +49,7 @@ const loginFunc = async () => {
     
     const processing_sub = centrifuge.newSubscription(`processing:user#${json.user_id}`);
     const try_on_sub = centrifuge.newSubscription(`try-on:user#${json.user_id}`);
-  
+
     processing_sub.on('subscribing', function(ctx) {
         console.log('subscribing to processing');
     });
@@ -74,12 +75,55 @@ const loginFunc = async () => {
     });
   
     processing_sub.on('publication', function(ctx) {
-        console.log(ctx.data);
+        console.log('processing', ctx.data);
 
-        garmentStore.garments.find(garment => garment.uuid === ctx.data.uuid)?.setImage({
-            type: 'remote',
-            uri: `/photos/${ctx.data.uuid}`
+        const garment = garmentStore.getGarmentByUUID(ctx.data.uuid);
+
+        if (garment === undefined) {
+            console.error(`garment with uuid ${ctx.data.uuid} does not exist`);
+            return false;
+        }
+
+        const type = garmentStore.getTypeByUUID(ctx.data.classification.type);
+        const subtype = garmentStore.getSubTypeByUUID(ctx.data.classification.subtype);
+        const style = garmentStore.getStyleByUUID(ctx.data.classification.style);
+        const tags = ctx.data.classification.tags;
+        const seasons = ctx.data.classification.seasons;
+        
+        
+        runInAction(() => {
+            garment.image = {
+                type: 'remote',
+                uri: ctx.data.image
+            }
+
+            if (type === undefined) {
+                console.log(`type with uuid ${ctx.data.classification.type} does not exist`)
+            } else {
+                // garment.setType(type);
+                garment.type = type;
+            }
+
+            if (subtype === undefined) {
+                console.log(`subtype with uuid ${ctx.data.classification.subtype} does not exist`)
+            } else {
+                // garment.setSubtype(subtype);
+                garment.subtype = subtype;
+            }
+
+            if (style === undefined) {
+                console.log(`style with uuid ${ctx.data.classification.style} does not exist`)
+            } else {
+                // garment.setStyle(style);
+                garment.style = style;
+            }
+            // garment.setTags(tags);
+            // garment.setSeasons(seasons);
+            garment.tags = tags;
+            garment.seasons = seasons;
         })
+
+        console.log('resulting garment:', garment)
     });
     
     try_on_sub.on('publication', function(ctx) {
@@ -99,5 +143,3 @@ const loginFunc = async () => {
     
     centrifuge.connect();
 }
-  
-loginFunc();

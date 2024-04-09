@@ -146,10 +146,10 @@ export class Outfit {
             return new OutfitItem({
                 garmentUUID: garment.uuid!,
                 rect: new OutfitItemRect({
-                    x: 300,
+                    x: 200,
                     y: 300,
-                    width: 100,
-                    height: 100,
+                    width: 200,
+                    height: 200,
                 })
             })
         }
@@ -169,8 +169,8 @@ interface OutfitStoreProps {
 export class OutfitStore {
     outfits: Outfit[];
 
-    constructor(props: OutfitStoreProps) {
-        this.outfits = props.outfits || [];
+    constructor(props?: OutfitStoreProps) {
+        this.outfits = props?.outfits || [];
 
         makeObservable(this, {
             outfits: observable,
@@ -198,30 +198,4 @@ export class OutfitStore {
     }
 };
 
-const item1 = new OutfitItem({
-    garmentUUID: '6366006a-b909-4381-a741-9e6fe0cbbf74',
-    rect: new OutfitItemRect({
-        x: 200,
-        y: 40,
-        angle: Math.PI / 4,
-        width: 100,
-        height: 100,
-        scale: 1
-    })
-})
-
-const item2 = new OutfitItem({
-    garmentUUID: '0208edd3-5dcc-4543-993c-f8da2764bb03',
-    rect: new OutfitItemRect({
-        x: 200,
-        y: 200,
-        angle: Math.PI / 16,
-        width: 100,
-        height: 100,
-        scale: 1
-    })
-})
-
-const outfit = new Outfit({image: {type: 'local', uri: '/outfit/1.png'}, items: [item1, item2]});
-
-export const outfitStore = new OutfitStore({outfits: [outfit]});
+export const outfitStore = new OutfitStore();
