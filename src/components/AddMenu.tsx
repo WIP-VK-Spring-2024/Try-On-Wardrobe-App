@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Animated from 'react-native-reanimated';
+import Animated, { ZoomIn, ZoomInDown, ZoomInEasyDown, ZoomOut, ZoomOutDown, ZoomOutEasyDown, useAnimatedStyle } from 'react-native-reanimated';
 import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
 
 import { observer } from 'mobx-react-lite';
@@ -52,7 +52,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
   const iconProps = {
     width: seasonIconSize,
     height: seasonIconSize,
-    fill: SECONDARY_COLOR
+    fill: SECONDARY_COLOR,
   };
 
   const openCreatedGarment = () => {
@@ -62,8 +62,8 @@ export const AddMenu = observer((props: {navigation: any}) => {
   return (
     <Animated.View
       style={floatingStyle.container}
-      entering={BounceInDown}
-      exiting={BounceOutDown}
+      entering={ZoomInEasyDown}
+      exiting={ZoomOutEasyDown}
     >
       <Box
         style={floatingStyle.menu}

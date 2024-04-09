@@ -17,11 +17,11 @@ import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { initStores } from './requests/init';
+import { loginFunc } from './requests/centrifuge';
 import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
 import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
-import { loginFunc } from './requests/centrifuge';
 
 export const Stack = createNativeStackNavigator();
 

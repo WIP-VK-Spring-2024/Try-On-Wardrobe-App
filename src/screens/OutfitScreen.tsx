@@ -12,7 +12,7 @@ import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import { MultipleSelectionGarmentList } from "../components/GarmentList";
 import { BackHeader } from "../components/Header";
 import { ButtonFooter } from "../components/Footer";
-import { WINDOW_HEIGHT } from "../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
 import { outfitScreenGarmentSelectionStore } from "../store";
 import { StackActions } from "@react-navigation/native";
 import { deleteOutfit } from "../requests/outfit";
@@ -21,10 +21,15 @@ import { MenuItemLabel } from "@gluestack-ui/themed";
 import DotsIcon from '../../assets/icons/dots-vertical.svg';
 import HangerIcon from '../../assets/icons/hanger.svg';
 
+// const tryOnAbleText = 'Примеряемая'
+// const notTryOnAbleText = 'Непримеряемая'
+const tryOnAbleText = 'Можно примерить'
+const notTryOnAbleText = 'Нельзя примерить'
+
 const TryOnAbleBadge = () => {
   return (
     <Badge size="md" variant="solid" borderRadius="$none" action="success">
-      <BadgeText>Примеряемая</BadgeText>
+      <BadgeText>{tryOnAbleText}</BadgeText>
       <BadgeIcon as={CheckCircleIcon} ml="$2" />
     </Badge>
   )
@@ -33,7 +38,7 @@ const TryOnAbleBadge = () => {
 const NonTryOnAbleBadge = () => {
   return (
     <Badge size="md" variant="solid" borderRadius="$none" action="warning">
-      <BadgeText>Не примеряемая</BadgeText>
+      <BadgeText>{notTryOnAbleText}</BadgeText>
       <BadgeIcon as={SlashIcon} ml="$2" />
     </Badge>
   )
@@ -69,13 +74,15 @@ interface HGarmentCardProps {
   outfit: Outfit
 }
 
+const trashIconSize = 25
+
 const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): React.ReactNode => {
   return (
     <Pressable
       backgroundColor="white"
       flexDirection="row"
-      justifyContent="space-between"
-      borderRadius={15}
+      justifyContent="space-around"
+      borderRadius={20}
       overflow="hidden"
       onPress={() => {
         props.navigation.navigate('Garment', {garment: props.garment})
@@ -91,7 +98,7 @@ const HGarmentCard = observer((props: PropsWithChildren & HGarmentCardProps): Re
       <View
         flexDirection="column"
         justifyContent="center"
-        gap={15}
+        gap={20}
       >
         <RobotoText fontWeight="bold">{props.garment.name}</RobotoText>
         {
@@ -128,7 +135,7 @@ const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => 
       height={100}
       {...props}
     >
-      <AddBtnIcon width={50} height={50}/>
+      <AddBtnIcon stroke={FOOTER_COLOR} fill={ACTIVE_COLOR} width={50} height={50}/>
       <RobotoText fontSize={24}>{props.text}</RobotoText>
     </Pressable>
   )
@@ -276,7 +283,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           ))
         }
         <HAddItemCard
-          text="добавить одежду"
+          text="Добавить одежду"
           onPress={()=>props.navigation.navigate("Outfit/Garment", {outfit: outfit})} 
         />
       </View>

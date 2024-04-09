@@ -121,6 +121,7 @@ export const loginFunc = async () => {
             // garment.setSeasons(seasons);
             garment.tags = tags;
             garment.seasons = seasons;
+            garment.tryOnAble = ctx.data.tryonable;
         })
 
         console.log('resulting garment:', garment)
