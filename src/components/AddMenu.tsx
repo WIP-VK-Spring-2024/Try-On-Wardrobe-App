@@ -62,8 +62,8 @@ export const AddMenu = observer((props: {navigation: any}) => {
   return (
     <Animated.View
       style={floatingStyle.container}
-      entering={ZoomInEasyDown}
-      exiting={ZoomOutEasyDown}
+      entering={ZoomInEasyDown.duration(180)}
+      exiting={ZoomOutEasyDown.duration(180)}
     >
       <Box
         style={floatingStyle.menu}
