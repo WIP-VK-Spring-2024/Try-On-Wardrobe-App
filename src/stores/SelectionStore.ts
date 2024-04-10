@@ -89,6 +89,10 @@ export class MultipleSelectionStore<T> {
         this.selectedItems = this.selectedItems.filter(item => (item as any).uuid !== (toRemove as any).uuid)
     }
 
+    isSelected(item: T) {
+      return this.selectedItems.includes(item);
+    }
+
     toggle(item: T) {
         if (this.select(item)) {
             return

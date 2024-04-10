@@ -13,7 +13,7 @@ import { RadioLabel } from "@gluestack-ui/themed";
 import { RadioIcon } from "@gluestack-ui/themed";
 import { View } from "@gluestack-ui/themed";
 import { garmentStore } from "../stores/GarmentStore";
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../consts";
+import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../consts";
 import { Checkbox as GlueStackCheckbox } from "@gluestack-ui/themed";
 import { CheckboxIndicator } from "@gluestack-ui/themed";
 import { CheckboxIcon } from "@gluestack-ui/themed";
@@ -31,11 +31,42 @@ export const FilterModal = observer(({
   }: FilterModalProps) => {
   const ref = useRef();
 
-  const Checkbox = (props: {label: string, value: string}) => {
+  const Checkbox = (props: {label: string, value: string, isChecked?: boolean}) => {
+    const getBG = () => {
+      if (props.isChecked === undefined)
+        return undefined;
+
+      if (props.isChecked)
+        return ACTIVE_COLOR
+
+      return "#ffffff";
+    }
+
+    const getBorderColor = () => {
+      if (props.isChecked === undefined)
+        return undefined;
+
+      if (props.isChecked)
+        return "f0f0f0"
+
+      return BASE_COLOR
+    }
+
     return (
-      <GlueStackCheckbox size="md" isInvalid={false} isDisabled={false} value={props.value} aria-label="tag">
-        <CheckboxIndicator mr="$2">
-          <CheckboxIcon as={CheckIcon} color={PRIMARY_COLOR}/>
+      <GlueStackCheckbox 
+        size="md" 
+        isInvalid={false} 
+        isDisabled={false} 
+        value={props.value} 
+        aria-label="tag"
+        isChecked={props.isChecked}
+      >
+        <CheckboxIndicator 
+          mr="$2" 
+          bg={getBG()} 
+          borderColor={getBorderColor()}
+        >
+          <CheckboxIcon as={CheckIcon}/>
         </CheckboxIndicator>
         <CheckboxLabel>{props.label}</CheckboxLabel>
       </GlueStackCheckbox>
@@ -61,6 +92,7 @@ export const FilterModal = observer(({
               key={i} 
               value={style} 
               label={garmentStore.getStyleByUUID(style)?.name || 'ошибка'}
+              isChecked={styleSelectionStore.isSelected(style)}
             />
           )
         }
@@ -82,7 +114,7 @@ export const FilterModal = observer(({
         onChange={tags => tagsSelectionStore.setSelectedItems(tags)}
       >
         {
-          tags.map((tag, i) => <Checkbox key={i} value={tag} label={tag}/>)
+          tags.map((tag, i) => <Checkbox key={i} value={tag} label={tag} isChecked={tagsSelectionStore.isSelected(tag)}/>)
         }
       </CheckboxGroup>
     )

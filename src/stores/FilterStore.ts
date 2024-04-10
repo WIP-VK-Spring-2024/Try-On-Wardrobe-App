@@ -28,6 +28,10 @@ export class FilterStore<T> {
         })
     }
 
+    hasFilter(key: string) {
+        return key in this.filterPredicates;
+    }
+
     setOrigin(origin: any[]) {
         this.origin = origin;
     }

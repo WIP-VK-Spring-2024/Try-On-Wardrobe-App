@@ -11,6 +11,9 @@ import SearchIcon from '../../assets/icons/search.svg';
 import { appState } from '../stores/AppState';
 import { observer } from 'mobx-react-lite';
 import { login } from '../../config'
+import { garmentScreenFilteredGarmentStore, garmentScreenStyleSelectionStore, garmentScreenTagsSelectionStore, tryOnScreenFilteredGarmentStore, tryOnScreenStyleSelectionStore, tryOnScreenTagsSelectionStore } from '../store';
+import { FilterStore } from '../stores/FilterStore';
+import { GarmentCard } from '../stores/GarmentStore';
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -50,7 +53,27 @@ export const Header = observer(({ rightMenu }: HeaderProps) => {
 });
 
 export const GarmentHeaderButtons = observer(() => {
-  const filterIconColor = appState.filterModalVisible
+  const getCurrentFilterStore = () => {
+    if (appState.screen === 'Home') {
+      return garmentScreenFilteredGarmentStore
+    }
+
+    if (appState.screen === 'TryOn') {
+      return tryOnScreenFilteredGarmentStore
+    }
+
+    return undefined;
+  }
+
+  const filtersAreActive = (store: FilterStore<GarmentCard> | undefined) => {
+    if (store === undefined) {
+      return false;
+    }
+
+    return store.hasFilter('style_filter') || store.hasFilter('tags_filter');
+  }
+
+  const filterIconColor = filtersAreActive(getCurrentFilterStore())
     ? PRIMARY_COLOR
     : HEADER_ICON_COLOR;
 
