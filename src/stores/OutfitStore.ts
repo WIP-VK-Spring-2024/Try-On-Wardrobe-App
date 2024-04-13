@@ -196,6 +196,10 @@ export class OutfitStore {
     removeOutfit(outfitUUID: string) {
         this.outfits = this.outfits.filter(outfit => outfit.uuid !== outfitUUID);
     }
+
+    getOutfitByUUID(outfitUUID: string) {
+        return this.outfits.find(outfit => outfit.uuid === outfitUUID);
+    }
 };
 
 export const outfitStore = new OutfitStore();

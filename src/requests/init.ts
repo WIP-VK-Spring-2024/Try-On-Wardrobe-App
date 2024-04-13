@@ -1,6 +1,7 @@
 import { apiEndpoint } from "../../config";
+import { cacheManager } from "../cacheManager/cacheManager";
 import { appState } from "../stores/AppState";
-import { garmentStore } from "../stores/GarmentStore";
+import { GarmentCard, garmentStore } from "../stores/GarmentStore";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
@@ -26,16 +27,37 @@ const stylesRequest = fetch(apiEndpoint + 'styles').then(data => {
 }).catch(err => processNetworkError(err))
 
 export const initStores = () => {
-    fetch(apiEndpoint + 'clothes').then(async data => {
-        data.json().then(async clothes => {
+    const remoteGarments = fetch(apiEndpoint + 'clothes').then(async data => {
+        return data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
     
-            const garmentCards = clothes.map(convertGarmentResponse);
-    
-            garmentStore.setGarments(garmentCards);
-        }).catch(err => processNetworkError(err))
-    }).catch(err => processNetworkError(err))
-    
+            return clothes.map(convertGarmentResponse) as GarmentCard[];
+        }).catch(err => {
+            processNetworkError(err)
+            return false;
+        })
+    }).catch(err => {
+        processNetworkError(err);
+        return false;
+    })
+
+    const localGarments = cacheManager.readGarmentCards()
+                    .then(cards => {
+                        garmentStore.setGarments(cards);
+                        return cards as GarmentCard[];
+                    })
+                    .catch(reason => {
+                        console.error(reason);
+                        return [];
+                    });
+
+    Promise.all([localGarments, remoteGarments])
+        .then(([local, remote]) => {
+            if (typeof remote !== 'boolean') {
+                cacheManager.updateGarments(local, remote)
+            }
+    })
+
     fetch(apiEndpoint + 'photos').then(async data => {
         data.json().then(async photos => {
             userPhotoStore.setPhotos(photos.map((photo: { uuid: string, image: string }) => ({

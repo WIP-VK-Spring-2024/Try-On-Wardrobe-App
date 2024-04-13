@@ -7,7 +7,8 @@ import { Rating, TryOnResultCard} from "./stores/TryOnStore";
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
     return { 
-      uri: 'file://' + RNFS.DocumentDirectoryPath + image.uri 
+      uri: 
+      // uri: 'file://' + RNFS.DocumentDirectoryPath + image.uri 
     }
   } else {
     return {
@@ -73,4 +74,47 @@ export const convertTryOnResponse = (result: TryOnResultResponse) => {
     user_image_id: result.user_image_id,
     clothes_id: result.clothes_id
   })
+}
+
+export const isEmpty = (obj: object) => {
+  return Object.keys(obj).length === 0;
+}
+
+export const isObject = (object: any) => {
+  return typeof object === 'object' && object !== null;
+}
+
+export function getUnique<G> (arr: G[]) {
+  return [...new Set(arr)];
+}
+
+export function getLast<T> (arr: string | T[]) {
+  return arr[arr.length - 1];
+}
+
+export const joinPath = (...strings: string[]) => {
+  const removeFirstSlash = (str: string) => {
+      if (str[0] === '/') {
+          return str.slice(1);
+      }
+
+      return str;
+  }
+
+  const removeLastSlash = (str: string) => {
+      if (getLast(str) === '/') {
+          return str.slice(0, str.length - 1)
+      }
+
+      return str;
+  }
+
+  const removeSlashes = (str: string) => {
+      return removeFirstSlash(removeLastSlash(str));
+  }
+
+  const first = removeLastSlash(strings[0]);
+  const last = removeFirstSlash(getLast(strings));
+
+  return [first, ...strings.slice(1, -1).map(removeSlashes), last].join('/');
 }
