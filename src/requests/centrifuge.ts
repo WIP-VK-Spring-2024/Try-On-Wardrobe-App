@@ -12,7 +12,7 @@ export const loginFunc = async () => {
         password: password
     }
   
-    const response = await fetch(apiEndpoint + '/login', {
+    const response = await fetch(apiEndpoint + 'login', {
         method: 'POST',
         body: JSON.stringify(loginBody),
         headers: {

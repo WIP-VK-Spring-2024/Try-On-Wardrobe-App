@@ -27,11 +27,12 @@ const stylesRequest = fetch(apiEndpoint + 'styles').then(data => {
 
 export const initStores = () => {
     fetch(apiEndpoint + 'clothes').then(async data => {
+        console.log('data', data)
+
         data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
     
             const garmentCards = clothes.map(convertGarmentResponse);
-    
             garmentStore.setGarments(garmentCards);
         }).catch(err => processNetworkError(err))
     }).catch(err => processNetworkError(err))
@@ -42,7 +43,7 @@ export const initStores = () => {
                 uuid: photo.uuid,
                 image: {
                     type: 'remote',
-                    uri: '/'+photo.image
+                    uri: photo.image
                 }
             })))
         }).catch(err => console.error(err))
