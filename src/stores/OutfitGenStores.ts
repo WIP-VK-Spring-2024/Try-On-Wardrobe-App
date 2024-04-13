@@ -1,6 +1,7 @@
 import { autorun } from "mobx";
 import { garmentStore, Updateable } from "./GarmentStore";
 import { MultipleSelectionStore } from "./SelectionStore";
+import { OutfitStore } from "./OutfitStore";
 
 export type OutfitPurpose = Updateable;
 
@@ -30,3 +31,5 @@ export const outfitGenFormTagsStore = new MultipleSelectionStore<string>(
 autorun(() => {
     outfitGenFormTagsStore.setItems(garmentStore.tags);
 })
+
+export const outfitGenResutlStore = new OutfitStore();

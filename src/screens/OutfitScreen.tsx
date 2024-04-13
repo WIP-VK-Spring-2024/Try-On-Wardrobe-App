@@ -241,6 +241,12 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     />
   )
 
+  console.log(outfit.image)
+  if (outfit.image !== undefined) {
+
+    console.log(getImageSource(outfit.image))
+  }
+
   return (
     <BaseScreen 
       navigation={props.navigation} 
