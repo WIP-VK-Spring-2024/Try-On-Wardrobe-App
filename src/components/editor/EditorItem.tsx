@@ -19,7 +19,9 @@ export const EditorItem = observer((props: {
       return;
     }
 
-    Skia.Data.fromURI(getImageSource(props.image).uri)
+    const source = getImageSource(props.image).uri
+    console.log(source)
+    Skia.Data.fromURI(source)
       .then(data => {
         console.log('fetched data', props.image!.uri)
         setImage(Skia.Image.MakeImageFromEncoded(data))

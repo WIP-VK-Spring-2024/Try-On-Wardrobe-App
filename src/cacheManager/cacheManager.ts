@@ -22,7 +22,7 @@ export class CacheManager {
     constructor(rootDirPath: string) {
         this.rootDirPath = rootDirPath;
 
-        this.dataDirPath = joinPath(rootDirPath, 'data');
+        this.dataDirPath = joinPath(rootDirPath, '/data');
 
         this.clothesDirPath = joinPath(rootDirPath, '/images/clothes');
         this.outfitsDirPath = joinPath(rootDirPath, '/images/outfits');
@@ -43,13 +43,13 @@ export class CacheManager {
 
     async readGarmentCards() {
         const path = this.joinDataDirPath('/garments.json');
+        console.log('reading garments from:', path)
         if (!RNFS.exists(path))
             return [];
 
-        // const data = await RNFS.readFile(path);
+        const data = await RNFS.readFile(path);
 
-        // return JSON.parse(data);
-        return [];
+        return JSON.parse(data);
     }
 
     async writeGarmentCards(cards?: GarmentCard[]) {
@@ -115,6 +115,10 @@ export class CacheManager {
 
         const compRes = arrayComp(filteredLocalGarments, filteredRemoteGarments, compByUUID);
 
+        console.log('garments:', garmentStore.garments)
+
+        console.log(compRes)
+
         garmentStore.setGarments(remoteGarments);
 
         const adds = compRes.toAddIndices.map(async id => {
@@ -122,9 +126,9 @@ export class CacheManager {
             const imageName = `${garment.uuid}.png`;
             // const imagePath = joinPath('/clothes', imageName);
             const imagePath = joinPath(this.clothesDirPath, imageName);
-            console.log(getImageSource(garment.image).uri)
+            // console.log(getImageSource(garment.image).uri)
             const status = await this.downloadImage(getImageSource(garment.image).uri, imagePath);
-            console.log('GARMENT DOWNLOAD STATUS', status);
+            // console.log('GARMENT DOWNLOAD STATUS', status);
             if (status === 200) {
                 garmentStore.getGarmentByUUID(garment.uuid!)?.setImage({
                     type: 'local',

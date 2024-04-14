@@ -11,7 +11,6 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
 
-import { autorun, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { boundsExtra, rotateHandleHalfSize, rotateHandleLength, rotateHandleSize, scaleHandleHalfSize, scaleHandleSize } from "./consts";
 import { EditorItem } from "./EditorItem";
