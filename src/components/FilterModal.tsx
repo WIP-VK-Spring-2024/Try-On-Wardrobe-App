@@ -1,25 +1,15 @@
-import { Button, CheckboxGroup, Divider, Icon, ModalBody, ModalContent, ModalFooter, ModalHeader, Radio, RadioGroup, RadioIndicator } from "@gluestack-ui/themed";
-import { Heading } from "@gluestack-ui/themed";
-import { ModalCloseButton } from "@gluestack-ui/themed";
+import { Button, CheckboxGroup, Divider, ModalBody, ModalContent, ModalFooter } from "@gluestack-ui/themed";
 import { Modal, ModalBackdrop } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { RobotoText } from "./common";
-import { CloseIcon } from "@gluestack-ui/themed";
 import { ButtonText } from "@gluestack-ui/themed";
 import { appState } from "../stores/AppState";
-import { CircleIcon } from "@gluestack-ui/themed";
-import { RadioLabel } from "@gluestack-ui/themed";
-import { RadioIcon } from "@gluestack-ui/themed";
-import { View } from "@gluestack-ui/themed";
 import { garmentStore } from "../stores/GarmentStore";
-import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR } from "../consts";
-import { Checkbox as GlueStackCheckbox } from "@gluestack-ui/themed";
-import { CheckboxIndicator } from "@gluestack-ui/themed";
-import { CheckboxIcon } from "@gluestack-ui/themed";
-import { CheckboxLabel } from "@gluestack-ui/themed";
-import { CheckIcon } from "@gluestack-ui/themed";
+import { ACTIVE_COLOR } from "../consts";
 import { MultipleSelectionStore } from "../stores/SelectionStore";
+import { Checkbox } from "./Checkbox";
+import { TagCheckboxBlock } from "./TagCheckboxBlock";
 
 interface FilterModalProps {
   styleSelectionStore: MultipleSelectionStore<string>,
@@ -30,48 +20,6 @@ export const FilterModal = observer(({
   tagsSelectionStore
   }: FilterModalProps) => {
   const ref = useRef();
-
-  const Checkbox = (props: {label: string, value: string, isChecked?: boolean}) => {
-    const getBG = () => {
-      if (props.isChecked === undefined)
-        return undefined;
-
-      if (props.isChecked)
-        return ACTIVE_COLOR
-
-      return "#ffffff";
-    }
-
-    const getBorderColor = () => {
-      if (props.isChecked === undefined)
-        return undefined;
-
-      if (props.isChecked)
-        return "f0f0f0"
-
-      return BASE_COLOR
-    }
-
-    return (
-      <GlueStackCheckbox 
-        size="md" 
-        isInvalid={false} 
-        isDisabled={false} 
-        value={props.value} 
-        aria-label="tag"
-        isChecked={props.isChecked}
-      >
-        <CheckboxIndicator 
-          mr="$2" 
-          bg={getBG()} 
-          borderColor={getBorderColor()}
-        >
-          <CheckboxIcon as={CheckIcon}/>
-        </CheckboxIndicator>
-        <CheckboxLabel>{props.label}</CheckboxLabel>
-      </GlueStackCheckbox>
-    )
-  }
 
   const StyleCheckboxBlock = observer(() => {
     const styles = styleSelectionStore.items;
@@ -100,26 +48,6 @@ export const FilterModal = observer(({
     )
   })
 
-  const TagCheckboxBlock = observer(() => {
-    const tags = tagsSelectionStore.items;
-    return (
-      <CheckboxGroup
-        display="flex"
-        flexDirection="row"
-        flexWrap="wrap"
-        gap={20}
-        rowGap={10}
-        aria-label="tags"
-        value={tagsSelectionStore.selectedItems}
-        onChange={tags => tagsSelectionStore.setSelectedItems(tags)}
-      >
-        {
-          tags.map((tag, i) => <Checkbox key={i} value={tag} label={tag} isChecked={tagsSelectionStore.isSelected(tag)}/>)
-        }
-      </CheckboxGroup>
-    )
-  })
-
   return (
     <Modal
       isOpen={appState.filterModalVisible}
@@ -137,7 +65,7 @@ export const FilterModal = observer(({
           <StyleCheckboxBlock/>
           <Divider h="$0.5" marginTop={10} marginBottom={10}/>
           <RobotoText fontSize={28} marginBottom={10}>Теги</RobotoText>
-          <TagCheckboxBlock/>
+          <TagCheckboxBlock tagStore={tagsSelectionStore}/>
         </ModalBody>
         <ModalFooter
           display="flex"

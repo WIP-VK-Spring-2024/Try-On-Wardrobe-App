@@ -165,6 +165,10 @@ export class GarmentStore {
   types: GarmentType[] = [];
 
   constructor() {
+    this.garments = [];
+    this.styles = [];
+    this.types = [];
+
     makeObservable(this, {
       garments: observable,
       styles: observable,
@@ -260,6 +264,11 @@ export class GarmentStore {
   }
 
   getGarmentByUUID(uuid: string) {
+    // TODO: WTF?
+    // if (this.garments === undefined) {
+    //   return undefined;
+    // }
+
     return this.garments.find(garment => garment.uuid === uuid);
   }
 

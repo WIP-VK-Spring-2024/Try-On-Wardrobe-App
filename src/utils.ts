@@ -44,7 +44,7 @@ export const convertGarmentResponse = (cloth: GarmentResponse) => {
     subtype: garmentSubtype,
     style: garmentStyle,
     image: {
-      uri: `/cut/${cloth.uuid}`,
+      uri: `cut/${cloth.uuid}`,
       type: 'remote'
     },
     tags: cloth.tags,

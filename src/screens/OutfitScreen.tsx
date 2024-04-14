@@ -21,8 +21,6 @@ import { MenuItemLabel } from "@gluestack-ui/themed";
 import DotsIcon from '../../assets/icons/dots-vertical.svg';
 import HangerIcon from '../../assets/icons/hanger.svg';
 
-// const tryOnAbleText = 'Примеряемая'
-// const notTryOnAbleText = 'Непримеряемая'
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
 
@@ -242,6 +240,12 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       }
     />
   )
+
+  console.log(outfit.image)
+  if (outfit.image !== undefined) {
+
+    console.log(getImageSource(outfit.image))
+  }
 
   return (
     <BaseScreen 

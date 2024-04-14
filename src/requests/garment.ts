@@ -3,7 +3,7 @@ import { GarmentCard, garmentStore } from "../stores/GarmentStore";
 
 
 export const deleteGarment = (garment: GarmentCard) => {
-    return fetch(apiEndpoint + `/clothes/${garment.uuid}`, {
+    return fetch(apiEndpoint + `clothes/${garment.uuid}`, {
         method: 'DELETE'
     }).then((response) => {
         if (garment.uuid) {

@@ -22,6 +22,8 @@ import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorSc
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
 import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
+import { OutfitGenFormScreen } from './screens/OutfitGenForm';
+import { OutfitGenResultScreen } from './screens/OutfitGenResult';
 
 export const Stack = createNativeStackNavigator();
 
@@ -87,6 +89,17 @@ const App = observer((): JSX.Element => {
             {header: OutfitEditorHeader}
           }
         />
+
+        <Stack.Screen
+          name="OutfitGenForm"
+          component={OutfitGenFormScreen}
+        />
+
+        <Stack.Screen
+          name="OutfitGenResult"
+          component={OutfitGenResultScreen}
+        />
+
       </Stack.Navigator>
   )
   })

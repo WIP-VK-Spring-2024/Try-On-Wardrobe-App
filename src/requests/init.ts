@@ -54,7 +54,7 @@ export const initStores = () => {
     Promise.all([localGarments, remoteGarments])
         .then(([local, remote]) => {
             if (typeof remote !== 'boolean') {
-                cacheManager.updateGarments(local, remote)
+                // cacheManager.updateGarments(local, remote)
             }
     })
 
@@ -64,7 +64,7 @@ export const initStores = () => {
                 uuid: photo.uuid,
                 image: {
                     type: 'remote',
-                    uri: '/'+photo.image
+                    uri: photo.image
                 }
             })))
         }).catch(err => console.error(err))
