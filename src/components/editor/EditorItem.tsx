@@ -5,29 +5,29 @@ import { Rectangle } from './models';
 import { Image, Rect, SkImage, Skia, vec } from '@shopify/react-native-skia';
 import { getImageSource } from '../../utils';
 import { ImageType } from '../../models';
+import { loadSkImage } from './utils';
 
 export const EditorItem = observer((props: {
   id: number, 
   positions: SharedValue<Rectangle[]>,
-  image?: ImageType
+  // image?: ImageType
+  skImage: SkImage | null | undefined
 }) => {
-  const [skImage, setImage] = useState<SkImage | null>(null);
+  console.log(props.skImage)
+  // const [skImage, setImage] = useState<SkImage | null>(null);
   
-  useEffect(() => {
-    console.log('fetch', props.image)
-    if (props.image === undefined) {
-      return;
-    }
+  // useEffect(() => {
+  //   console.log('fetch', props.image)
+  //   if (props.image === undefined) {
+  //     return;
+  //   }
 
-    const source = getImageSource(props.image).uri
-    console.log(source)
-    Skia.Data.fromURI(source)
-      .then(data => {
-        console.log('fetched data', props.image!.uri)
-        setImage(Skia.Image.MakeImageFromEncoded(data))
-      })
-      .catch(err => console.error(err))
-  }, [props.image])
+  //   loadSkImage(props.image).then((image: SkImage | null) => {
+  //     if (image !== null) {
+  //       setImage(image)
+  //     }
+  //   })
+  // }, [props.image])
 
   const x = useDerivedValue(() => props.positions.value[props.id].x);
   const y = useDerivedValue(() => props.positions.value[props.id].y);
@@ -50,7 +50,7 @@ export const EditorItem = observer((props: {
   })
 
   return (
-    skImage === null 
+    props.skImage === null  || props.skImage === undefined
       ? <Rect
         x={x}
         y={y}
@@ -60,7 +60,7 @@ export const EditorItem = observer((props: {
         origin={origin}
       />
       : <Image
-          image={skImage}
+          image={props.skImage}
           x={x}
           y={y}
           width={width}

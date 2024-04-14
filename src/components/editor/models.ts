@@ -1,3 +1,4 @@
+import { SkImage } from "@shopify/react-native-skia"
 import { ImageType } from "../../models"
 
 export interface RectangleProps {
@@ -13,8 +14,9 @@ export interface Rectangle extends RectangleProps {
     halfWidth: number,
     halfHeight: number,
     image?: ImageType,
+    skImage?: SkImage,
 }
 
 export interface RectangleWithPayload<T> extends Rectangle {
-    payload: T
+    payload: T,
 }

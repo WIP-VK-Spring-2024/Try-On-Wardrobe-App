@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { BaseScreen } from './BaseScreen';
 import { GarmentCard } from "../stores/GarmentStore";
@@ -20,6 +20,7 @@ import { MenuItemLabel } from "@gluestack-ui/themed";
 
 import DotsIcon from '../../assets/icons/dots-vertical.svg';
 import HangerIcon from '../../assets/icons/hanger.svg';
+import { loadSkImage } from "../components/editor/utils";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -215,6 +216,17 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     .map((item: OutfitItem) => item.garment)
     .filter(item => item !== undefined) as any as GarmentCard[]
   
+  useEffect(() => {
+    outfit.items.forEach(async item => {
+      if (item.image) {
+        const img = await loadSkImage(item.image);
+        if (img) {
+          item.setSkImage(img);
+        }
+      }
+    })
+  }, [outfit])
+
   const header = (
     <BackHeader
       navigation={props.navigation}
@@ -240,12 +252,6 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       }
     />
   )
-
-  console.log(outfit.image)
-  if (outfit.image !== undefined) {
-
-    console.log(getImageSource(outfit.image))
-  }
 
   return (
     <BaseScreen 

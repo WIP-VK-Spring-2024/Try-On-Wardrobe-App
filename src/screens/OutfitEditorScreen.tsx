@@ -9,7 +9,7 @@ import { ACTIVE_COLOR } from "../consts";
 import { useSharedValue } from "react-native-reanimated";
 import { RectangleWithPayload } from "../components/editor/models";
 import { autorun } from "mobx";
-import { itemFromRect, rectFromItem } from "../components/editor/utils";
+import { itemFromRect, loadSkImage, rectFromItem } from "../components/editor/utils";
 import { useCanvasRef } from "@shopify/react-native-skia";
 
 import RNFS from 'react-native-fs';
@@ -64,6 +64,24 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       positions.value = outfit.items.map(rectFromItem);
     })
   }, [])
+
+  // useEffect(() => {
+  //   autorun(async () => {
+  //     const rects = outfit.items.map(rectFromItem).map(async rect => {
+  //       if (rect.image !== undefined) {
+  //         const img = await loadSkImage(rect.image);
+  //         return {...rect, skImage: img || undefined};
+  //       }
+  //       return rect;
+  //     })
+
+  //     Promise.all(rects).then((rects => {
+  //       positions.value = rects;
+  //     }))
+
+  //     // positions.value = outfit.items.map(rectFromItem);
+  //   })
+  // }, [])
 
   const onSave = () => {
     outfit.setItems(positions.value.map(itemFromRect));

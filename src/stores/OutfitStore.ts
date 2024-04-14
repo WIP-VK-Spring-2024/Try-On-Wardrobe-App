@@ -2,6 +2,7 @@ import {makeObservable, observable, action, computed, runInAction, observe} from
 import { ImageType } from '../models';
 import { staticEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from './GarmentStore';
+import { SkImage } from '@shopify/react-native-skia';
 
 interface OutfitItemRectProps {
     x?: number
@@ -57,24 +58,32 @@ export class OutfitItemRect {
 interface OutfitItemProps {
     garmentUUID: string
     rect: OutfitItemRect
+    skImage?: SkImage
 }
 
 export class OutfitItem {
     garmentUUID: string
     rect: OutfitItemRect
+    skImage: SkImage | undefined
 
     constructor(props: OutfitItemProps) {
         this.garmentUUID = props.garmentUUID;
         this.rect = props.rect;
+        this.skImage = props.skImage;
 
         makeObservable(this, {
             rect: observable,
 
             setRect: action,
+            setSkImage: action,
 
             garment: computed,
             image: computed,
         })
+    }
+
+    setSkImage(skImage: SkImage) {
+        this.skImage = skImage;
     }
 
     setRect(rect: OutfitItemRect) {
