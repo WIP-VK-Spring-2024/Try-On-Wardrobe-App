@@ -54,7 +54,7 @@ export const initStores = () => {
     Promise.all([localGarments, remoteGarments])
         .then(([local, remote]) => {
             if (typeof remote !== 'boolean') {
-                // cacheManager.updateGarments(local, remote)
+                cacheManager.updateGarments(local, remote);
             }
     })
 

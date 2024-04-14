@@ -35,9 +35,8 @@ autorun(() => {
 
 export const outfitGenResutlStore = new OutfitStore();
 
-type GenOutfit =  {uuids: string[]};
 class UUIDStore {
-    outfits: GenOutfit[]
+    outfits: string[][]
 
     constructor() {
         this.outfits = [];
@@ -49,7 +48,7 @@ class UUIDStore {
         })
     }
 
-    setOutfits(outfits: GenOutfit[]) {
+    setOutfits(outfits: string[][]) {
         this.outfits = outfits;
     }
 }
