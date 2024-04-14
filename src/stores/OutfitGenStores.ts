@@ -1,7 +1,8 @@
-import { autorun } from "mobx";
+import { action, autorun, makeObservable, observable } from "mobx";
 import { garmentStore, Updateable } from "./GarmentStore";
 import { MultipleSelectionStore } from "./SelectionStore";
 import { OutfitStore } from "./OutfitStore";
+import { act } from "react-test-renderer";
 
 export type OutfitPurpose = Updateable;
 
@@ -33,3 +34,24 @@ autorun(() => {
 })
 
 export const outfitGenResutlStore = new OutfitStore();
+
+type GenOutfit =  {uuids: string[]};
+class UUIDStore {
+    outfits: GenOutfit[]
+
+    constructor() {
+        this.outfits = [];
+
+        makeObservable(this, {
+            outfits: observable,
+
+            setOutfits: action,
+        })
+    }
+
+    setOutfits(outfits: GenOutfit[]) {
+        this.outfits = outfits;
+    }
+}
+
+export const outfitGenUUIDStore = new UUIDStore();

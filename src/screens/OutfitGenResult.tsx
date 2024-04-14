@@ -17,6 +17,7 @@ import RNFS from 'react-native-fs';
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { uploadOutfit } from "../requests/outfit";
 import { StyleProp, ViewStyle } from "react-native";
+import { outfitGenUUIDStore } from "../stores/OutfitGenStores";
 
 const MARGIN = 10;
 const GAP = 10;
@@ -208,7 +209,12 @@ interface OutfitGenResultScreenProps {
 }
 
 export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps) => {
-  const uuids = garmentStore.garments.slice(0, 3).map(g => g.uuid) as string[];
+  // const uuids = garmentStore.garments.slice(0, 3).map(g => g.uuid) as string[];
+
+  const outfits = outfitGenUUIDStore.outfits;
+
+  console.log('outfits:', outfits)
+
   return (
     <BaseScreen
       navigation={props.navigation}
@@ -223,12 +229,12 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
         margin={10}
       >
         {
-          [...Array(4).keys()].map(i => {
+          outfits.map((outfit, i) => {
             return (
               <OutfitGenCard
                 navigation={props.navigation}
                 key={i}
-                garmentUUIDS={uuids}
+                garmentUUIDS={outfits[i]}
               />
             )
           })

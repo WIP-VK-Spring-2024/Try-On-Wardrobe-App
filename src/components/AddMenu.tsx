@@ -13,7 +13,10 @@ import { RobotoText } from './common';
 
 import CameraIcon from '../../assets/icons/camera.svg';
 import GalleryIcon from '../../assets/icons/gallery.svg';
+import OutfitIcon from '../../assets/icons/outfit.svg';
+
 import { garmentStore } from '../stores/GarmentStore';
+import { appState } from '../stores/AppState';
 
 export const AddMenu = observer((props: {navigation: any}) => {
   const floatingStyle = StyleSheet.create({
@@ -95,15 +98,13 @@ export const AddMenu = observer((props: {navigation: any}) => {
 
         <Pressable 
           style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createUserPhotoFromGallery();
-            if (!created) {
-              console.log('user photo not created')
-            }
+          onPress={() => {
+            props.navigation.navigate('OutfitGenForm');
+            appState.setCreateMenuVisible(false);
           }}
         >
-          <GalleryIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Ваше фото</RobotoText>
+          <OutfitIcon {...iconProps}/>
+          <RobotoText fontSize={24}>Образ</RobotoText>
         </Pressable>
       </Box>
     </Animated.View>

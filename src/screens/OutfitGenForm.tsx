@@ -11,6 +11,9 @@ import { Checkbox } from "../components/Checkbox";
 import { RobotoText } from "../components/common";
 import { Divider } from "@gluestack-ui/themed";
 import { TagCheckboxBlock } from "../components/TagCheckboxBlock";
+import { BackHeader } from "../components/Header";
+import { ButtonFooter } from "../components/Footer";
+import { apiEndpoint } from "../../config";
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
@@ -82,9 +85,33 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
 
   const [prompt, setPrompt] = useState('');
 
+  const footer = (
+    <ButtonFooter
+      text="Сгенерировать"
+      onPress={() => {
+        fetch(apiEndpoint + 'outfits/gen', {
+          method: 'POST',
+          body: JSON.stringify({
+            prompt: prompt,
+            purposes: outfitPurposeStore.selectedItems.map(p => p.name),
+            amount: 4
+          })
+        })
+        props.navigation.navigate('OutfitGenResult');
+      }}
+    />
+  )
+
   return (
     <BaseScreen
       navigation={props.navigation}
+      header={
+        <BackHeader 
+          navigation={props.navigation}
+          text='Создание комплекта'
+        />
+      }
+      footer={footer}
     >
       <View
         padding={20}

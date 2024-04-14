@@ -169,10 +169,6 @@ export class GarmentStore {
     this.styles = [];
     this.types = [];
 
-    autorun(() => {
-      console.log('GARMENT UPDATE', this.garments)
-    })
-
     makeObservable(this, {
       garments: observable,
       styles: observable,
@@ -272,7 +268,7 @@ export class GarmentStore {
     // if (this.garments === undefined) {
     //   return undefined;
     // }
-    
+
     return this.garments.find(garment => garment.uuid === uuid);
   }
 

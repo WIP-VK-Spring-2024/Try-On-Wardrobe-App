@@ -4,6 +4,7 @@ import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
 import { runInAction } from "mobx";
+import { outfitGenResutlStore, outfitGenUUIDStore } from "../stores/OutfitGenStores";
 
 
 export const loginFunc = async () => {
@@ -49,6 +50,33 @@ export const loginFunc = async () => {
     
     const processing_sub = centrifuge.newSubscription(`processing:user#${json.user_id}`);
     const try_on_sub = centrifuge.newSubscription(`try-on:user#${json.user_id}`);
+
+    const outfit_gen = centrifuge.newSubscription(`outfit-gen:user#${json.user_id}`);
+
+    outfit_gen.on('subscribing', function(ctx) {
+        console.log('subscribing to outfit gen');
+    });
+  
+    outfit_gen.on('subscribed', function(ctx) {
+        console.log('subscribed to outfit gen');
+    });
+  
+    outfit_gen.on('unsubscribed', function(ctx) {
+        console.log('unsubscribed from outfit gen');
+    });
+
+    outfit_gen.on('publication', function(ctx) {
+        console.log(ctx);
+
+        const outfits = ctx.data.outfits.map((outfit: {clothes: {clothes_id: string}[]}) => 
+            outfit.clothes.map(c => c.clothes_id))
+        
+        outfitGenUUIDStore.setOutfits(outfits);
+    })
+
+    outfit_gen.on('error', ctx => {
+        console.log('error', ctx);
+    })
 
     processing_sub.on('subscribing', function(ctx) {
         console.log('subscribing to processing');
@@ -141,6 +169,7 @@ export const loginFunc = async () => {
     
     processing_sub.subscribe();
     try_on_sub.subscribe();
+    outfit_gen.subscribe();
     
     centrifuge.connect();
 }
