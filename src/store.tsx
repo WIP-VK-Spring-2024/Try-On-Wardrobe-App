@@ -69,11 +69,11 @@ const makeGarmentFilter = (): [
     garmentSelectionStore.setItems(filteredGarmentStore.items);
   })
 
-  const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.types);
+  const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.usedTypes);
   const garmentSubtypeSelectionStore = new SingleSelectionStore<Updateable>([]);
 
   autorun(() => {
-    garmentTypeSelectionStore.setItems(garmentStore.types);
+    garmentTypeSelectionStore.setItems(garmentStore.usedTypes);
   })
 
   autorun(() => {

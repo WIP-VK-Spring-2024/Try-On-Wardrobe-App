@@ -1,6 +1,6 @@
 import {makeObservable, observable, action, computed, runInAction, observe, autorun} from 'mobx';
 import { ImageType } from '../models';
-import { deepEqualArr } from '../utils';
+import { deepEqualArr, getUnique, notEmpty } from '../utils';
 
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
 
@@ -23,7 +23,7 @@ export interface GarmentCardProps {
   seasons?: Season[],
   note?: string,
   image: ImageType,
-  type?: Updateable,
+  type?: GarmentType,
   subtype?: Updateable,
   style?: GarmentStyle,
   color?: string,
@@ -37,7 +37,7 @@ export class GarmentCard {
   seasons: Season[]
   // note?: string
   image: ImageType
-  type?: Updateable
+  type?: GarmentType
   subtype?: Updateable
   style?: GarmentStyle
   color?: string
@@ -114,7 +114,7 @@ export class GarmentCard {
     this.image = image;
   }
 
-  setType(type: Updateable) {
+  setType(type: GarmentType) {
     this.type = type;
   }
 
@@ -182,7 +182,10 @@ export class GarmentStore {
       removeGarment: action,
 
       tags: computed,
-      subtypes: computed
+      subtypes: computed,
+
+      usedTypes: computed,
+      usedSubtypes: computed,
     })
   }
 
@@ -191,6 +194,7 @@ export class GarmentStore {
   }
 
   setTypes(types: GarmentType[]) {
+    console.log('set types', types)
     this.types = types;
   }
 
@@ -218,15 +222,15 @@ export class GarmentStore {
     return this.types.find(t => t.uuid === type.uuid)?.subtypes || [];
   }
 
-  getTypeByUUID(uuid: string) {
+  getTypeByUUID = (uuid: string) => {
     return this.types.find(t => t.uuid === uuid);
   }
 
-  getSubTypeByUUID(uuid: string) {
+  getSubTypeByUUID = (uuid: string) => {
     return this.subtypes.find(t => t.uuid === uuid);
   }
 
-  getStyleByUUID(uuid: string) {
+  getStyleByUUID = (uuid: string) => {
     return this.styles.find(st => st.uuid === uuid);
   }
 
@@ -264,17 +268,29 @@ export class GarmentStore {
   }
 
   getGarmentByUUID(uuid: string) {
-    // TODO: WTF?
-    // if (this.garments === undefined) {
-    //   return undefined;
-    // }
-
     return this.garments.find(garment => garment.uuid === uuid);
   }
 
   get subtypes() {
     return this.types.map(type => type.subtypes)
                      .reduce((total, subs) => total.concat(subs));
+  }
+
+  get usedTypes(): GarmentType[] {
+    console.log(this.usedSubtypes)
+    return getUnique(this.garments.map(garment => garment.type?.uuid))
+            .filter(notEmpty)
+            .map(garmentStore.getTypeByUUID)
+            .filter(notEmpty)
+            .map(type => ({
+              name: type.name,
+              uuid: type.uuid,
+              subtypes: type.subtypes.filter(sub => this.usedSubtypes.has(sub))
+            }));
+  }
+
+  get usedSubtypes() {
+    return new Set(this.garments.map(garment => garment.subtype));
   }
 }
 

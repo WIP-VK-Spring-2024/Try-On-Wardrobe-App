@@ -117,3 +117,7 @@ export const joinPath = (...strings: string[]) => {
 
   return [first, ...strings.slice(1, -1).map(removeSlashes), last].join('/');
 }
+
+export function notEmpty<T>(value: T | undefined): value is T {
+  return value !== undefined;
+}
