@@ -18,6 +18,7 @@ import { StackActions } from "@react-navigation/native";
 import { updateOutfit, uploadOutfit } from "../requests/outfit";
 import { appState } from "../stores/AppState";
 import { ConnectionErrorAlert, SuccessAlert } from "../components/MessageAlert";
+import { cacheManager } from "../cacheManager/cacheManager";
 
 
 interface OutfitEditorHeaderProps {
@@ -65,39 +66,23 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
     })
   }, [])
 
-  // useEffect(() => {
-  //   autorun(async () => {
-  //     const rects = outfit.items.map(rectFromItem).map(async rect => {
-  //       if (rect.image !== undefined) {
-  //         const img = await loadSkImage(rect.image);
-  //         return {...rect, skImage: img || undefined};
-  //       }
-  //       return rect;
-  //     })
-
-  //     Promise.all(rects).then((rects => {
-  //       positions.value = rects;
-  //     }))
-
-  //     // positions.value = outfit.items.map(rectFromItem);
-  //   })
-  // }, [])
-
   const onSave = () => {
     outfit.setItems(positions.value.map(itemFromRect));
 
     canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const bytes = image.encodeToBase64();
-        RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
+        // RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
 
         const fileName = `${Date.now()}.png`
 
-        RNFS.writeFile(RNFS.DocumentDirectoryPath + `/outfit/${fileName}`, bytes, 'base64');
+        const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
+
+        RNFS.writeFile(path, bytes, 'base64');
 
         outfit.setImage({
           type: 'local',
-          uri: `/outfit/${fileName}`
+          uri: path
         });
 
         const processSave = (status: boolean) => {

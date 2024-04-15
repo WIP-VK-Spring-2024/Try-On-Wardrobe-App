@@ -17,7 +17,17 @@ const isFalse = (el: boolean) => !el;
 
 type comparatorType<T> = (first: T, second: T) => boolean;
 
-type diffObjFabric = (key: string, a: any, b: any) => any;
+type diffObjProps = {
+    key: string,
+    current: any,
+    target: any
+}
+
+type diffObjType = {
+    [key: string]: diffObjProps
+}
+
+type diffObjFabric = (key: string, a: any, b: any) => diffObjProps;
 
 const defaultDiffObjFabric: diffObjFabric = (key: string, a: any, b: any) => ({
     key,
@@ -65,12 +75,10 @@ export function arrayComp<T>(arr1: T[], arr2: T[], comparator: comparatorType<T>
 : {
     toAddIndices: number[],
     toDeleteIndices: number[],
-    diffs: {
-        id: number,
-        key: string,
-        current: any,
-        value: any
-    }[]
+    diffs: ({
+        id1: number,
+        id2: number,
+    } & diffObjType)[]
 } {
     const getFalseIndexes = getIndexesF(isFalse);
 
@@ -92,7 +100,8 @@ export function arrayComp<T>(arr1: T[], arr2: T[], comparator: comparatorType<T>
 
             if (!isEmpty(diff)) {
                 diffs.push({
-                    currentId: i1,
+                    id1: i1,
+                    id2: i2,
                     ...diff
                 })
             }

@@ -41,14 +41,21 @@ export class CacheManager {
         return joinPath(this.dataDirPath, ...pathes);
     }
 
-    async readGarmentCards() {
-        const path = this.joinDataDirPath('/garments.json');
-        if (!RNFS.exists(path))
-            return [];
+    async readJSON(path: string) {
+        const exists = await RNFS.exists(path)
+        if (!exists)
+            return undefined;
 
         const data = await RNFS.readFile(path);
 
         return JSON.parse(data);
+    }
+
+    async readGarmentCards(): Promise<GarmentCard[]> {
+        const path = this.joinDataDirPath('/garments.json');
+        const data = await this.readJSON(path);
+
+        return data || [];
     }
 
     async writeGarmentCards(cards?: GarmentCard[]) {
@@ -58,16 +65,17 @@ export class CacheManager {
         RNFS.writeFile(path, data);
     }
 
-    async readOutfits() {
-        const data = await RNFS.readFile(this.joinDataDirPath('/outfits.json'));
+    async readOutfits(): Promise<Outfit[]> {
+        const path = this.joinDataDirPath('/outfits.json');
+        const data = await this.readJSON(path);
 
-        return JSON.parse(data);
+        return data || [];
     }
 
     async writeOutfits() {
         const data = JSON.stringify(outfitStore.outfits);
 
-        const path = this.joinDataDirPath('/garments.json');
+        const path = this.joinDataDirPath('/outfits.json');
         RNFS.writeFile(path, data);
     }
 
@@ -88,23 +96,17 @@ export class CacheManager {
         RNFS.unlink(path);
     }
 
-    async updateImage(garment: GarmentCard, newGarment: GarmentCard) {
-        const oldImageName = `${garment.uuid}.png`;
-        this.deleteImage(joinPath(this.clothesDirPath, oldImageName));
-
-        const newImageName = `${newGarment.uuid}.png`;
-        const newImagePath = joinPath(this.clothesDirPath, newImageName);
+    async updateImage(props: {oldPath: string, uri: string, newPath: string}) {
         const status = await this.downloadImage(
-            getImageSource(newGarment.image).uri, 
-            newImagePath
+            props.uri, 
+            props.newPath
         );
-
+            
         if (status === 200) {
-            garment.setImage({
-                type: 'local',
-                uri: newImagePath
-            })
-        };
+            this.deleteImage(props.oldPath);
+        }
+
+        return status;
     }
 
     async changeImageToLocal(garments: GarmentCard[]) {
@@ -168,14 +170,28 @@ export class CacheManager {
     }
 
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {
+
+        const getImageName = (outfit: Outfit) => {
+            return `${outfit.uuid}_${outfit.updated_at}.png`
+        }
+        
+        console.log('local', localOutfits)
+        console.log('remote', remoteOutfits)
+
+        
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
+        
+        console.log(compRes)
+        console.log(compRes.diffs)
 
         outfitStore.setOutfits(remoteOutfits);
 
+        // console.log('outfits', remoteOutfits);
+
         const adds = compRes.toAddIndices.map(async id => {
             const outfit = remoteOutfits[id];
-            const imageName = `${outfit.uuid}.png`;
-            const imagePath = joinPath('/outfits', imageName);
+            const imageName = getImageName(outfit);
+            const imagePath = joinPath(this.outfitsDirPath, imageName);
 
             const status = await this.downloadImage(getImageSource(outfit.image!).uri, imagePath);
 
@@ -192,14 +208,42 @@ export class CacheManager {
 
         const dels = compRes.toDeleteIndices.map(async id => {
             const outfit = localOutfits[id];
-            const imageName = `${outfit.uuid}.png`;
+            const imageName = getImageName(outfit);
 
-            await this.deleteImage(joinPath('/outfits', imageName));
+            await this.deleteImage(joinPath(this.outfitsDirPath, imageName));
             return true;
         })
 
-        Promise.all([...adds, ...dels]).then(() => {
-            outfitStore.setOutfits(remoteOutfits);
+        const imageUpdates = compRes.diffs.map(async diff => {
+            if (Object.hasOwn(diff, 'updated_at')) {
+                const local = localOutfits[diff.id1];
+                const remote = remoteOutfits[diff.id2];
+
+                const oldPath = joinPath(this.outfitsDirPath, getImageName(local));
+                const newPath = joinPath(this.outfitsDirPath, getImageName(remote));
+
+                console.log(oldPath, newPath);
+
+                if (remote.image !== undefined) {
+                    const status = await this.updateImage({
+                        oldPath: oldPath,
+                        newPath: newPath,
+                        uri: getImageSource(remote.image).uri
+                    })
+
+                    if (status === 200) {
+                        outfitStore.getOutfitByUUID(local.uuid!)?.setImage({
+                            type: 'local',
+                            uri: newPath
+                        })
+                    }
+                }
+
+            }
+        })
+
+        Promise.all([...adds, ...dels, ...imageUpdates]).then(() => {
+            this.writeOutfits();
         })
     }
 }

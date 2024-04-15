@@ -8,7 +8,9 @@ const makeFormData = (outfit: Outfit) => {
 
     let formData = new FormData();
     
-    const uri = 'file://' + RNFS.DocumentDirectoryPath + outfit.image!.uri
+    const uri = 'file://' + outfit.image!.uri
+
+    console.log(uri)
 
     formData.append('img', {
         type: "image/png",

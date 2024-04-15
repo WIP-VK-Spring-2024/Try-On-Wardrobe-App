@@ -78,6 +78,7 @@ export const initStores = () => {
 
     interface OutfitResponse {
         created_at: string
+        updated_at: string
         image: string
         public: boolean
         uuid: string
@@ -94,10 +95,12 @@ export const initStores = () => {
         }
     }
 
-    fetch(apiEndpoint + 'outfits').then(async data => {
+    const remoteOutfits = fetch(apiEndpoint + 'outfits').then(async data => {
         const json = await data.json();
 
-        const outfits = json.map((outfit: OutfitResponse) => {
+        // console.log('outfits', json)
+
+        return json.map((outfit: OutfitResponse) => {
             const items = Object.entries(outfit.transforms)
                 .map(([uuid, transform]) => {
                     return new OutfitItem({
@@ -112,10 +115,28 @@ export const initStores = () => {
                     type: 'remote',
                     uri: outfit.image
                 },
-                items: items
+                items: items,
+                updated_at: outfit.updated_at
             })
         })
 
-        outfitStore.setOutfits(outfits);
+        // outfitStore.setOutfits(outfits);
     })
+
+    const localOutfits = cacheManager.readOutfits()
+        .then(outfits => {
+            // garmentStore.setGarments(cards);
+            outfitStore.setOutfits(outfits);
+            return outfits as Outfit[];
+        })
+        .catch(reason => {
+            console.error(reason);
+            return [];
+        });
+
+    Promise.all([localOutfits, remoteOutfits])
+        .then(([local, remote]) => {
+            cacheManager.updateOutfits(local, remote);
+        })
+    
 }

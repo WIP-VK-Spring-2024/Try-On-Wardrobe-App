@@ -93,26 +93,31 @@ export class OutfitItem {
 
 interface OutfitProps {
     uuid?: string
+    updated_at?: string
     items?: OutfitItem[]
     image?: ImageType
 }
 
 export class Outfit {
     uuid: string | undefined
+    updated_at: string | undefined
     image: ImageType | undefined
     items: OutfitItem[]
 
     constructor(props?: OutfitProps) {
         this.uuid = props?.uuid
+        this.updated_at = props?.updated_at;
         this.image = props?.image;
         this.items = props?.items || [];
 
         makeObservable(this, {
             uuid: observable,
+            updated_at: observable,
             image: observable,
             items: observable,
 
             setUUID: action,
+            setUpdatedAt: action,
             setImage: action,
             setItems: action,
             addItem: action,
@@ -124,6 +129,10 @@ export class Outfit {
 
     setUUID(uuid: string) {
         this.uuid = uuid;
+    }
+
+    setUpdatedAt(updated_at: string) {
+        this.updated_at = updated_at;
     }
 
     setImage(image: ImageType) {
