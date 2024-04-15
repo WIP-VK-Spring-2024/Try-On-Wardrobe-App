@@ -107,31 +107,24 @@ export const loginFunc = async () => {
                 if (type === undefined) {
                     console.log(`type with uuid ${ctx.data.classification.type} does not exist`)
                 } else {
-                    // garment.setType(type);
                     garment.type = type;
                 }
     
                 if (subtype === undefined) {
                     console.log(`subtype with uuid ${ctx.data.classification.subtype} does not exist`)
                 } else {
-                    // garment.setSubtype(subtype);
                     garment.subtype = subtype;
                 }
     
                 if (style === undefined) {
                     console.log(`style with uuid ${ctx.data.classification.style} does not exist`)
                 } else {
-                    // garment.setStyle(style);
                     garment.style = style;
                 }
-                // garment.setTags(tags);
-                // garment.setSeasons(seasons);
                 garment.tags = tags;
                 garment.seasons = seasons;
                 garment.tryOnAble = ctx.data.tryonable;
             })
-    
-            console.log('resulting garment:', garment)
         }
     });
 
@@ -139,9 +132,6 @@ export const loginFunc = async () => {
         connection: centrifuge,
         name: `try-on:user#${json.user_id}`,
         onPublication: ctx => {
-            console.log(ctx.data);
-            console.log(staticEndpoint + ctx.data.image)
-
             resultStore.setResultUrl(staticEndpoint + ctx.data.image);
             resultStore.setResultUUID(ctx.data.uuid);
         }
@@ -151,8 +141,6 @@ export const loginFunc = async () => {
         connection: centrifuge,
         name: `outfit-gen:user#${json.user_id}`,
         onPublication: ctx => {
-            console.log(ctx);
-
             const outfits = ctx.data.outfits.map((outfit: {clothes: {clothes_id: string}[]}) => 
                 outfit.clothes.map(c => c.clothes_id))
             
