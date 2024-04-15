@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT } from '../consts';
+import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
 import { BaseScreen } from './BaseScreen';
@@ -31,6 +31,8 @@ import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 import { autorun } from 'mobx';
+
+import ImageModal from 'react-native-image-modal';
 
 export const GarmentHeader = (props: {route: any, navigation: any}) => {
   return (
@@ -171,12 +173,14 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
   const GarmentImage = observer(() => {
     return (
-      <Image 
+      <ImageModal
         source={getImageSource(garment.image)}
-        w="100%"
-        height={WINDOW_HEIGHT / 2}
+        style={{
+          width: WINDOW_WIDTH - 30,
+          height: WINDOW_HEIGHT / 2,
+        }}
+        overlayBackgroundColor={BASE_COLOR + 'a0'}
         resizeMode="contain"
-        alt=""
       />
     )
   });

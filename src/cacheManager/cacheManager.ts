@@ -170,14 +170,14 @@ export class CacheManager {
     }
 
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {        
-        console.log('local', localOutfits)
-        console.log('remote', remoteOutfits)
+        // console.log('local', localOutfits)
+        // console.log('remote', remoteOutfits)
 
         
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
         
-        console.log(compRes)
-        console.log(compRes.diffs)
+        // console.log(compRes)
+        // console.log(compRes.diffs)
 
         outfitStore.setOutfits(remoteOutfits);
 

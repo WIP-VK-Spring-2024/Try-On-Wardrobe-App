@@ -6,6 +6,8 @@ import { ImageSourcePropType} from 'react-native';
 import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import { RobotoText } from './common';
 
+import ImageModal from 'react-native-image-modal';
+
 
 const divideIntoPairs = (items: any[]) => {
     let item_pairs = [];
@@ -62,6 +64,20 @@ export const ListImage = observer((props: { source: string | ImageSourcePropType
         alt=""
         borderRadius={20}
         backgroundColor="#ffffff"
+      />
+    );
+  },
+);
+
+export const ModalListImage = observer((props: { source: string | ImageSourcePropType }) => {
+    return (
+      <ImageModal
+        {...props}
+        style={{
+          width: (WINDOW_WIDTH - 30) / 2,
+          height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
+          borderRadius: 20
+        }}
       />
     );
   },

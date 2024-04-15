@@ -208,7 +208,7 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
 
   const outfits = outfitGenUUIDStore.outfits;
 
-  console.log('outfits:', outfits)
+  // console.log('outfits:', outfits)
 
   return (
     <BaseScreen

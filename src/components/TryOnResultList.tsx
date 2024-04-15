@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseList, AddItemCard, ListImage } from './BaseList';
+import { BaseList, AddItemCard, ListImage, ModalListImage } from './BaseList';
 import { Pressable, Image } from '@gluestack-ui/themed';
 import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
 import { observer } from 'mobx-react-lite';
@@ -34,7 +34,7 @@ const TryOnResultCard = observer(
                 onPress={onPress}
                 w="49%"
                 h={WINDOW_HEIGHT / 3}>
-                <ListImage source={source} />
+                <ModalListImage source={source} />
             </Pressable>
         );
     },

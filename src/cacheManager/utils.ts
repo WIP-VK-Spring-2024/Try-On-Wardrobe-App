@@ -101,7 +101,6 @@ export function arrayComp<T>(arr1: T[], arr2: T[], comparator: comparatorType<T>
             toAddIndices.push(i2);
         } else {
             let diff = getDiff(el, arr1[i1], defaultDiffObjFabric);
-            // diff.id = i1;
 
             if (!isEmpty(diff)) {
                 diffs.push({

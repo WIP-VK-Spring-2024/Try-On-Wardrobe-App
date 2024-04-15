@@ -194,7 +194,6 @@ export class GarmentStore {
   }
 
   setTypes(types: GarmentType[]) {
-    console.log('set types', types)
     this.types = types;
   }
 
@@ -277,7 +276,6 @@ export class GarmentStore {
   }
 
   get usedTypes(): GarmentType[] {
-    console.log(this.usedSubtypes)
     return getUnique(this.garments.map(garment => garment.type?.uuid))
             .filter(notEmpty)
             .map(garmentStore.getTypeByUUID)
