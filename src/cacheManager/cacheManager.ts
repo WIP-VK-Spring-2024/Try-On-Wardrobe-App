@@ -116,7 +116,7 @@ export class CacheManager {
                 const image_path = joinPath(this.clothesDirPath, image_name);
                 const alreadyExists = await RNFS.exists(image_path);
                 if (!alreadyExists) {
-                    const status = await this.downloadImage(garment.image.uri, image_path);
+                    const status = await this.downloadImage(getImageSource(garment.image).uri, image_path);
                     if (status !== 200) {
                         console.error(status);
                         return false;

@@ -7,7 +7,6 @@ import { Rating, TryOnResultCard} from "./stores/TryOnStore";
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
     return { 
-      // uri: 'file://' + joinPath(RNFS.DocumentDirectoryPath, image.uri)
       uri: 'file://' + image.uri 
     }
   } else {

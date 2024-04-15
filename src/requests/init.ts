@@ -55,6 +55,7 @@ export const initStores = () => {
         .then(([local, remote]) => {
             if (typeof remote !== 'boolean') {
                 cacheManager.updateGarments(local, remote);
+                // garmentStore.setGarments(remote);
             }
     })
 
