@@ -4,6 +4,7 @@ import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
 import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
 import { Rating } from './stores/TryOnStore';
+import { SkImage } from '@shopify/react-native-skia';
 
 class ResultStore {
   resultUrl: string | undefined;

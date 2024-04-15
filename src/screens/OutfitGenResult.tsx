@@ -34,14 +34,12 @@ const OutfitGenItem = observer((props: OutfitGenItemProps) => {
   const [skImage, setImage] = useState<SkImage | null>(null);
   
   useEffect(() => {
-    console.log('fetch', props.image)
     if (props.image === undefined) {
       return;
     }
 
     Skia.Data.fromURI(getImageSource(props.image).uri)
       .then(data => {
-        console.log('fetched data', props.image!.uri)
         setImage(Skia.Image.MakeImageFromEncoded(data))
       })
       .catch(err => console.error(err))
@@ -154,10 +152,7 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
           uri: `/outfit/${fileName}`
         });
 
-        console.log(outfit.image)
-
         uploadOutfit(outfit).then(() => {
-          console.log('adding image', outfit.image)
           setUUID(outfit.uuid);
           outfitStore.addOutfit(outfit);
         })

@@ -14,7 +14,6 @@ export interface Rectangle extends RectangleProps {
     halfWidth: number,
     halfHeight: number,
     image?: ImageType,
-    skImage?: SkImage,
 }
 
 export interface RectangleWithPayload<T> extends Rectangle {

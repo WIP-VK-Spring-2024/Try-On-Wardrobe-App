@@ -214,18 +214,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const outfit: Outfit = props.route.params.outfit;
   const garments: GarmentCard[] = outfit.items
     .map((item: OutfitItem) => item.garment)
-    .filter(item => item !== undefined) as any as GarmentCard[]
-  
-  useEffect(() => {
-    outfit.items.forEach(async item => {
-      if (item.image) {
-        const img = await loadSkImage(item.image);
-        if (img) {
-          item.setSkImage(img);
-        }
-      }
-    })
-  }, [outfit])
+    .filter(item => item !== undefined) as any as GarmentCard[];
 
   const header = (
     <BackHeader

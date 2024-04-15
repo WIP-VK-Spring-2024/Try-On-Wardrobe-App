@@ -43,7 +43,6 @@ export class CacheManager {
 
     async readGarmentCards() {
         const path = this.joinDataDirPath('/garments.json');
-        console.log('reading garments from:', path)
         if (!RNFS.exists(path))
             return [];
 
@@ -73,7 +72,6 @@ export class CacheManager {
     }
 
     async downloadImage(remoteURI: string, path: string) {
-        // console.log('downloading to', joinPath(RNFS.DocumentDirectoryPath, path))
         try {
             const downloadRes = await RNFS.downloadFile({
                 fromUrl: remoteURI,
@@ -109,26 +107,44 @@ export class CacheManager {
         };
     }
 
+    async changeImageToLocal(garments: GarmentCard[]) {
+        return garments.map(async garment => {
+            if (garment.image.type === 'remote') {
+                const image_name = `${garment.uuid}.png`;
+                const image_path = joinPath(this.clothesDirPath, image_name);
+                const alreadyExists = await RNFS.exists(image_path);
+                if (!alreadyExists) {
+                    const status = await this.downloadImage(garment.image.uri, image_path);
+                    if (status !== 200) {
+                        console.error(status);
+                        return false;
+                    }
+                }
+
+                garment.setImage({
+                    type: 'local',
+                    uri: image_path
+                })
+            }
+            return true;
+        })
+    }
+
     async updateGarments(localGarments: GarmentCard[], remoteGarments: GarmentCard[]) {
         const filteredLocalGarments = localGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
         const filteredRemoteGarments = remoteGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
 
         const compRes = arrayComp(filteredLocalGarments, filteredRemoteGarments, compByUUID);
 
-        console.log('garments:', garmentStore.garments)
-
-        console.log(compRes)
-
         garmentStore.setGarments(remoteGarments);
+
+        this.changeImageToLocal(garmentStore.garments);
 
         const adds = compRes.toAddIndices.map(async id => {
             const garment = filteredRemoteGarments[id] as GarmentCard;
             const imageName = `${garment.uuid}.png`;
-            // const imagePath = joinPath('/clothes', imageName);
             const imagePath = joinPath(this.clothesDirPath, imageName);
-            // console.log(getImageSource(garment.image).uri)
             const status = await this.downloadImage(getImageSource(garment.image).uri, imagePath);
-            // console.log('GARMENT DOWNLOAD STATUS', status);
             if (status === 200) {
                 garmentStore.getGarmentByUUID(garment.uuid!)?.setImage({
                     type: 'local',
@@ -153,9 +169,6 @@ export class CacheManager {
 
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
-
-        console.log(compRes);
-        console.log(compRes.diffs);
 
         outfitStore.setOutfits(remoteOutfits);
 

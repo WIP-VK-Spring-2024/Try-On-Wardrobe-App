@@ -407,8 +407,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
                 key={i} 
                 id={i} 
                 positions={positions}
-                // image={positions.value[i].image}
-                skImage={positions.value[i].skImage}
+                image={positions.value[i].image}
+                // skImage={positions.value[i].skImage}
               />
             ))
           }

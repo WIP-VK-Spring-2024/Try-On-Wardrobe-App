@@ -10,24 +10,21 @@ import { loadSkImage } from './utils';
 export const EditorItem = observer((props: {
   id: number, 
   positions: SharedValue<Rectangle[]>,
-  // image?: ImageType
-  skImage: SkImage | null | undefined
+  image?: ImageType
 }) => {
-  console.log(props.skImage)
-  // const [skImage, setImage] = useState<SkImage | null>(null);
+  const [skImage, setImage] = useState<SkImage | null>(null);
   
-  // useEffect(() => {
-  //   console.log('fetch', props.image)
-  //   if (props.image === undefined) {
-  //     return;
-  //   }
+  useEffect(() => {
+    if (props.image === undefined) {
+      return;
+    }
 
-  //   loadSkImage(props.image).then((image: SkImage | null) => {
-  //     if (image !== null) {
-  //       setImage(image)
-  //     }
-  //   })
-  // }, [props.image])
+    loadSkImage(props.image).then((image: SkImage | null) => {
+      if (image !== null) {
+        setImage(image)
+      }
+    })
+  }, [props.image])
 
   const x = useDerivedValue(() => props.positions.value[props.id].x);
   const y = useDerivedValue(() => props.positions.value[props.id].y);
@@ -50,7 +47,7 @@ export const EditorItem = observer((props: {
   })
 
   return (
-    props.skImage === null  || props.skImage === undefined
+    skImage === null  || skImage === undefined
       ? <Rect
         x={x}
         y={y}
@@ -60,7 +57,7 @@ export const EditorItem = observer((props: {
         origin={origin}
       />
       : <Image
-          image={props.skImage}
+          image={skImage}
           x={x}
           y={y}
           width={width}
