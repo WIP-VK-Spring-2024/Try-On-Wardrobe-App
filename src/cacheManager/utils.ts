@@ -1,4 +1,9 @@
+import { Outfit } from "../stores/OutfitStore";
 import { isEmpty, isObject } from "../utils";
+
+export const getOutfitImageName = (outfit: Outfit) => {
+    return `${outfit.uuid}_${outfit.updated_at}.png`
+}
 
 function getIndexesF<T> (f: (el: T)=>boolean) {
     return (arr: T[]) => {

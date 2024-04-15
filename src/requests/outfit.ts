@@ -1,4 +1,5 @@
 import { apiEndpoint } from "../../config";
+import { cacheManager } from "../cacheManager/cacheManager";
 import { Outfit, outfitStore } from "../stores/OutfitStore";
 import RNFS from 'react-native-fs';
 
@@ -78,6 +79,7 @@ export const uploadOutfit = async (outfit: Outfit) => {
 
         return resp.json()
             .then(res => {
+                console.log(res);
                 outfit.setUUID(res.uuid);
                 return true;
             })
@@ -89,7 +91,7 @@ export const uploadOutfit = async (outfit: Outfit) => {
         console.error(reason)
         return false;
     })
-};
+}
 
 export const deleteOutfit = async (outfitUUID: string) => {
     return fetch(apiEndpoint + `outfits/${outfitUUID}`, {

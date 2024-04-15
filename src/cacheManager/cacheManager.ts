@@ -1,7 +1,7 @@
 import RNFS from 'react-native-fs';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { staticEndpoint } from '../../config';
-import { arrayComp } from './utils';
+import { arrayComp, getOutfitImageName } from './utils';
 import { getImageSource, joinPath } from '../utils';
 import { Outfit, outfitStore } from '../stores/OutfitStore';
 
@@ -169,12 +169,7 @@ export class CacheManager {
         })
     }
 
-    async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {
-
-        const getImageName = (outfit: Outfit) => {
-            return `${outfit.uuid}_${outfit.updated_at}.png`
-        }
-        
+    async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {        
         console.log('local', localOutfits)
         console.log('remote', remoteOutfits)
 
@@ -190,7 +185,7 @@ export class CacheManager {
 
         const adds = compRes.toAddIndices.map(async id => {
             const outfit = remoteOutfits[id];
-            const imageName = getImageName(outfit);
+            const imageName = getOutfitImageName(outfit);
             const imagePath = joinPath(this.outfitsDirPath, imageName);
 
             const status = await this.downloadImage(getImageSource(outfit.image!).uri, imagePath);
@@ -208,7 +203,7 @@ export class CacheManager {
 
         const dels = compRes.toDeleteIndices.map(async id => {
             const outfit = localOutfits[id];
-            const imageName = getImageName(outfit);
+            const imageName = getOutfitImageName(outfit);
 
             await this.deleteImage(joinPath(this.outfitsDirPath, imageName));
             return true;
@@ -219,8 +214,8 @@ export class CacheManager {
                 const local = localOutfits[diff.id1];
                 const remote = remoteOutfits[diff.id2];
 
-                const oldPath = joinPath(this.outfitsDirPath, getImageName(local));
-                const newPath = joinPath(this.outfitsDirPath, getImageName(remote));
+                const oldPath = joinPath(this.outfitsDirPath, getOutfitImageName(local));
+                const newPath = joinPath(this.outfitsDirPath, getOutfitImageName(remote));
 
                 console.log(oldPath, newPath);
 

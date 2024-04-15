@@ -19,6 +19,7 @@ import { updateOutfit, uploadOutfit } from "../requests/outfit";
 import { appState } from "../stores/AppState";
 import { ConnectionErrorAlert, SuccessAlert } from "../components/MessageAlert";
 import { cacheManager } from "../cacheManager/cacheManager";
+import { getOutfitImageName } from "../cacheManager/utils";
 
 
 interface OutfitEditorHeaderProps {
@@ -73,8 +74,16 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       .then(image => {
         const bytes = image.encodeToBase64();
         // RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
+        
+        const makeName = () => {
+          if (outfit.uuid  === undefined) {
+            return`${Date.now()}.png`;
+          }
 
-        const fileName = `${Date.now()}.png`
+          return getOutfitImageName(outfit);
+        }
+
+        const fileName = makeName();
 
         const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
 
