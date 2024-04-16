@@ -4,7 +4,13 @@ import { MultipleSelectionStore } from "./SelectionStore";
 import { OutfitStore } from "./OutfitStore";
 import { act } from "react-test-renderer";
 
-export type OutfitPurpose = Updateable;
+export type OutfitPurpose = {
+    uuid: string,
+    created_at?: string,
+    updated_at?: string,
+    eng_name?: string,
+    name: string
+};
 
 export const outfitPurposeStore = new MultipleSelectionStore<OutfitPurpose>([
     {

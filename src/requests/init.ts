@@ -2,6 +2,7 @@ import { apiEndpoint } from "../../config";
 import { cacheManager } from "../cacheManager/cacheManager";
 import { appState } from "../stores/AppState";
 import { GarmentCard, garmentStore } from "../stores/GarmentStore";
+import { outfitPurposeStore } from "../stores/OutfitGenStores";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
@@ -142,4 +143,15 @@ export const initStores = () => {
             cacheManager.updateOutfits(local, remote);
         })
     
+    fetch(apiEndpoint + '/outfits/purposes').then(res => {
+        res.json().then((json: {
+            uuid: string,
+            created_at: string,
+            updated_at: string,
+            eng_name: string,
+            name: string
+        }[]) => {
+            outfitPurposeStore.setItems(json);
+        }).catch(reason => console.error(reason))
+    })
 }

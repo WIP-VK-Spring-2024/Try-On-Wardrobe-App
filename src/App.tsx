@@ -85,9 +85,6 @@ const App = observer((): JSX.Element => {
         <Stack.Screen
           name="Editor"
           component={OutfitEditorScreen}
-          options={
-            {header: OutfitEditorHeader}
-          }
         />
 
         <Stack.Screen
