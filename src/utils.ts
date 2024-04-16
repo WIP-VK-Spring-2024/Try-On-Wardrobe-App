@@ -23,6 +23,7 @@ export const deepEqualArr = (arr1: any[], arr2: any[]) => {
 interface GarmentResponse {
   uuid: string,
   name: string,
+  image: string,
   type_id: string,
   subtype_id: string,
   style_id: string,
@@ -43,7 +44,7 @@ export const convertGarmentResponse = (cloth: GarmentResponse) => {
     subtype: garmentSubtype,
     style: garmentStyle,
     image: {
-      uri: `cut/${cloth.uuid}`,
+      uri: cloth.image,
       type: 'remote'
     },
     tags: cloth.tags,
