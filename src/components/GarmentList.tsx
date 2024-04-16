@@ -46,7 +46,8 @@ const ClothesListCard = observer(
         <ListImage source={source} />
         {selected && (
           <SelectedIcon
-            stroke={PRIMARY_COLOR}
+            // stroke={PRIMARY_COLOR}
+            fill={PRIMARY_COLOR}
             style={style.overlay}
             width={overlaySize}
             height={overlaySize}

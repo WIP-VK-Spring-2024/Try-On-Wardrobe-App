@@ -162,6 +162,7 @@ export const OutfitGarmentSelectionScreen = observer(
       ? <ButtonFooter
         onPress={()=>{
           outfit.addGarments(outfitScreenGarmentSelectionStore.selectedItems);
+          outfitScreenGarmentSelectionStore.clearSelectedItems();
           props.navigation.dispatch(StackActions.pop(1));
           props.navigation.navigate("Editor", {outfit: outfit});
         }}

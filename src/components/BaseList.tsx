@@ -90,12 +90,14 @@ export const AddItemCard = observer(
         borderRadius={20}
         backgroundColor="#ffffff"
         onPress={onPress}
-        w="49%"
-        h={WINDOW_HEIGHT / 3}
+        width={(WINDOW_WIDTH - 30) / 2}
+        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
         display="flex"
         flexDirection="row"
         alignItems="center"
-        justifyContent="space-around">
+        justifyContent="center"
+        gap={10}
+      >
         <AddBtnIcon
           width={45}
           height={45}

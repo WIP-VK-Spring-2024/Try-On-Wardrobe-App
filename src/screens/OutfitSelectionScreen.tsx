@@ -28,7 +28,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
 
   const addOutfitCard = (
     <AddItemCard
-      text="Новый комплект"
+      text="Новый образ"
       onPress={() => {
 
         outfitStore.addOutfit();

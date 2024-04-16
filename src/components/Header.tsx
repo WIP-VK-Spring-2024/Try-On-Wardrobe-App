@@ -86,7 +86,7 @@ export const GarmentHeaderButtons = observer(() => {
         <FilterIcon stroke={filterIconColor} />
       </Pressable>
       {/* <SettingsIcon stroke={HEADER_ICON_COLOR}/> */}
-      <SearchIcon stroke={HEADER_ICON_COLOR} />
+      {/* <SearchIcon stroke={HEADER_ICON_COLOR} /> */}
     </Box>
   );
 });
