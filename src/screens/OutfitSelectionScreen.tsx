@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Pressable } from 'react-native';
 import { AddItemCard, BaseList, ListImage } from '../components/BaseList';
 import { getImageSource } from '../utils';
-import { outfitStore } from '../stores/OutfitStore';
+import { Outfit, outfitStore } from '../stores/OutfitStore';
 
 interface OutfitListProps {
   navigation: any
@@ -30,9 +30,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
     <AddItemCard
       text="Новый образ"
       onPress={() => {
-
-        outfitStore.addOutfit();
-        const newOutfit = outfitStore.outfits[outfitStore.outfits.length - 1];
+        const newOutfit = new Outfit();
         props.navigation.navigate('Outfit/Garment', {outfit: newOutfit});
       }}
     />

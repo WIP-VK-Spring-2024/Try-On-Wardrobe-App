@@ -13,7 +13,7 @@ import { itemFromRect, loadSkImage, rectFromItem } from "../components/editor/ut
 import { useCanvasRef } from "@shopify/react-native-skia";
 
 import RNFS from 'react-native-fs';
-import { Outfit } from "../stores/OutfitStore";
+import { Outfit, outfitStore } from "../stores/OutfitStore";
 import { StackActions } from "@react-navigation/native";
 import { updateOutfit, uploadOutfit } from "../requests/outfit";
 import { appState } from "../stores/AppState";
@@ -87,27 +87,27 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
 
     canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
-        const bytes = image.encodeToBase64();
-        // RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
-        
         const makeName = () => {
           if (outfit.uuid  === undefined) {
             return`${Date.now()}.png`;
           }
-
+          
           return getOutfitImageName(outfit);
         }
-
+        
         const fileName = makeName();
-
+        
         const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
-
+        
+        const bytes = image.encodeToBase64();
         RNFS.writeFile(path, bytes, 'base64');
 
         outfit.setImage({
           type: 'local',
           uri: path
         });
+
+        outfitStore.addOutfit(outfit);
 
         const processSave = (status: boolean) => {
           if (status) {

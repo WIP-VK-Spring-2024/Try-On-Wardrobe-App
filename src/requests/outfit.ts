@@ -82,7 +82,7 @@ export const uploadOutfit = async (outfit: Outfit) => {
 
         return resp.json()
             .then(res => {
-                console.log(res);
+                console.log('outfti upload:', res);
                 outfit.setUUID(res.uuid);
                 outfit.setUpdatedAt(res.updated_at);
 
