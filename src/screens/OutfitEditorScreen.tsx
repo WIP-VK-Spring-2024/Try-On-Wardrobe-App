@@ -25,12 +25,27 @@ import { getOutfitImageName } from "../cacheManager/utils";
 interface OutfitEditorHeaderProps {
   navigation: any
   onSave?: ()=>void
+  outfit: Outfit
 }
 
 export const OutfitEditorHeader = (props: OutfitEditorHeaderProps) => {
   return (
     <BackHeader
       navigation={props.navigation}
+      onBackPress={() => {
+        props.navigation.reset({
+          index: 1,
+          routes: [
+            { name: "OutfitSelection" },
+            { 
+              name: "Outfit",
+              params: {
+                outfit: props.outfit
+              }
+            }
+          ]
+        })
+      }}
       text="Комплект"
       rightMenu={
       <Pressable
@@ -117,7 +132,11 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
     <View
       height="100%"
     >
-      <OutfitEditorHeader navigation={props.navigation} onSave={onSave}/>
+      <OutfitEditorHeader 
+        navigation={props.navigation}
+        outfit={outfit}
+        onSave={onSave}
+      />
       { appState.error==='network' && <ConnectionErrorAlert/> }
       { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
       <OutfitEditor positions={positions} outfit={outfit} canvasRef={canvasRef}/>

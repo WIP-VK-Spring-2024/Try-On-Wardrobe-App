@@ -33,7 +33,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
 
         outfitStore.addOutfit();
         const newOutfit = outfitStore.outfits[outfitStore.outfits.length - 1];
-        props.navigation.navigate('Outfit', {outfit: newOutfit});
+        props.navigation.navigate('Outfit/Garment', {outfit: newOutfit});
       }}
     />
   )
