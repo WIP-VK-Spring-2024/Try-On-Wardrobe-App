@@ -53,6 +53,21 @@ export const updateOutfit = async (outfit: Outfit) => {
         return resp.json()
             .then(res => {
                 console.log(res);
+
+                outfit.setUpdatedAt(res.updated_at);
+
+                
+                const newName = getOutfitImageName(outfit);
+                const newPath = RNFS.DocumentDirectoryPath + `/images/outfits/${newName}`;
+
+                RNFS.moveFile(outfit.image!.uri, newPath)
+                .catch(reason => console.error(reason))
+
+                outfit.setImage({
+                    type: 'local',
+                    uri: newPath
+                })
+
                 return true;
             })
             .catch(reason => {
@@ -82,7 +97,7 @@ export const uploadOutfit = async (outfit: Outfit) => {
 
         return resp.json()
             .then(res => {
-                console.log('outfti upload:', res);
+                console.log('outfit upload:', res);
                 outfit.setUUID(res.uuid);
                 outfit.setUpdatedAt(res.updated_at);
 

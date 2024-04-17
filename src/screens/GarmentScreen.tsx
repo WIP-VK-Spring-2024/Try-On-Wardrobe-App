@@ -345,7 +345,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
                 garment.removeTag(props.name);
               }}
             >
-              <CrossIcon />
+              <CrossIcon width={10} height={10} stroke={ACTIVE_COLOR}/>
             </Pressable>
         }
       </Box>

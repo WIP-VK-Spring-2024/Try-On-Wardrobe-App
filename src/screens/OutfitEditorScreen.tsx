@@ -88,11 +88,11 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
     canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const makeName = () => {
-          if (outfit.uuid  === undefined) {
+          // if (outfit.uuid  === undefined) {
             return`${Date.now()}.png`;
-          }
+          // }
           
-          return getOutfitImageName(outfit);
+          // return getOutfitImageName(outfit);
         }
         
         const fileName = makeName();
@@ -107,9 +107,8 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
           uri: path
         });
 
-        outfitStore.addOutfit(outfit);
-
         const processSave = (status: boolean) => {
+          console.log('processSave');
           if (status) {
             appState.setSuccessMessage('Изменения успешно сохранены');
             setTimeout(()=>appState.closeSuccessMessage(), 2000);
@@ -119,9 +118,16 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
         }
 
         if (outfit.uuid === undefined) {
-          uploadOutfit(outfit).then(processSave);
+          uploadOutfit(outfit)
+            .then((status) => {
+              outfitStore.addOutfit(outfit);
+              processSave(status);
+            })
+            .catch(reason => console.error(reason))
         } else {
-          updateOutfit(outfit).then(processSave);
+          updateOutfit(outfit)
+            .then(processSave)
+            .catch(reason => console.error(reason))
         }
 
       })
