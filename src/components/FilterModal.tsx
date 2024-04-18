@@ -15,6 +15,7 @@ interface FilterModalProps {
   styleSelectionStore: MultipleSelectionStore<string>,
   tagsSelectionStore: MultipleSelectionStore<string>,
 }
+
 export const FilterModal = observer(({
   styleSelectionStore,
   tagsSelectionStore

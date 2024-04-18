@@ -11,7 +11,11 @@ import SearchIcon from '../../assets/icons/search.svg';
 import { appState } from '../stores/AppState';
 import { observer } from 'mobx-react-lite';
 import { login } from '../../config'
-import { garmentScreenFilteredGarmentStore, garmentScreenStyleSelectionStore, garmentScreenTagsSelectionStore, tryOnScreenFilteredGarmentStore, tryOnScreenStyleSelectionStore, tryOnScreenTagsSelectionStore } from '../store';
+
+import { garmentScreenFilteredGarmentStore,
+         tryOnScreenFilteredGarmentStore,
+         outfitScreenFilteredGarmentStore} from '../store';
+
 import { FilterStore } from '../stores/FilterStore';
 import { GarmentCard } from '../stores/GarmentStore';
 
@@ -55,11 +59,15 @@ export const Header = observer(({ rightMenu }: HeaderProps) => {
 export const GarmentHeaderButtons = observer(() => {
   const getCurrentFilterStore = () => {
     if (appState.screen === 'Home') {
-      return garmentScreenFilteredGarmentStore
+      return garmentScreenFilteredGarmentStore;
     }
 
     if (appState.screen === 'TryOn') {
-      return tryOnScreenFilteredGarmentStore
+      return tryOnScreenFilteredGarmentStore;
+    }
+
+    if (appState.screen === 'OutfitSelection') {
+      return outfitScreenFilteredGarmentStore;
     }
 
     return undefined;

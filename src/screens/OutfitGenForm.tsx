@@ -59,7 +59,7 @@ const PromptForm = observer((props: PromptFormProps) => {
   return (
     <FormControl>
       <FormControlLabel>
-          <RobotoText fontWeight="bold">Промпт</RobotoText>
+          <RobotoText fontWeight="bold">Описание</RobotoText>
       </FormControlLabel>
       <Textarea>
           <TextareaInput
@@ -71,7 +71,7 @@ const PromptForm = observer((props: PromptFormProps) => {
           />
       </Textarea>
       <FormControlHelper>
-          <FormControlHelperText>Опишите образ, который вы желаете</FormControlHelperText>
+          <FormControlHelperText>Опишите образ, который вы желаете сгенерировать</FormControlHelperText>
       </FormControlHelper>
     </FormControl>
   )
@@ -81,22 +81,27 @@ interface OutfitGenFormScreenProps {
   navigation: any
 }
 
-export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) => {
+export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) => {``
 
   const [prompt, setPrompt] = useState('');
+  const [useWeather, setUseWeather] = useState(true);
 
   const footer = (
     <ButtonFooter
       text="Сгенерировать"
       onPress={() => {
-        fetch(apiEndpoint + 'outfits/gen', {
-          method: 'POST',
-          body: JSON.stringify({
+        const urlParams = new URLSearchParams({
             prompt: prompt,
-            purposes: outfitPurposeStore.selectedItems.map(p => p.name),
-            amount: 4
-          })
-        })
+            amount: "4",
+            use_weather: useWeather.toString(),
+        });
+
+        for (const purpose of outfitPurposeStore.selectedItems.map(p => p.name)) {
+            urlParams.append("purposes", purpose)
+        }
+
+        fetch(apiEndpoint + 'outfits/gen?'+urlParams.toString())
+
         props.navigation.navigate('OutfitGenResult');
       }}
     />
@@ -124,7 +129,15 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
           prompt={prompt}
           setPrompt={setPrompt}
         />
+        <Checkbox
+            label="Учитывать погоду в генерации"
+            value="use_weather"
+            isChecked={useWeather}
+            onChange={weather => setUseWeather(weather)}
+        />
         <Divider h="$0.5" marginTop={10} marginBottom={10}/>
+
+        <RobotoText>Теги</RobotoText>
         <TagCheckboxBlock tagStore={outfitGenFormTagsStore}/>
       </View>
     </BaseScreen>

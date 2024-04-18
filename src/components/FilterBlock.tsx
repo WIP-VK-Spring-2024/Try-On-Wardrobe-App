@@ -91,7 +91,10 @@ export const TypeFilter = observer(({typeStore, subtypeStore}: TypeFilterProps) 
                 key={i} 
                 text={type.name} 
                 isSelected={i === typeStore.selectedItemId}
-                onPress={() => typeStore.select(i)}
+                onPress={() => {
+                    typeStore.select(i);
+                    subtypeStore.unselect();
+                }}
               />
             ))
           }
