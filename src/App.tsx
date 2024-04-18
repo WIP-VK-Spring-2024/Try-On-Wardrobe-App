@@ -24,6 +24,7 @@ import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScre
 import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
 import { OutfitGenFormScreen } from './screens/OutfitGenForm';
 import { OutfitGenResultScreen } from './screens/OutfitGenResult';
+import { LoginScreen } from './screens/LoginScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,9 @@ const App = observer((): JSX.Element => {
 
   const ScreenStack = observer(() => {
     return (
-      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Home'>
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Login'>
+        <Stack.Screen name="Login" component={LoginScreen} />
+
         <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
