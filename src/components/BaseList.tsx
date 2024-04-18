@@ -8,6 +8,10 @@ import { RobotoText } from './common';
 
 import ImageModal from 'react-native-image-modal';
 
+export const CARD_SIZE = {
+  height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
+  width: (WINDOW_WIDTH - 30) / 2,
+};
 
 const divideIntoPairs = (items: any[]) => {
     let item_pairs = [];
@@ -55,12 +59,18 @@ export const BaseList = observer((props: BaseListProps) => {
     );
 });
 
-export const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
+interface ListImageProps {
+  source: string | ImageSourcePropType
+  opacity?: number
+}
+
+export const ListImage = observer((props: ListImageProps) => {
     return (
       <Image
         {...props}
-        width={(WINDOW_WIDTH - 30) / 2}
-        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
+        opacity={"$10"}
+        width={CARD_SIZE.width}
+        height={CARD_SIZE.height}
         alt=""
         borderRadius={20}
         backgroundColor="#ffffff"
@@ -74,8 +84,8 @@ export const ModalListImage = observer((props: { source: string | ImageSourcePro
       <ImageModal
         {...props}
         style={{
-          width: (WINDOW_WIDTH - 30) / 2,
-          height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
+          width: CARD_SIZE.width,
+          height: CARD_SIZE.height,
           borderRadius: 20
         }}
       />
@@ -90,8 +100,8 @@ export const AddItemCard = observer(
         borderRadius={20}
         backgroundColor="#ffffff"
         onPress={onPress}
-        width={(WINDOW_WIDTH - 30) / 2}
-        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
+        width={CARD_SIZE.width}
+        height={CARD_SIZE.height}
         display="flex"
         flexDirection="row"
         alignItems="center"

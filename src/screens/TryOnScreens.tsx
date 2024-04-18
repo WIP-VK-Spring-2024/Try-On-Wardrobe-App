@@ -10,6 +10,7 @@ import { Header, BackHeader, GarmentHeaderButtons } from "../components/Header";
 import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
 import { MultipleSelectionGarmentList } from "../components/GarmentList";
+import { tryOnValidationStore } from "../stores/TryOnStore"
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -67,6 +68,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
       />
       <MultipleSelectionGarmentList 
         store={tryOnScreenGarmentSelectionStore}
+        disabledPredicate={(item) => !tryOnValidationStore.isSelectable(item.type?.name || '')}
       />
     </BaseScreen>
   );

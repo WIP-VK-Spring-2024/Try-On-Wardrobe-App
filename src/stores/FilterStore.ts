@@ -9,7 +9,7 @@ interface FilterStoreProps<T> {
 }
 
 export class FilterStore<T> {
-    origin: any[]
+    origin: T[]
     filterPredicates: FilterPredicatesType<T>
 
     constructor(props: FilterStoreProps<T>) {

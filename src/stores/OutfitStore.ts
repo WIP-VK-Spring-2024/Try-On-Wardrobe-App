@@ -1,8 +1,6 @@
 import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
-import { staticEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from './GarmentStore';
-import { SkImage } from '@shopify/react-native-skia';
 
 interface OutfitItemRectProps {
     x?: number

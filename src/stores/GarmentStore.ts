@@ -1,8 +1,12 @@
-import {makeObservable, observable, action, computed, runInAction, observe, autorun} from 'mobx';
+import { makeObservable, observable, action, computed } from 'mobx';
 import { ImageType } from '../models';
 import { deepEqualArr, getUnique, notEmpty } from '../utils';
 
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
+
+export const GARMENT_TYPE_DRESS = 'Платья'
+export const GARMENT_TYPE_UPPER = 'Верх'
+export const GARMENT_TYPE_LOWER = 'Низ'
 
 export interface Updateable {
   uuid: string,
