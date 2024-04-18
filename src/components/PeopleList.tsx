@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseList, ListImage, AddItemCard } from './BaseList';
+import { BaseList, ListImage, AddItemCard, CARD_SIZE } from './BaseList';
 import { Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType } from 'react-native';
 import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
@@ -26,7 +26,7 @@ const PersonListCard = observer(
           navigation.navigate('Clothes');
         }}
         w="49%"
-        h={WINDOW_HEIGHT / 3}>
+        h={CARD_SIZE.height}>
         <ListImage source={source} />
       </Pressable>
     );

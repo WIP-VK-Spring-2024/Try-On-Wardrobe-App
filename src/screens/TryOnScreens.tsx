@@ -1,7 +1,16 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { ButtonFooter, Footer } from "../components/Footer";
-import { resultStore, tryOnScreenGarmentSelectionStore, tryOnScreenStyleSelectionStore, tryOnScreenSubtypeSelectionStore, tryOnScreenTagsSelectionStore, tryOnScreenTypeSelectionStore, userPhotoSelectionStore } from "../store";
+import {
+  resultStore,
+  tryOnScreenGarmentSelectionStore,
+  tryOnScreenStyleSelectionStore,
+  tryOnScreenSubtypeSelectionStore,
+  tryOnScreenTagsSelectionStore,
+  tryOnScreenTypeSelectionStore,
+  userPhotoSelectionStore,
+} from '../store';
+
 import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./BaseScreen";
 import { TryOnResultList } from "../components/TryOnResultList";
@@ -9,7 +18,7 @@ import { TypeFilter } from "../components/FilterBlock";
 import { Header, BackHeader, GarmentHeaderButtons } from "../components/Header";
 import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
-import { MultipleSelectionGarmentList } from "../components/GarmentList";
+import { DisableableSelectionGarmentList } from "../components/GarmentList";
 import { tryOnValidationStore } from "../stores/TryOnStore"
 
 interface TryOnRequest {
@@ -66,7 +75,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
         typeStore={tryOnScreenTypeSelectionStore}
         subtypeStore={tryOnScreenSubtypeSelectionStore}
       />
-      <MultipleSelectionGarmentList 
+      <DisableableSelectionGarmentList 
         store={tryOnScreenGarmentSelectionStore}
         disabledPredicate={(item) => !tryOnValidationStore.isSelectable(item.type?.name || '')}
       />

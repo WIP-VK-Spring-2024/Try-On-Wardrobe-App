@@ -68,7 +68,6 @@ export const ListImage = observer((props: ListImageProps) => {
     return (
       <Image
         {...props}
-        opacity={"$10"}
         width={CARD_SIZE.width}
         height={CARD_SIZE.height}
         alt=""
