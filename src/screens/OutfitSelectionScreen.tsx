@@ -5,6 +5,9 @@ import { Pressable } from 'react-native';
 import { AddItemCard, BaseList, ListImage } from '../components/BaseList';
 import { getImageSource } from '../utils';
 import { Outfit, outfitStore } from '../stores/OutfitStore';
+import { Header } from '../components/Header';
+import { FilterModal } from '../components/FilterModal'
+import { outfitScreenStyleSelectionStore, outfitScreenTagsSelectionStore } from '../store';
 
 interface OutfitListProps {
   navigation: any
@@ -44,12 +47,22 @@ interface OutfitSelectionScreenProps {
 }
 
 export const OutfitSelectionScreen = observer((props: OutfitSelectionScreenProps) => {
+  const header = <Header rightMenu={null} /> 
+
   return (
-    <BaseScreen
-      navigation={props.navigation}
-      screen="OutfitSelection"
-    >
-      <OutfitList navigation={props.navigation}/>
-    </BaseScreen>
+    <>
+      <BaseScreen
+        navigation={props.navigation}
+        screen="OutfitSelection"
+        header={header}
+      >
+        <OutfitList navigation={props.navigation}/>
+      </BaseScreen>
+
+      <FilterModal
+        styleSelectionStore={outfitScreenStyleSelectionStore}
+        tagsSelectionStore={outfitScreenTagsSelectionStore}
+      />
+  </>
   )
 });
