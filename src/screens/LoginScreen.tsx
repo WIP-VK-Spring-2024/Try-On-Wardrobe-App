@@ -8,9 +8,10 @@ import { RobotoText } from "../components/common";
 import { apiEndpoint } from "../../config";
 import { joinPath } from "../utils";
 import { appState } from "../stores/AppState";
-import { loginFunc } from "../requests/centrifuge";
+import { initCentrifuge } from "../requests/centrifuge";
 import { initStores } from "../requests/init";
 import { ajax } from "../requests/common";
+import { cacheManager } from "../cacheManager/cacheManager";
 
 interface LoginBtnProps {
   text: string
@@ -63,7 +64,8 @@ const LoginTab = observer((props: TabProps) => {
           json.token,
           json.user_id
         );
-        loginFunc();
+        cacheManager.writeToken();
+        initCentrifuge();
         initStores();
         props.navigation.navigate('Home');
       })

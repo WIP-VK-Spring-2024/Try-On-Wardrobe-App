@@ -1,53 +1,108 @@
 import { View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
-import Animated, { Easing, useAnimatedProps, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
-import { Circle, Svg } from "react-native-svg";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import React, { ReactNode, useEffect } from "react";
+import Animated, { Easing, SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { Circle, Svg, SvgProps } from "react-native-svg";
+import { ACTIVE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import { G } from "react-native-svg";
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+import HangerIcon from '../../assets/icons/hanger.svg';
+import GarmentIcon from '../../assets/icons/garment.svg';
+import OutfitIcon from '../../assets/icons/outfit.svg';
+import { cacheManager } from "../cacheManager/cacheManager";
+import { initCentrifuge } from "../requests/centrifuge";
+import { initStores } from "../requests/init";
+import { appState } from "../stores/AppState";
 
-export const LoadingScreen = observer(() => {
-  const motion = WINDOW_HEIGHT / 4;
-  const cy = useSharedValue(WINDOW_HEIGHT / 2);
+const MOTION = WINDOW_HEIGHT / 8;
 
-  const animatedProps = useAnimatedProps(() => ({
-    cy: withTiming(cy.value, {
-      easing: Easing.bounce
-    })
-  }));
+const AnimatedGroup = Animated.createAnimatedComponent(G);
+
+
+interface BouncingCircleProps {
+  id: number
+  icon: ReactNode
+}
+
+const BouncingCircle = (props: BouncingCircleProps) => {
+  const offset = useSharedValue(0);
+
+  const circleProps = useAnimatedProps(() => ({
+    transform: [{ translateY: offset.value }]
+  }))
+
+  const anim = withRepeat(
+      withSequence(
+          withDelay(200,
+           withTiming(-MOTION, {duration: 600, easing: Easing.inOut(Easing.quad)}),
+          ),
+          withDelay(200, 
+            withTiming(0, {duration: 600, easing: Easing.inOut(Easing.quad)}),  
+          )
+      ), -1
+  )
 
   useEffect(() => {
-    cy.value = withRepeat(
-      withDelay(1000, 
-        withSequence(
-          withDelay(500,             
-            withSequence(
-              withTiming(WINDOW_HEIGHT / 2 + motion, {duration: 200, easing: Easing.sin}),
-    
-              withTiming(WINDOW_HEIGHT / 2, {duration: 200, easing: Easing.sin}),
-            ),
-          ),
-          withDelay(500,            
-            withSequence(
-              withTiming(WINDOW_HEIGHT / 2 - motion, {duration: 200, easing: Easing.sin}),
+    offset.value = withDelay(props.id * 400, anim);
+  }, [])
 
-              withTiming(WINDOW_HEIGHT / 2, {duration: 200, easing: Easing.sin}),
-            )
-            )
-        ))
-    , -1)
-  })
+  return (
+    <AnimatedGroup
+      x={WINDOW_WIDTH / 4 * (props.id + 1)}
+      y={WINDOW_HEIGHT / 2}
+      animatedProps={circleProps}
+    >
+      {/* <HangerIcon width={50} height={50} fill={ACTIVE_COLOR}/> */}
+      {props.icon}
+    </AnimatedGroup>
+  )
+}
+
+interface LoadingScreenProps {
+  navigation: any
+}
+
+export const LoadingScreen = observer((props: LoadingScreenProps) => {
+  const icons = [
+    <HangerIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
+    <OutfitIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
+    <GarmentIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
+  ]
+
+  useEffect(() => {
+    cacheManager.readToken()
+      .then(async (token) => {
+        if (token === false) {
+          props.navigation.navigate('Login');
+          return;
+        }
+
+        const status = await cacheManager.updateToken(token);
+        if (status === false) {
+          props.navigation.navigate('Login');
+        } else {
+          initCentrifuge();
+          initStores();
+          props.navigation.navigate('Home');
+        }
+      })
+      .catch(reason => {
+        console.error(reason);
+      })
+  }, [])
 
   return (
     <View>
       <Svg>
-          <AnimatedCircle
-          cx={WINDOW_WIDTH / 4}
-          r={20}
-          fill="#b58df1"
-          animatedProps={animatedProps}
-          />
+          {
+            [...Array(3).keys()].map(i => (
+              <BouncingCircle
+                key={i}
+                id={i}
+                icon={icons[i]}
+              />
+            ))
+          }
       </Svg>
     </View>
   )

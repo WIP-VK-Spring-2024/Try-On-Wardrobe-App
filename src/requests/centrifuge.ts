@@ -37,7 +37,7 @@ const subsribeToChannel = (props: CentrifugeSubscriptionProps) => {
     return channel;
 }
 
-export const loginFunc = async () => {  
+export const initCentrifuge = async () => {  
     const centrifuge = new Centrifuge(centrifugeEndpoint, {
         token: appState.JWTToken
     });

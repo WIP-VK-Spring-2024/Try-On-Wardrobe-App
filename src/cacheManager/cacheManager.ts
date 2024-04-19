@@ -84,9 +84,15 @@ export class CacheManager {
 
     async readToken() {
         const path = this.joinDataDirPath('/token.tkn');
-        const data = await RNFS.readFile(path);
 
-        return data;
+        try {
+            const data = await RNFS.readFile(path);
+    
+            return data;
+        } catch (e) {
+            return false;
+        }
+
     }
 
     async writeToken() {
@@ -100,13 +106,15 @@ export class CacheManager {
         return true;
     }
 
-    async updateToken() {
-        ajax.apiGet('/renew', {
-            credentials: true
+    async updateToken(oldToken: string) {
+        return ajax.apiPost('/renew', {
+            headers: {
+                'X-Session-Id': oldToken
+            }
         }).then(resp => {
             console.log(resp);
 
-            resp.json().then(json => {
+            return resp.json().then(json => {
                 console.log(json);
 
                 appState.login(
@@ -114,8 +122,11 @@ export class CacheManager {
                     json.user_id
                 );
 
-                this.writeToken();
+                return this.writeToken();
             });
+        }).catch(reason => {
+            console.error(reason);
+            return false;
         })
     }
 
