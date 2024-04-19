@@ -6,8 +6,11 @@ interface AjaxProps {
     apiEndpoint: string
 }
 
+type HeadersType = {[key: string]: string};
+
 interface AjaxCommonParams {
     credentials?: boolean
+    headers?: HeadersType
 }
 
 interface AjaxPostParams extends AjaxCommonParams {
@@ -16,7 +19,6 @@ interface AjaxPostParams extends AjaxCommonParams {
 
 type FetchMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
-type HeadersType = {[key: string]: string};
 
 class Ajax {
     apiEndpoint: string
@@ -36,7 +38,7 @@ class Ajax {
     }
 
     fetch(uri: string, method: FetchMethod, params?: AjaxPostParams) {
-        const headers: HeadersType = this.addCredentials({}, params?.credentials);
+        const headers: HeadersType = this.addCredentials(params?.headers || {}, params?.credentials);
 
         return fetch(uri, {
             method: method,
