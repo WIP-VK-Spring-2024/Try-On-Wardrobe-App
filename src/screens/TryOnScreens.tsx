@@ -53,14 +53,14 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
       margin={20}
       >
       <RobotoText fontSize={tooltipFontSize}>
-        Примерять можно вещи категорий "Верх", "Низ" и "Платья"
+        Примерять можно вещи категорий "Верх", "Низ" и "Платья".
       </RobotoText>
       <RobotoText fontSize={tooltipFontSize}>
         При примерке нескольких вещей вы можете выбрать только одну вещь каждой
-        категории
+        категории.
       </RobotoText>
       <RobotoText fontSize={tooltipFontSize}>
-        Платья можно примерять только без других вещей
+        Платья можно примерять только без других вещей.
       </RobotoText>
     </Tooltip>
   );

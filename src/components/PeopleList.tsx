@@ -2,13 +2,15 @@ import React from 'react';
 import { BaseList, ListImage, AddItemCard, CARD_SIZE } from './BaseList';
 import { Pressable } from '@gluestack-ui/themed';
 import { ImageSourcePropType } from 'react-native';
-import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
+import { BASE_COLOR } from '../consts';
 
 import { observer } from 'mobx-react-lite';
 import { userPhotoSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
 import { createUserPhotoFromGallery } from '../requests/imageCreation'
+
+import DotsIcon from "../../assets/icons/dots-vertical.svg"
 
 interface PersonListCardProps {
   source: string | ImageSourcePropType;
@@ -28,6 +30,9 @@ const PersonListCard = observer(
         w="49%"
         h={CARD_SIZE.height}>
         <ListImage source={source} />
+        <Pressable position='absolute' top={5} right={5}>
+          <DotsIcon width={25} height={25}/>
+        </Pressable>
       </Pressable>
     );
   },
@@ -40,14 +45,14 @@ export const PeopleList = observer(({navigation}: {navigation: any}) => {
         source={getImageSource(item.image)}
         id={i}
       />
-    ))
+    ));
   
     people.unshift(<AddItemCard text="Новое фото для примерки" onPress={async () => {
         const created = await createUserPhotoFromGallery();
         if (!created) {
           console.log('user photo not created')
         }
-      }}/>)
+      }}/>);
   
-    return <BaseList items={people} />
+    return <BaseList items={people} />;
   })

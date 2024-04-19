@@ -6,11 +6,12 @@ import { SelectTrigger } from '@gluestack-ui/themed';
 import { SelectContent, View } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
 import { SelectDragIndicator } from '@gluestack-ui/themed';
-import { Input } from '@gluestack-ui/themed';
-import { InputField } from '@gluestack-ui/themed';
-import { Box } from '@gluestack-ui/themed';
+import { Input, Menu, MenuItem, Pressable, InputField, Box } from '@gluestack-ui/themed';
 import {  StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
 import { StyleProp, TextProps, ViewProps, ViewStyle } from 'react-native';
+
+import DotsIcon from '../../assets/icons/dots-vertical.svg'
+import TrashIcon from '../../assets/icons/trash.svg'
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -112,10 +113,43 @@ export const IconWithCaption = observer((props: {icon: React.ReactNode, caption:
   )
 });
 
-export const UnorderedList = (props: {items: string[], margin?: number, fontSize?: number}) => {
+export const UnorderedList = (props: {
+  items: string[];
+  margin?: number;
+  fontSize?: number;
+}) => {
   return (
     <View marginLeft={props.margin}>
-      { props.items.map((item, i) => (<RobotoText key={i} fontSize={props.fontSize}>{`\u2022 ${item}`}</RobotoText>)) }
+      {props.items.map((item, i) => (
+        <RobotoText
+          key={i}
+          fontSize={props.fontSize}>{`\u2022 ${item}`}
+        </RobotoText>
+      ))}
     </View>
   );
+};
+
+interface DeleteMenuProps {
+  onPress: () => void;
+}
+
+export const DeleteMenu = (props: DeleteMenuProps) => {
+  return (
+    <Menu
+      placement="bottom right"
+      trigger={({ ...triggerProps }) => {
+        return (
+          <Pressable {...triggerProps}>
+              <DotsIcon width={40} height={40}/>
+          </Pressable>
+        )
+      }}
+    >
+      <MenuItem key="Delete" textValue="Delete" gap={10} onPress={props.onPress}>
+        <TrashIcon width={25} height={25}/>
+        <RobotoText>Удалить</RobotoText>
+      </MenuItem>
+    </Menu>
+  )
 }
