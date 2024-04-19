@@ -23,7 +23,7 @@ import { FilterModal } from "../components/FilterModal";
 import { DisableableSelectionGarmentList } from "../components/GarmentList";
 import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
-import { RobotoText } from "../components/common"
+import { RobotoText, UnorderedList } from "../components/common"
 import { PRIMARY_COLOR } from "../consts";
 
 interface TryOnRequest {
@@ -34,6 +34,9 @@ interface TryOnRequest {
 const backHeaderFontSize = 22
 
 const tooltipFontSize = 15
+
+const tryOnStepFontSize = 12
+const tryOnHeaderFontSize = 15
 
 export const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   useEffect(() => {
@@ -74,8 +77,10 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
       navigation={navigation}
       text="Выберите вещи"
       rightMenu={rightMenu}
-      fontSize={backHeaderFontSize}
-    />
+      fontSize={backHeaderFontSize}>
+      <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
+      <RobotoText fontSize={tryOnHeaderFontSize}>Выберите одежду для примерки</RobotoText>
+    </BackHeader>
   );
 
   const footer =
@@ -124,17 +129,50 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
 
 export const PersonSelectionScreen = observer(
   ({ navigation }: { navigation: any }) => {
+    const [infoShown, setInfoShown] = useState(false);
+
+    const tooltip = (
+      <View w="100%" justifyContent="center">
+        <Tooltip
+          shown={infoShown}
+          hide={() => setInfoShown(false)}
+          top={-210}
+          margin={20}>
+          <RobotoText fontSize={tooltipFontSize}>
+            Для того, чтобы примерить одежду, сначала нужно загрузить своё фото.
+          </RobotoText>
+          <RobotoText fontSize={tooltipFontSize}>
+            Для достижения лучших результатов примерки, ваши фото должны быть:
+          </RobotoText>
+          <UnorderedList fontSize={tooltipFontSize} items={['В полный рост', 'Вертикальной ориентации', 'С маленькими отступами по краям']} margin={10}/>
+          <RobotoText fontSize={tooltipFontSize}>
+            Для проверки функции примерки вам предоставлено тестовое фото.
+          </RobotoText>
+        </Tooltip>
+      </View>
+    );
+
+    const rightMenu = (
+      <InfoButton
+        size={28}
+        fill={infoShown ? PRIMARY_COLOR : '#000000'}
+        onPress={() => setInfoShown(!infoShown)}
+      />
+    );
+
     const header = (
       <BackHeader
         navigation={navigation}
-        text="Выберите фото"
-        fontSize={backHeaderFontSize}
-      />
+        rightMenu={rightMenu}
+      >
+        <RobotoText fontSize={tryOnStepFontSize}>Шаг 1 из 2</RobotoText>
+        <RobotoText fontSize={tryOnHeaderFontSize}>Выберите своё фото</RobotoText>
+      </BackHeader>
     );
 
     return (
       <>
-        <BaseScreen navigation={navigation} header={header} footer={null}>
+        <BaseScreen navigation={navigation} header={header} footer={tooltip}>
           <PeopleList navigation={navigation} />
         </BaseScreen>
         <FilterModal

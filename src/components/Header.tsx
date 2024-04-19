@@ -103,37 +103,39 @@ interface BackHeaderProps {
   navigation: any
   fontSize?: number
   rightMenu?: ReactNode
-  text: string
+  text?: string
   onBackPress?: ()=>void
 }
 
-export const BackHeader = (props: BackHeaderProps) => {
+export const BackHeader = (props: BackHeaderProps & React.PropsWithChildren) => {
   const onBackPress = props.onBackPress || (() => {props.navigation.dispatch(StackActions.pop(1));})
 
   return (
     <HeaderBase>
       <Pressable
-        display='flex'
-        flexDirection='row'
-        justifyContent='space-between'
-        alignItems='flex-end'
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="flex-end"
         flex={3}
-        gap={3}
-        onPress={onBackPress}
-      >
+        onPress={onBackPress}>
         <ChevronLeftIcon size="xl" color={ACTIVE_COLOR} />
       </Pressable>
-      <RobotoText
-        color="#000"
-        flex={10}
-        textAlign='center'
-        fontSize={props.fontSize || 32}
-      >
-        {props.text}
-      </RobotoText>
-      <View flex={3} display='flex' alignItems='flex-end' marginRight={5}>
+
+      <View flex={10} alignItems="center">
+        {props.children || (
+          <RobotoText
+            color="#000"
+            numberOfLines={1}
+            textAlign="center"
+            fontSize={props.fontSize || 32}>
+            {props.text}
+          </RobotoText>
+        )}
+      </View>
+
+      <View flex={3} alignItems="flex-end" marginRight={5}>
         {props.rightMenu}
       </View>
     </HeaderBase>
-  )
+  );
 };

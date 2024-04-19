@@ -30,15 +30,15 @@ import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
-import { autorun } from 'mobx';
 
 import ImageModal from 'react-native-image-modal';
 
-export const GarmentHeader = (props: {route: any, navigation: any}) => {
+export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
     <BackHeader
       navigation={props.navigation}
-      text="Карточка"
+      text={props.name || "Карточка"}
+      fontSize={24}
       rightMenu={
       <Pressable
         onPress={async ()=>{
@@ -195,11 +195,14 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         gap={20}
       >
         <View flex={1}></View>
-        <UpdateableText
-          text={garment.name}
-          inEditing={inEditing}
-          onUpdate={(text: string)=>{garment.setName(text)}}
-        />
+        <View flex={10}>
+          <UpdateableText
+            numberOfLines={1}
+            text={garment.name}
+            inEditing={inEditing}
+            onUpdate={(text: string)=>{garment.setName(text)}}
+          />
+        </View>
         <Pressable
           flex={1}
           onPress={() => {
@@ -416,7 +419,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   return (
     <BaseScreen 
       navigation={props.navigation}
-      header={<GarmentHeader route={props.route} navigation={props.navigation}/>}
+      header={<GarmentHeader route={props.route} navigation={props.navigation} name={garment.name}/>}
       footer={
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }

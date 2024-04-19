@@ -3,14 +3,14 @@ import {ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, Se
 import {observer} from 'mobx-react-lite';
 import { Select } from '@gluestack-ui/themed';
 import { SelectTrigger } from '@gluestack-ui/themed';
-import { SelectContent } from '@gluestack-ui/themed';
+import { SelectContent, View } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
 import { SelectDragIndicator } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
 import { InputField } from '@gluestack-ui/themed';
 import { Box } from '@gluestack-ui/themed';
-import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
-import { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import {  StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
+import { StyleProp, TextProps, ViewProps, ViewStyle } from 'react-native';
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -68,7 +68,7 @@ interface UpdateableTextProps {
   onUpdate: (text: string)=>void
 }
 
-export const UpdateableText = observer((props: PropsWithChildren & UpdateableTextProps) => {
+export const UpdateableText = observer((props: PropsWithChildren & UpdateableTextProps & TextProps) => {
   return (
     <>
      {
@@ -111,3 +111,11 @@ export const IconWithCaption = observer((props: {icon: React.ReactNode, caption:
     </Box>
   )
 });
+
+export const UnorderedList = (props: {items: string[], margin?: number, fontSize?: number}) => {
+  return (
+    <View marginLeft={props.margin}>
+      { props.items.map((item, i) => (<RobotoText key={i} fontSize={props.fontSize}>{`\u2022 ${item}`}</RobotoText>)) }
+    </View>
+  );
+}
