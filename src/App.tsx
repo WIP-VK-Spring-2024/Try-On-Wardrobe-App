@@ -24,6 +24,7 @@ import { OutfitGenFormScreen } from './screens/OutfitGenForm';
 import { OutfitGenResultScreen } from './screens/OutfitGenResult';
 import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
+import { PostScreen } from './screens/PostScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -71,7 +72,7 @@ const App = observer((): JSX.Element => {
         
         <Stack.Screen name="Login" component={LoginScreen} />
 
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Home" component={PostScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
