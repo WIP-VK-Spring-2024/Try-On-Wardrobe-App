@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
-import {PRIMARY_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
+import {PRIMARY_COLOR, ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
 import { StackActions } from '@react-navigation/native';
 
@@ -121,7 +121,7 @@ export const BackHeader = (props: BackHeaderProps) => {
         gap={3}
         onPress={onBackPress}
       >
-        <ChevronLeftIcon size="xl" color={PRIMARY_COLOR} />
+        <ChevronLeftIcon size="xl" color={ACTIVE_COLOR} />
       </Pressable>
       <RobotoText
         color="#000"

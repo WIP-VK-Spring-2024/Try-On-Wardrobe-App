@@ -164,7 +164,7 @@ export const OutfitGarmentSelectionScreen = observer(
           props.navigation.navigate("Editor", {outfit: outfit});
         }}
       />
-      : undefined
+      : null;
 
     return (
       <BaseScreen 

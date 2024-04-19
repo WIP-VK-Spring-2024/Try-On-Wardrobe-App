@@ -64,15 +64,19 @@ interface ListImageProps {
   opacity?: number
 }
 
+export const CARD_PROPS = {
+  width: CARD_SIZE.width,
+  height: CARD_SIZE.height,
+  borderRadius: 20,
+  backgroundColor: "#ffffff"
+}
+
 export const ListImage = observer((props: ListImageProps) => {
     return (
       <Image
         {...props}
-        width={CARD_SIZE.width}
-        height={CARD_SIZE.height}
+        {...CARD_PROPS}
         alt=""
-        borderRadius={20}
-        backgroundColor="#ffffff"
       />
     );
   },
@@ -96,8 +100,8 @@ export const AddItemCard = observer(
   ({ text, onPress }: { text: string; onPress: () => void }) => {
     return (
       <Pressable
-        borderRadius={20}
-        backgroundColor="#ffffff"
+        borderRadius={CARD_PROPS.borderRadius}
+        backgroundColor={CARD_PROPS.backgroundColor}
         onPress={onPress}
         width={CARD_SIZE.width}
         height={CARD_SIZE.height}
