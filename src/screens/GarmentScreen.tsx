@@ -12,7 +12,7 @@ import { AlertDialogFooter } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
 import { ButtonText } from '@gluestack-ui/themed';
 import { CloseIcon } from '@gluestack-ui/themed';
-import { getImageSource } from '../utils';
+import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
 import { StackActions } from '@react-navigation/native';
@@ -33,6 +33,7 @@ import { appState } from '../stores/AppState';
 import { autorun } from 'mobx';
 
 import ImageModal from 'react-native-image-modal';
+import { ajax } from '../requests/common';
 
 export const GarmentHeader = (props: {route: any, navigation: any}) => {
   return (
@@ -104,7 +105,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     clearObj(new_garment)
 
-    ajax.apiPut(joinPath('/clothes/', garment.uuid), {
+    ajax.apiPut('/clothes/' + garment.uuid, {
      credentials: true,
       body: JSON.stringify(new_garment)
     })
