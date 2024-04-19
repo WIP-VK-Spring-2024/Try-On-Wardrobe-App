@@ -7,20 +7,21 @@ import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/Outfi
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
+import { ajax } from "./common";
 
 const processNetworkError = (err: any) => {
     console.log(err);
     appState.setError('network')
 }
 
-const typesRequest = fetch(apiEndpoint + 'types').then(data => {
+const typesRequest = ajax.apiGet('/types').then(data => {
     return data.json().then(types => {
         garmentStore.setTypes(types)
         return true;
     }).catch(err => processNetworkError(err))
 }).catch(err => processNetworkError(err))
 
-const stylesRequest = fetch(apiEndpoint + 'styles').then(data => {
+const stylesRequest = ajax.apiGet('/styles').then(data => {
     return data.json().then(styles => {
         garmentStore.setStyles(styles);
         return true;
@@ -28,7 +29,9 @@ const stylesRequest = fetch(apiEndpoint + 'styles').then(data => {
 }).catch(err => processNetworkError(err))
 
 export const initStores = () => {
-    const remoteGarments = fetch(apiEndpoint + 'clothes').then(async data => {
+    const remoteGarments = ajax.apiGet('/clothes', {
+        credentials: true
+    }).then(async data => {
         return data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
     
@@ -62,7 +65,9 @@ export const initStores = () => {
             }
     })
 
-    fetch(apiEndpoint + 'photos').then(async data => {
+    ajax.apiGet('/photos', {
+        credentials: true
+    }).then(async data => {
         data.json().then(async photos => {
             userPhotoStore.setPhotos(photos.map((photo: { uuid: string, image: string }) => ({
                 uuid: photo.uuid,
@@ -74,7 +79,9 @@ export const initStores = () => {
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
 
-    fetch(apiEndpoint + 'try-on').then(async data => {
+    ajax.apiGet('try-on', {
+        credentials: true
+    }).then(async data => {
         data.json().then(async results => {
             tryOnStore.setResults(results.map(convertTryOnResponse));
         }).catch(err => console.error(err))
@@ -99,7 +106,9 @@ export const initStores = () => {
         }
     }
 
-    const remoteOutfits = fetch(apiEndpoint + 'outfits').then(async data => {
+    const remoteOutfits = ajax.apiGet('/outfits', {
+        credentials: true
+    }).then(async data => {
         const json = await data.json();
 
         // console.log('outfits', json)
@@ -143,7 +152,9 @@ export const initStores = () => {
             cacheManager.updateOutfits(local, remote);
         })
     
-    fetch(apiEndpoint + '/outfits/purposes').then(res => {
+    ajax.apiGet('/outfits/purposes', {
+        credentials: true
+    }).then(res => {
         res.json().then((json: {
             uuid: string,
             created_at: string,

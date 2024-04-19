@@ -1,9 +1,33 @@
-import { View } from "@gluestack-ui/themed";
+import { Pressable, View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React, { PropsWithChildren, useState } from "react";
 import { EmailInput, LoginInput, PasswordInput, SexSelector } from "../components/LoginForms";
-import { PRIMARY_COLOR } from "../consts";
+import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts";
 import { Tabs } from "../components/Tabs";
+import { RobotoText } from "../components/common";
+import { apiEndpoint } from "../../config";
+import { joinPath } from "../utils";
+import { appState } from "../stores/AppState";
+import { loginFunc } from "../requests/centrifuge";
+import { initStores } from "../requests/init";
+import { ajax } from "../requests/common";
+
+interface LoginBtnProps {
+  text: string
+  onPress?: ()=>void
+}
+const LoginBtn = observer((props: LoginBtnProps) => {
+  return (
+    <Pressable
+      padding={10}
+      backgroundColor={ACTIVE_COLOR}
+      borderRadius={10}
+      onPress={props.onPress}
+    >
+      <RobotoText color="#ffffff" textAlign="center">{props.text}</RobotoText>
+    </Pressable>
+  )
+})
 
 const TabContentContainer = observer((props: PropsWithChildren) => {
   return (
@@ -15,9 +39,38 @@ const TabContentContainer = observer((props: PropsWithChildren) => {
   )
 })
 
-const LoginTab = observer(() => {
+interface TabProps {
+  navigation: any
+}
+
+const LoginTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+
+  const logIn = () => {
+    const params = {
+      name: login,
+      password: password
+    }
+
+    ajax.apiPost('/login', {
+      body: JSON.stringify(params)
+    }).then(resp => {
+      console.log(resp);
+      resp.json().then((json: {token: string, user_id: string}) => {
+        console.log(json);
+        appState.login(
+          json.token,
+          json.user_id
+        );
+        loginFunc();
+        initStores();
+        props.navigation.navigate('Home');
+      })
+    }).catch(reason => {
+      console.error(reason);
+    })
+  }
 
   return (
     <TabContentContainer>
@@ -29,15 +82,48 @@ const LoginTab = observer(() => {
         value={password}
         setValue={setPassword}
       />
+      <LoginBtn
+        text="Войти"
+        onPress={logIn}
+      />
     </TabContentContainer>
   )
 })
 
-const SignUpTab = observer(() => {
+const SignUpTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sex, setSex] = useState("female");
+
+  const signUp = () => {
+    const params = {
+      name: login,
+      email: email,
+      password: password,
+      gender: sex
+    };
+
+    ajax.apiPost('/users', {
+      credentials: true,
+      body: JSON.stringify(params)
+    }).then(resp => {
+      console.log(resp);
+      resp.json().then(json => {
+        console.log(json);
+        resp.json().then((json: {token: string, user_id: string}) => {
+          console.log(json);
+          appState.login(
+            json.token,
+            json.user_id
+          );
+          props.navigation.navigate('Home');
+        })
+      })
+    }).catch(reason => {
+      console.error(reason);
+    })
+  }
 
   return (
     <TabContentContainer>
@@ -57,6 +143,10 @@ const SignUpTab = observer(() => {
         value={sex}
         setValue={setSex}
       />
+      <LoginBtn
+        text="Зарегистрироваться"
+        onPress={signUp}
+      />
     </TabContentContainer>
   )
 })
@@ -66,8 +156,6 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen = observer((props: LoginScreenProps) => {
-
-
   return (
     <View
       w="100%"
@@ -88,13 +176,13 @@ export const LoginScreen = observer((props: LoginScreenProps) => {
           tabs={[
             {
               value: 'login',
-              header: 'Войти',
-              content: <LoginTab/>
+              header: 'Вход',
+              content: <LoginTab navigation={props.navigation}/>
             },
             {
               value: 'sign-up',
               header: 'Регистрация',
-              content: <SignUpTab/>
+              content: <SignUpTab navigation={props.navigation}/>
             },
           ]}
         />

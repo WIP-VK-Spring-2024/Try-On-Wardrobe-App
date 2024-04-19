@@ -52,18 +52,13 @@ export const Tabs = observer((props: TabsProps) => {
       >
         {
           props.tabs.map((tab, i) => (
-            <>        
-              {
-                i !== 0 && <Divider orientation="vertical" w="$0.5"/>
-              }    
-              <TabHeader
-                key={i}
-                wPercent={100 / props.tabs.length}
-                text={tab.header}
-                isActive={tab.value === value}
-                onSelect={()=>setValue(tab.value)}
-              />
-            </>
+            <TabHeader
+              key={i}
+              wPercent={100 / props.tabs.length}
+              text={tab.header}
+              isActive={tab.value === value}
+              onSelect={()=>setValue(tab.value)}
+            />
           ))
         }
       </View>

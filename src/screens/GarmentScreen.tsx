@@ -104,12 +104,9 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     clearObj(new_garment)
 
-    fetch(apiEndpoint + '/clothes/' + garment.uuid, {
-      method: 'PUT',
-      body: JSON.stringify(new_garment),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    ajax.apiPut(joinPath('/clothes/', garment.uuid), {
+     credentials: true,
+      body: JSON.stringify(new_garment)
     })
       .then(()=>{
         appState.setSuccessMessage('Изменения успешно сохранены');

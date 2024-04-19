@@ -5,6 +5,7 @@ import { Outfit, outfitStore } from "../stores/OutfitStore";
 import RNFS from 'react-native-fs';
 import { joinPath } from "../utils";
 import { appState } from "../stores/AppState";
+import { ajax } from "./common";
 
 const makeFormData = (outfit: Outfit) => {
     const image_p = outfit.image!.uri.split('/');
@@ -44,8 +45,8 @@ export const updateOutfit = async (outfit: Outfit) => {
 
     const formData = makeFormData(outfit);
 
-    return fetch(apiEndpoint + `outfits/${outfit.uuid}`, {
-        method: 'PUT',
+    return ajax.apiPut(`/outfits/${outfit.uuid}`, {
+        credentials: true,
         body: formData
     }).then(resp => {
         console.log(resp);
@@ -89,8 +90,8 @@ export const uploadOutfit = async (outfit: Outfit) => {
 
     const formData = makeFormData(outfit);
 
-    return fetch(apiEndpoint + 'outfits', {
-        method: 'POST',
+    return ajax.apiPost('/outfits', {
+        credentials: true,
         body: formData,
     }).then(resp => {
         console.log(resp);
@@ -127,8 +128,8 @@ export const uploadOutfit = async (outfit: Outfit) => {
 }
 
 export const deleteOutfit = async (outfitUUID: string) => {
-    return fetch(apiEndpoint + `outfits/${outfitUUID}`, {
-        method: 'DELETE'
+    return ajax.apiDelete(`/outfits/${outfitUUID}`, {
+        credentials: true
     }).then(resp => {
         console.log(resp);
         outfitStore.removeOutfit(outfitUUID);

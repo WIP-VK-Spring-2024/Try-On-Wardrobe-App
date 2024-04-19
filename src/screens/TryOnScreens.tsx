@@ -10,6 +10,7 @@ import { Header, BackHeader, GarmentHeaderButtons } from "../components/Header";
 import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
 import { MultipleSelectionGarmentList } from "../components/GarmentList";
+import { ajax } from "../requests/common";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -40,14 +41,11 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
           user_image_id: userPhotoSelectionStore.selectedItem?.uuid
         }
 
-        fetch(
+        ajax.apiPost(
           apiEndpoint + '/try-on',
           {
-            method: 'POST',
+            credentials: true,
             body: JSON.stringify(tryOnBody),
-            headers: {
-              'Content-Type': 'application/json'
-            }
           },
         ).then(() => {
           navigation.navigate('Result');

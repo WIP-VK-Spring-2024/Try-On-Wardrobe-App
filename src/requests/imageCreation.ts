@@ -6,6 +6,7 @@ import { appState } from '../stores/AppState';
 import { Outfit } from '../stores/OutfitStore';
 
 import RNFS from 'react-native-fs';
+import { ajax } from './common';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {
     console.log('upload')
@@ -22,8 +23,8 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
         uri: image.path
     });
 
-    return fetch(apiEndpoint + 'clothes', {
-        method: 'POST',
+    return ajax.apiPost('/clothes', {
+        credentials: true,
         body: formData
     }).then(resp => {
         console.log(resp);
@@ -58,8 +59,8 @@ const uploadUserPhoto = (image: ImageOrVideo) => {
         uri: image.path
     });
 
-    return fetch(apiEndpoint + 'photos', {
-        method: 'POST',
+    return ajax.apiPost('/photos', {
+        credentials: true,
         body: formData
     }).then(resp => {console.log(resp), resp.json().then(res => {
         userPhotoStore.addPhoto({

@@ -10,7 +10,7 @@ import { Input } from '@gluestack-ui/themed';
 import { InputField } from '@gluestack-ui/themed';
 import { Box } from '@gluestack-ui/themed';
 import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
-import { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { StyleProp, TextProps, TextStyle, ViewProps, ViewStyle } from 'react-native';
 
 export const RobotoText = observer((props: any) => {
   return (

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Divider, FormControl, FormControlLabel, FormControlLabelText, Input, Pressable, RadioGroup, RadioLabel, View } from "@gluestack-ui/themed";
-import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts";
+import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR } from "../consts";
 import { RobotoText } from "../components/common";
 import { InputField } from "@gluestack-ui/themed";
 import { Radio } from "@gluestack-ui/themed";
@@ -113,28 +113,56 @@ export const PasswordInput = observer((props: InputProps) => {
   )
 })
 
-export const SexSelector = observer((props: InputProps) => {
-  return (
-    <RadioGroup 
-      value={props.value} 
-      onChange={props.setValue}
-      flexDirection="row"
-      justifyContent="center"
-      gap={40}
-    >
-      <Radio value="male" size="md" isInvalid={false} isDisabled={false}>
-        <RadioIndicator mr="$2">
-          <RadioIcon as={CircleIcon} />
-        </RadioIndicator>
-        <RadioLabel>М</RadioLabel>
-      </Radio>
+interface RadioBtnProps {
+  label: string
+  value: string
+  isChecked: boolean
+}
 
-      <Radio value="female" size="md" isInvalid={false} isDisabled={false}>
-        <RadioIndicator mr="$2">
-          <RadioIcon as={CircleIcon} />
-        </RadioIndicator>
-        <RadioLabel>Ж</RadioLabel>
-      </Radio>
-    </RadioGroup>
+export const RadioBtn = (props: RadioBtnProps) => {
+  const icon = () => <CircleIcon stroke={ACTIVE_COLOR}/>
+
+  return (
+    <Radio 
+      value={props.value}
+      size="md" 
+      isInvalid={false} 
+      isDisabled={false}
+    >
+      <RadioIndicator 
+        mr="$2"
+        borderColor={ACTIVE_COLOR}
+      >
+        <RadioIcon as={icon}/>
+      </RadioIndicator>
+      <RadioLabel>{props.label}</RadioLabel>
+    </Radio>
+  )
+}
+
+export const SexSelector = observer((props: InputProps) => {
+
+  return (
+    <View>
+      <RobotoText>Пол</RobotoText>
+      <RadioGroup 
+        value={props.value} 
+        onChange={props.setValue}
+        flexDirection="row"
+        justifyContent="center"
+        gap={40}
+      >
+        <RadioBtn
+          label="М"
+          value="male"
+          isChecked={true}
+        />
+        <RadioBtn
+          label="Ж"
+          value="female"
+          isChecked={false}
+        />
+      </RadioGroup>
+    </View>
   )
 })

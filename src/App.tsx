@@ -16,8 +16,6 @@ import { GarmentScreen } from './screens/GarmentScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
-import { initStores } from './requests/init';
-import { loginFunc } from './requests/centrifuge';
 import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
@@ -32,8 +30,8 @@ const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 
 RNFS.mkdir(pictures_path);
 
-initStores();
-loginFunc();
+// initStores();
+// loginFunc();
 
 const App = observer((): JSX.Element => {
   useEffect(() => {
