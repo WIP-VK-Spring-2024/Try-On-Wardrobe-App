@@ -43,7 +43,9 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
     const cards = tryOnStore.results.map((item) => (
         <TryOnResultCard
             source={getImageSource(item.image)}
-            onPress={() => {}}
+            onPress={()=>{
+              navigation.navigate('TryOnCard', {tryOnResult: item});
+            }}
             uuid={item.uuid}
             rating={item.rating}
         />

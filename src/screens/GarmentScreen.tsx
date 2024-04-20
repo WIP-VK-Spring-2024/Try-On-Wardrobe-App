@@ -57,6 +57,20 @@ export const GarmentHeader = (props: {name?: string, route: any, navigation: any
   )
 };
 
+const GarmentImage = observer(({garment} : {garment: GarmentCard}) => {
+  return (
+    <ImageModal
+      source={getImageSource(garment.image)}
+      style={{
+        width: WINDOW_WIDTH - 30,
+        height: WINDOW_HEIGHT / 2,
+      }}
+      overlayBackgroundColor={BASE_COLOR + 'a0'}
+      resizeMode="contain"
+    />
+  )
+});
+
 export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
@@ -119,6 +133,38 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
       .catch(res => console.error(res))
   }
 
+  const GarmentNameInput = observer(
+    () => {
+      return (
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="center"
+          alignItems="center"
+          gap={20}>
+          <View flex={1}></View>
+          <View flex={10}>
+            <UpdateableText
+              numberOfLines={1}
+              text={garment.name}
+              inEditing={inEditing}
+              onUpdate={(text: string) => {
+                garment.setName(text);
+              }}
+            />
+          </View>
+          <Pressable
+            flex={1}
+            onPress={() => {
+              setInEditing((oldInEditing: boolean) => !oldInEditing);
+            }}>
+            <EditIcon stroke="#000000" />
+          </Pressable>
+        </Box>
+      );
+    },
+  );
+
   const CloseAlertDialog = observer(() => {
     const closeDialog = () => {
       setShowAlertDialog(false);
@@ -169,50 +215,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    )
-  });
-
-  const GarmentImage = observer(() => {
-    return (
-      <ImageModal
-        source={getImageSource(garment.image)}
-        style={{
-          width: WINDOW_WIDTH - 30,
-          height: WINDOW_HEIGHT / 2,
-        }}
-        overlayBackgroundColor={BASE_COLOR + 'a0'}
-        resizeMode="contain"
-      />
-    )
-  });
-
-  const GarmentNameInput = observer(() => {
-    return (
-      <Box
-        display="flex" 
-        flexDirection="row"
-        justifyContent='center'
-        alignItems='center'
-        gap={20}
-      >
-        <View flex={1}></View>
-        <View flex={10}>
-          <UpdateableText
-            numberOfLines={1}
-            text={garment.name}
-            inEditing={inEditing}
-            onUpdate={(text: string)=>{garment.setName(text)}}
-          />
-        </View>
-        <Pressable
-          flex={1}
-          onPress={() => {
-            setInEditing((oldInEditing: boolean) => !oldInEditing);
-          }}
-        >
-          <EditIcon stroke="#000000"/>
-        </Pressable>
-      </Box>
     )
   });
 
@@ -434,7 +436,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         marginRight={20}
         marginBottom={100}
       >
-        <GarmentImage/>
+        <GarmentImage garment={garment}/>
         <GarmentNameInput/>
         <GarmentSeasonIcons/>
         <GarmentTypeSelector />

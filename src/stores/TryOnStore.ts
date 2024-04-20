@@ -11,7 +11,7 @@ export interface TryOnResultCardProps {
   image: ImageType;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 }
 
 export class TryOnResultCard {
@@ -20,7 +20,7 @@ export class TryOnResultCard {
   image: ImageType;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 
   constructor(props: TryOnResultCardProps) {
     this.uuid = props.uuid;
