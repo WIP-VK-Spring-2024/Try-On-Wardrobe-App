@@ -16,14 +16,15 @@ import { GarmentScreen } from './screens/GarmentScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
-import { initStores } from './requests/init';
-import { loginFunc } from './requests/centrifuge';
 import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
 import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
 import { OutfitGenFormScreen } from './screens/OutfitGenForm';
 import { OutfitGenResultScreen } from './screens/OutfitGenResult';
+import { LoginScreen } from './screens/LoginScreen';
+import { LoadingScreen } from './screens/LoadingScreen';
+import { PostScreen } from './screens/PostScreen';
 
 export const Stack = createNativeStackNavigator();
 
@@ -31,8 +32,8 @@ const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 
 RNFS.mkdir(pictures_path);
 
-initStores();
-loginFunc();
+// initStores();
+// loginFunc();
 
 const App = observer((): JSX.Element => {
   useEffect(() => {
@@ -66,8 +67,12 @@ const App = observer((): JSX.Element => {
 
   const ScreenStack = observer(() => {
     return (
-      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Home'>
-        <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Loading'>
+        <Stack.Screen name="Loading" component={LoadingScreen} />
+        
+        <Stack.Screen name="Login" component={LoginScreen} />
+
+        <Stack.Screen name="Home" component={PostScreen} />
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 

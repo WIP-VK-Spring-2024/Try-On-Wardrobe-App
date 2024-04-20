@@ -21,6 +21,7 @@ import { Header, BackHeader, GarmentHeaderButtons } from "../components/Header";
 import { PeopleList } from "../components/PeopleList";
 import { FilterModal } from "../components/FilterModal";
 import { DisableableSelectionGarmentList } from "../components/GarmentList";
+import { ajax } from "../requests/common";
 import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
 import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
@@ -96,24 +97,24 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
             user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
           };
 
-          fetch(apiEndpoint + '/try-on', {
-            method: 'POST',
+          ajax.apiPost(apiEndpoint + '/try-on', {
+            credentials: true,
             body: JSON.stringify(tryOnBody),
             headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-            .then(() => {
-              navigation.navigate('Result');
-              resultStore.clearResult();
-            })
-            .catch(err => console.error(err));
-        }}>
-        {tooltip}
-      </ButtonFooter>
-    ) : (
-      <View w="100%" justifyContent="center">{tooltip}</View>
-    );
+              'Content-Type': 'application/json'
+            }
+          },
+        ).then(() => {
+          navigation.navigate('Result');
+          resultStore.clearResult();
+        }).catch(err => console.error(err))
+      }}
+    >
+    {tooltip}
+  </ButtonFooter>
+) : (
+  <View w="100%" justifyContent="center">{tooltip}</View>
+);
 
   return (
     <BaseScreen navigation={navigation} footer={footer} header={header}>

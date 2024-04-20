@@ -1,12 +1,14 @@
 import {Rating, tryOnStore} from '../stores/TryOnStore';
 import {apiEndpoint} from '../../config';
 import { resultStore } from "../store";
+import { ajax } from './common';
+import { joinPath } from '../utils';
 
 
 const rateTryOnResult = (uuid: string, rating: Rating) => {
     return () => {
-        fetch(apiEndpoint + '/try-on/' + uuid + '/rate', {
-            method: 'PATCH',
+        ajax.apiPatch(joinPath('/try-on/', uuid, '/rate'), {
+            credentials: true,
             body: JSON.stringify({rating: rating}),
         })
             .then(data => {

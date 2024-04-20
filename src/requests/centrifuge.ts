@@ -1,5 +1,5 @@
 import { Centrifuge, PublicationContext } from "centrifuge";
-import { apiEndpoint, centrifugeEndpoint, login, password, staticEndpoint } from "../../config";
+import { apiEndpoint, centrifugeEndpoint, staticEndpoint } from "../../config";
 import { appState } from "../stores/AppState";
 import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
@@ -37,33 +37,9 @@ const subsribeToChannel = (props: CentrifugeSubscriptionProps) => {
     return channel;
 }
 
-export const loginFunc = async () => {
-    const loginBody = {
-        name: login,
-        password: password
-    }
-  
-    const response = await fetch(apiEndpoint + 'login', {
-        method: 'POST',
-        body: JSON.stringify(loginBody),
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-  
-    if (!response.ok) {
-        console.error(response);
-        return;
-    }
-  
-    const json = await response.json();
-  
-    console.log(json);
-  
-    appState.login(json.token, json.user_id);
-  
+export const initCentrifuge = async () => {  
     const centrifuge = new Centrifuge(centrifugeEndpoint, {
-        token: json.token
+        token: appState.JWTToken
     });
     
     centrifuge.on('connecting', function(ctx) {
@@ -80,7 +56,7 @@ export const loginFunc = async () => {
     
     const processing_sub = subsribeToChannel({
         connection: centrifuge,
-        name: `processing:user#${json.user_id}`,
+        name: `processing:user#${appState.userID}`,
         onPublication: ctx => {
             console.log('processing', ctx.data);
 
@@ -130,7 +106,7 @@ export const loginFunc = async () => {
 
     const try_on_sub = subsribeToChannel({
         connection: centrifuge,
-        name: `try-on:user#${json.user_id}`,
+        name: `try-on:user#${appState.userID}`,
         onPublication: ctx => {
             resultStore.setResultUrl(staticEndpoint + ctx.data.image);
             resultStore.setResultUUID(ctx.data.uuid);
@@ -139,7 +115,7 @@ export const loginFunc = async () => {
 
     const outfit_gen = subsribeToChannel({
         connection: centrifuge,
-        name: `outfit-gen:user#${json.user_id}`,
+        name: `outfit-gen:user#${appState.userID}`,
         onPublication: ctx => {
             const outfits = ctx.data.outfits.map((outfit: {clothes: {clothes_id: string}[]}) => 
                 outfit.clothes.map(c => c.clothes_id))

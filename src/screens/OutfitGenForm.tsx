@@ -14,6 +14,7 @@ import { TagCheckboxBlock } from "../components/TagCheckboxBlock";
 import { BackHeader } from "../components/Header";
 import { ButtonFooter } from "../components/Footer";
 import { apiEndpoint } from "../../config";
+import { ajax } from "../requests/common";
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
@@ -100,7 +101,7 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             urlParams.append("purposes", purpose)
         }
 
-        fetch(apiEndpoint + 'outfits/gen?'+urlParams.toString())
+        ajax.apiGet('/outfits/gen?'+urlParams.toString())
 
         props.navigation.navigate('OutfitGenResult');
       }}

@@ -1,10 +1,9 @@
-import { apiEndpoint } from "../../config"
 import { userPhotoStore } from "../stores/UserPhotoStore"
-import { joinPath } from "../utils"
 import { processNetworkError } from "../stores/AppState"
+import { ajax } from "./common"
 
 export const deleteUserPhoto = (uuid: string) => {
-  fetch(joinPath(apiEndpoint, `/photos/${uuid}`), {method: "DELETE"})
+  ajax.apiDelete(`/photos/${uuid}`, {credentials: true})
     .then(_ => userPhotoStore.removePhoto(uuid))
     .catch(error => processNetworkError(error));
 };

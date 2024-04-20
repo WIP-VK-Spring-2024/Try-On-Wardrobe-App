@@ -12,7 +12,7 @@ import { AlertDialogFooter } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
 import { ButtonText } from '@gluestack-ui/themed';
 import { CloseIcon } from '@gluestack-ui/themed';
-import { getImageSource } from '../utils';
+import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { apiEndpoint } from '../../config';
 import { StackActions } from '@react-navigation/native';
@@ -32,6 +32,7 @@ import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
+import { ajax } from '../requests/common';
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -119,12 +120,9 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     clearObj(new_garment)
 
-    fetch(apiEndpoint + '/clothes/' + garment.uuid, {
-      method: 'PUT',
-      body: JSON.stringify(new_garment),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    ajax.apiPut('/clothes/' + garment.uuid, {
+     credentials: true,
+      body: JSON.stringify(new_garment)
     })
       .then(()=>{
         appState.setSuccessMessage('Изменения успешно сохранены');

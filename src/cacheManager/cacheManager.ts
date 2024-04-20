@@ -4,11 +4,14 @@ import { staticEndpoint } from '../../config';
 import { arrayComp, getOutfitImageName } from './utils';
 import { getImageSource, joinPath } from '../utils';
 import { Outfit, outfitStore } from '../stores/OutfitStore';
+import { appState } from '../stores/AppState';
+import { ajax } from '../requests/common';
 
 // saves:
 // - images
 // - garmentCards
 // - outfits
+// - JWTToken
 
 type withUUID = {uuid: string | undefined};
 const compByUUID = (a: withUUID, b: withUUID) => a.uuid === b.uuid;
@@ -77,6 +80,54 @@ export class CacheManager {
 
         const path = this.joinDataDirPath('/outfits.json');
         RNFS.writeFile(path, data);
+    }
+
+    async readToken() {
+        const path = this.joinDataDirPath('/token.tkn');
+
+        try {
+            const data = await RNFS.readFile(path);
+    
+            return data;
+        } catch (e) {
+            return false;
+        }
+
+    }
+
+    async writeToken() {
+        if (appState.JWTToken === undefined) {
+            console.error('unable to save undefined token');
+            return false;
+        }
+
+        const path = this.joinDataDirPath('/token.tkn');
+        RNFS.writeFile(path, appState.JWTToken);
+        return true;
+    }
+
+    async updateToken(oldToken: string) {
+        return ajax.apiPost('/renew', {
+            headers: {
+                'X-Session-Id': oldToken
+            }
+        }).then(resp => {
+            console.log(resp);
+
+            return resp.json().then(json => {
+                console.log(json);
+
+                appState.login(
+                    json.token,
+                    json.user_id
+                );
+
+                return this.writeToken();
+            });
+        }).catch(reason => {
+            console.error(reason);
+            return false;
+        })
     }
 
     async downloadImage(remoteURI: string, path: string) {

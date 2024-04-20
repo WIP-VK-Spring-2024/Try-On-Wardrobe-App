@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
 } from '@gluestack-ui/themed';
 import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
-import { StyleProp, TextProps, ViewProps, ViewStyle } from 'react-native';
+import { StyleProp, TextProps, TextStyle, ViewProps, ViewStyle } from 'react-native';
 
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts"
 import  CloseIcon from '../../assets/icons/cross.svg'
