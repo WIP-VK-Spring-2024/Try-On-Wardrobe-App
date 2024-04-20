@@ -1,17 +1,12 @@
 import { apiEndpoint } from "../../config";
 import { cacheManager } from "../cacheManager/cacheManager";
-import { appState } from "../stores/AppState";
+import { processNetworkError } from "../stores/AppState";
 import { GarmentCard, garmentStore } from "../stores/GarmentStore";
 import { outfitPurposeStore } from "../stores/OutfitGenStores";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
-
-const processNetworkError = (err: any) => {
-    console.log(err);
-    appState.setError('network')
-}
 
 const typesRequest = fetch(apiEndpoint + 'types').then(data => {
     return data.json().then(types => {

@@ -1,17 +1,29 @@
 import React, { PropsWithChildren } from 'react';
-import {ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, SelectPortal, Text} from '@gluestack-ui/themed';
-import {observer} from 'mobx-react-lite';
+import { ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, SelectPortal, Text } from '@gluestack-ui/themed';
+import { observer } from 'mobx-react-lite';
 import { Select } from '@gluestack-ui/themed';
 import { SelectTrigger } from '@gluestack-ui/themed';
 import { SelectContent, View } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
-import { SelectDragIndicator } from '@gluestack-ui/themed';
-import { Input, Menu, MenuItem, Pressable, InputField, Box } from '@gluestack-ui/themed';
-import {  StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
+import { SelectDragIndicator, Icon, ButtonGroup, Heading } from '@gluestack-ui/themed';
+import { Input, Menu, MenuItem, Pressable, InputField, ButtonText, Button, Box } from '@gluestack-ui/themed';
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogCloseButton,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogContent,
+  AlertDialogHeader,
+} from '@gluestack-ui/themed';
+import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
 import { StyleProp, TextProps, ViewProps, ViewStyle } from 'react-native';
 
+import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts"
+import  CloseIcon from '../../assets/icons/cross.svg'
 import DotsIcon from '../../assets/icons/dots-vertical.svg'
 import TrashIcon from '../../assets/icons/trash.svg'
+import { appState } from '../stores/AppState';
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -153,3 +165,57 @@ export const DeleteMenu = (props: DeleteMenuProps) => {
     </Menu>
   )
 }
+
+interface DeletionModalProps {
+  onConfirm: (uuid: string) => void
+  ref?: React.RefObject<any>
+  text: string;
+}
+
+export const DeletionModal = observer(({onConfirm, ref, text} : DeletionModalProps) => {
+  return (
+    <AlertDialog
+      isOpen={appState.deleteModalVisible}
+      onClose={appState.hideDeleteModal}
+    >
+      <AlertDialogBackdrop />
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <Heading size="lg">Вы уверены?</Heading>
+          <AlertDialogCloseButton>
+            <Icon as={CloseIcon} />
+          </AlertDialogCloseButton>
+        </AlertDialogHeader>
+        <AlertDialogBody>
+          <RobotoText size="md">{text}</RobotoText>
+        </AlertDialogBody>
+        <AlertDialogFooter        >
+          <ButtonGroup space="lg">
+            <Button
+              size="lg"
+              variant="outline"
+              action="negative"
+              bg="#ffffff"
+              onPress={() => {
+                if (appState.deleteUUID) {
+                  onConfirm(appState.deleteUUID);
+                }
+                appState.hideDeleteModal();
+              }}
+            >
+              <ButtonText>Удалить</ButtonText>
+            </Button>
+
+            <Button
+              size="lg"
+              bg={ACTIVE_COLOR}
+              onPress={() => appState.hideDeleteModal()}
+            >
+              <ButtonText>Не удалять</ButtonText>
+            </Button>
+          </ButtonGroup>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+});

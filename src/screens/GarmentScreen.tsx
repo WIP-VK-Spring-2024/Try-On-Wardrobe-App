@@ -39,6 +39,7 @@ export const GarmentHeader = (props: {name?: string, route: any, navigation: any
       navigation={props.navigation}
       text={props.name || "Карточка"}
       fontSize={24}
+      textOverflowEllipsis={true}
       rightMenu={
       <Pressable
         onPress={async ()=>{

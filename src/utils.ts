@@ -1,8 +1,8 @@
 import { ImageType } from "./models";
-import RNFS from 'react-native-fs';
+import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
-import { Rating, TryOnResultCard} from "./stores/TryOnStore";
+import { TryOnResultCard} from "./stores/TryOnStore";
 
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {

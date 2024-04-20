@@ -16,24 +16,6 @@ interface TooltipProps {
   margin?: number;
 }
 
-const styles = StyleSheet.create({
-  modalContent: {
-    flex: 1,
-    justifyContent: 'center',
-    margin: '5%',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    backgroundColor: "#00000066"
-  },
-});
-
 export const Tooltip = observer(
   (props: TooltipProps & React.PropsWithChildren) => {
     return (

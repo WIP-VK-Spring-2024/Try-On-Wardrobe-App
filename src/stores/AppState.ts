@@ -2,11 +2,20 @@ import {makeObservable, observable, action, computed} from 'mobx';
 
 export type Screen = 'Home' | 'TryOn' | 'Feed' | 'OutfitSelection'
 
+export const processNetworkError = (err: any) => {
+  console.log(err);
+  appState.setError('network')
+}
+
 class AppStateStore {
     error: string | undefined
     successMessage: string | undefined
+
     createMenuVisible: boolean
     filterModalVisible: boolean
+
+    deleteModalVisible: boolean;
+    deleteUUID: string | undefined;
 
     JWTToken: string | undefined
     userID: string | undefined
@@ -18,6 +27,7 @@ class AppStateStore {
       this.successMessage = undefined
       this.createMenuVisible = false
       this.filterModalVisible = false;
+      this.deleteModalVisible = false;
       this.screen = 'Home'
       
       makeObservable(this, {
@@ -25,6 +35,7 @@ class AppStateStore {
         successMessage: observable,
         createMenuVisible: observable,
         filterModalVisible: observable,
+        deleteModalVisible: observable,
         screen: observable,
   
         setError: action,
@@ -34,6 +45,8 @@ class AppStateStore {
         setCreateMenuVisible: action,
         setFilterModalVisible: action,
         toggleCreateMenuVisible: action,
+        openDeleteModal: action,
+        hideDeleteModal: action,
         setScreen: action,
   
         hasError: computed
@@ -67,6 +80,16 @@ class AppStateStore {
   
     toggleCreateMenuVisible() {
       this.createMenuVisible = !this.createMenuVisible;
+    }
+
+    openDeleteModal(deleteUUID: string) {
+      this.deleteModalVisible = true;
+      this.deleteUUID = deleteUUID;
+    }
+
+    hideDeleteModal() {
+      this.deleteModalVisible = false;
+      this.deleteUUID = undefined;
     }
   
     closeError() {

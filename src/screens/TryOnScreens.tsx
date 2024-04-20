@@ -23,8 +23,10 @@ import { FilterModal } from "../components/FilterModal";
 import { DisableableSelectionGarmentList } from "../components/GarmentList";
 import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
-import { RobotoText, UnorderedList } from "../components/common"
+import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
 import { PRIMARY_COLOR } from "../consts";
+import { appState } from "../stores/AppState";
+import { deleteUserPhoto } from "../requests/user_photo"
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -178,6 +180,10 @@ export const PersonSelectionScreen = observer(
         <FilterModal
           styleSelectionStore={tryOnScreenStyleSelectionStore}
           tagsSelectionStore={tryOnScreenTagsSelectionStore}
+        />
+        <DeletionModal
+          onConfirm={deleteUserPhoto}
+          text="Удалить ваше фото?"
         />
       </>
     );

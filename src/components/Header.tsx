@@ -104,6 +104,7 @@ interface BackHeaderProps {
   fontSize?: number
   rightMenu?: ReactNode
   text?: string
+  textOverflowEllipsis?: boolean;
   onBackPress?: ()=>void
 }
 
@@ -125,7 +126,7 @@ export const BackHeader = (props: BackHeaderProps & React.PropsWithChildren) => 
         {props.children || (
           <RobotoText
             color="#000"
-            numberOfLines={1}
+            numberOfLines={props.textOverflowEllipsis ? 1 : undefined}
             textAlign="center"
             fontSize={props.fontSize || 32}>
             {props.text}

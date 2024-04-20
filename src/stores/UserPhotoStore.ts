@@ -17,6 +17,7 @@ class UserPhotoStore {
 
             setPhotos: action,
             addPhoto: action,
+            removePhoto: action,
         })
     }
 
@@ -26,6 +27,13 @@ class UserPhotoStore {
 
     addPhoto(photo: UserPhoto) {
         this.photos.push(photo);
+    }
+
+    removePhoto(uuid: string) {
+      const idx = this.photos.findIndex((photo) => photo.uuid == uuid)
+      if (idx != -1) {
+        this.photos.splice(idx, 1)
+      }
     }
 }
 
