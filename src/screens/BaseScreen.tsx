@@ -19,15 +19,19 @@ interface BaseScreenProps {
 }
 
 export const BaseScreen = observer((props: BaseScreenProps & React.PropsWithChildren) => {
-  const header = props.header || <Header/>;
-  const footer = props.footer === null ? null : props.footer || <Footer navigation={props.navigation} />;
+  const header = props.header === null
+                ? null
+                : props.header || <Header navigation={props.navigation} />;
+
+  const footer = props.footer === null
+                ? null
+                : props.footer || <Footer navigation={props.navigation} />;
 
   useFocusEffect(
     React.useCallback(() => {
       if (props.screen) {
         appState.setScreen(props.screen);
       }
-      appState.hideDeleteModal()
       appState.setCreateMenuVisible(false);
     }, [props.screen])
   );

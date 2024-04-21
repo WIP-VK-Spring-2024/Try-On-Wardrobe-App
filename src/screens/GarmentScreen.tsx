@@ -4,17 +4,12 @@ import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, Alert
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
-import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
+import { CustomSelect, IconWithCaption, RobotoText, UpdateableText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
-import { Icon } from '@gluestack-ui/themed';
-import { AlertDialogFooter } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { ButtonText } from '@gluestack-ui/themed';
-import { CloseIcon } from '@gluestack-ui/themed';
 import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
-import { apiEndpoint } from '../../config';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
 
@@ -164,56 +159,24 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   );
 
   const CloseAlertDialog = observer(() => {
-    const closeDialog = () => {
-      setShowAlertDialog(false);
-      props.navigation.dispatch(StackActions.pop(1));
-    }
     return (
-      <AlertDialog
+      <AlertModal
+        header="Сохранение"
+        text="Вы действительно хотите выйти, не сохранив изменения?"
+        noText='Сбросить'
+        yesText='Сохранить'
         isOpen={showAlertDialog}
-        onClose={() => {
-          setShowAlertDialog(false);
+        hide={() => setShowAlertDialog(false)}
+        onAccept={() => {
+          garment.saveChanges();
+          props.navigation.dispatch(StackActions.pop(1));
         }}
-      >
-        <AlertDialogBackdrop />
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <Heading size="lg">Сохранение</Heading>
-            <AlertDialogCloseButton>
-              <Icon as={CloseIcon} />
-            </AlertDialogCloseButton>
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <RobotoText size="sm">
-              Вы действительно хотите выйти, не сохранив изменения?
-            </RobotoText>
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <ButtonGroup space="lg">
-              <Button
-                variant="outline"
-                action="secondary"
-                onPress={() => {
-                  garment.clearChanges();
-                  closeDialog();
-                }}
-              >
-                <ButtonText>Сбросить</ButtonText>
-              </Button>
-              <Button
-                bg={ACTIVE_COLOR}
-                onPress={() => {
-                  garment.saveChanges();
-                  closeDialog();
-                }}
-              >
-                <ButtonText>Сохранить</ButtonText>
-              </Button>
-            </ButtonGroup>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    )
+        onReject={() => {
+          garment.clearChanges();
+          props.navigation.dispatch(StackActions.pop(1));
+        }}
+      />
+    );
   });
 
   const SeasonIconPressable = (props: React.PropsWithChildren & {season: Season}) => {

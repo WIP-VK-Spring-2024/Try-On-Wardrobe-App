@@ -41,8 +41,8 @@ const TryOnComponentsBlock = observer(({userPhoto, garments, navigation} : TryOn
           source={getImageSource(userPhoto.image)}
           style={{
             width: (WINDOW_WIDTH - 40) / 2,
-            // height: WINDOW_HEIGHT / 3,
-            aspectRatio: 1
+            height: WINDOW_HEIGHT / 3 - 40,
+            // aspectRatio: 1
           }}
           overlayBackgroundColor={BASE_COLOR + 'a0'}
           resizeMode="contain"

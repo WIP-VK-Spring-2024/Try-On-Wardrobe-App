@@ -190,7 +190,7 @@ export const PersonSelectionScreen = observer(
           tagsSelectionStore={tryOnScreenTagsSelectionStore}
         />
         <DeletionModal
-          onConfirm={deleteUserPhoto}
+          onAccept={deleteUserPhoto}
           text="Удалить ваше фото?"
           isOpen={deletionModalShown}
           deleteUUID={deleteUUID}
@@ -206,7 +206,7 @@ export const PersonSelectionScreen = observer(
 
 export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   const footer = <Footer navigation={navigation} />;
-  const header = <Header rightMenu={null} />;
+  const header = <Header navigation={navigation} rightMenu={null} />;
 
   return (
     <>

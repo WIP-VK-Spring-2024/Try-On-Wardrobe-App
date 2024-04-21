@@ -19,6 +19,7 @@ import { FilterStore } from '../stores/FilterStore';
 import { GarmentCard } from '../stores/GarmentStore';
 import { ajax } from '../requests/common';
 import { cacheManager } from '../cacheManager/cacheManager';
+import { profileStore } from '../stores/ProfileStore';
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -39,32 +40,23 @@ const HeaderBase = (props: PropsWithChildren) => {
 
 interface HeaderProps {
   rightMenu?: ReactNode
+  navigation: any
 }
 
-export const Header = observer(({ rightMenu }: HeaderProps) => {
-  const navigation = useNavigation();
-
+export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
         <Pressable
           onPress={() => {
-            ajax.apiPost('/logout', {
-              credentials: true
-            }).then(resp => {
-              console.log(resp);
-              cacheManager.deleteToken();
-              navigation.navigate('Login');
-            }).catch(reason => {
-              console.error(reason);
-            })
+              navigation.navigate('Profile');
           }}
         >
           <Avatar 
             bg={PRIMARY_COLOR} 
             borderRadius="$full"
           >
-            <AvatarFallbackText>{appState.userName}</AvatarFallbackText>
+            <AvatarFallbackText>{profileStore.name}</AvatarFallbackText>
           </Avatar>
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">

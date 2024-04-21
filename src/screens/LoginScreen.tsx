@@ -10,6 +10,9 @@ import { initCentrifuge } from "../requests/centrifuge";
 import { initStores } from "../requests/init";
 import { ajax } from "../requests/common";
 import { cacheManager } from "../cacheManager/cacheManager";
+import { profileStore } from "../stores/ProfileStore";
+import { Gender } from "../stores/common";
+import { convertLoginResponse, LoginSuccessResponse } from "../utils"
 
 interface LoginBtnProps {
   text: string
@@ -42,6 +45,12 @@ interface TabProps {
   navigation: any
 }
 
+interface ErrorResponse {
+  msg: string
+}
+
+type LoginResponse = LoginSuccessResponse | ErrorResponse;
+
 const LoginTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -55,20 +64,6 @@ const LoginTab = observer((props: TabProps) => {
     ajax.apiPost('/login', {
       body: JSON.stringify(params)
     }).then(async resp => {
-      console.log(resp);
-
-      interface LoginSuccessResponse {
-        token: string
-        user_id: string
-        user_name: string
-      } 
-
-      interface ErrorResponse {
-        msg: string
-      }
-
-      type LoginResponse = LoginSuccessResponse | ErrorResponse;
-
       resp.json().then((json: LoginResponse) => {
         
         if ('msg' in json) {
@@ -82,11 +77,14 @@ const LoginTab = observer((props: TabProps) => {
           json.user_id
         );
 
-        appState.setUserName(json.user_name)
+        profileStore.setUser(convertLoginResponse(json));
         cacheManager.writeToken();
 
         initCentrifuge();
         initStores();
+
+        setLogin('');
+        setPassword('');
 
         props.navigation.navigate('Home');
 
@@ -119,7 +117,7 @@ const SignUpTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [sex, setSex] = useState("female");
+  const [sex, setSex] = useState<Gender>("female");
 
   const signUp = () => {
     const params = {

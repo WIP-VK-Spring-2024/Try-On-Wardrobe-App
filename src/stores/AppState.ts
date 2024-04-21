@@ -16,7 +16,6 @@ class AppStateStore {
 
     JWTToken: string | undefined
     userID: string | undefined
-    userName: string
 
     screen: Screen
   
@@ -26,18 +25,15 @@ class AppStateStore {
       this.createMenuVisible = false
       this.filterModalVisible = false;
       this.screen = 'Home'
-      this.userName = ''
       
       makeObservable(this, {
         error: observable,
         successMessage: observable,
         createMenuVisible: observable,
         filterModalVisible: observable,
-        userName: observable,
         screen: observable,
   
         setError: action,
-        setUserName: action,
         setSuccessMessage: action,
         closeError: action,
         closeSuccessMessage: action,
@@ -54,6 +50,11 @@ class AppStateStore {
       this.JWTToken = JWTToken;
       this.userID = userID;
     }
+
+    logout() {
+      this.JWTToken = undefined;
+      this.userID = undefined;
+    }
     
     setError(error: string | undefined) {
       this.error = error;
@@ -61,10 +62,6 @@ class AppStateStore {
 
     setScreen(screen: Screen) {
       this.screen = screen;
-    }
-  
-    setUserName(name: string) {
-      this.userName = name;
     }
 
     setSuccessMessage(msg: string | undefined) {

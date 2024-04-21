@@ -114,7 +114,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
   
   return (
     <View height="100%">
-      <Header/>
+      <Header navigation={props.navigation}/>
 
       <FlatList
         numColumns={3}

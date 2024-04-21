@@ -47,7 +47,7 @@ interface OutfitSelectionScreenProps {
 }
 
 export const OutfitSelectionScreen = observer((props: OutfitSelectionScreenProps) => {
-  const header = <Header rightMenu={null} /> 
+  const header = <Header navigation={props.navigation} rightMenu={null} /> 
 
   return (
     <>

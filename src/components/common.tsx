@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { Children, PropsWithChildren } from 'react';
 import { ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, SelectPortal, Text } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 import { Select } from '@gluestack-ui/themed';
@@ -7,6 +7,7 @@ import { SelectContent, View } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
 import { SelectDragIndicator, Icon, ButtonGroup, Heading } from '@gluestack-ui/themed';
 import { Input, Menu, MenuItem, Pressable, InputField, ButtonText, Button, Box } from '@gluestack-ui/themed';
+
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -16,13 +17,25 @@ import {
   AlertDialogContent,
   AlertDialogHeader,
 } from '@gluestack-ui/themed';
+
+import {
+  Modal as GluestackModal,
+  ModalBackdrop,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  ModalContent,
+  ModalHeader,
+} from '@gluestack-ui/themed';
+
 import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
 import { StyleProp, TextProps, TextStyle, ViewProps, ViewStyle } from 'react-native';
 
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts"
-import  CloseIcon from '../../assets/icons/cross.svg'
 import DotsIcon from '../../assets/icons/dots-vertical.svg'
 import TrashIcon from '../../assets/icons/trash.svg'
+
+import { CloseIcon } from '@gluestack-ui/themed';
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -165,24 +178,27 @@ export const DeleteMenu = (props: DeleteMenuProps) => {
   )
 }
 
-interface DeletionModalProps {
-  deleteUUID?: string
-  onConfirm: (uuid: string) => void
+interface AlertModalProps {
+  onAccept: () => void
+  onReject?: () => void
+  header?: string
+  yesText?: string
+  noText?: string
   text: string
   hide: () => void
   isOpen: boolean
 }
 
-export const DeletionModal = observer(({onConfirm, text, isOpen, hide, deleteUUID} : DeletionModalProps) => {
+export const AlertModal = observer(({onAccept, onReject, text, isOpen, hide, header, noText, yesText} : AlertModalProps) => {
   return (
     <AlertDialog
       isOpen={isOpen}
-      onClose={hide}
+      onClose={() => hide()}
     >
       <AlertDialogBackdrop />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <Heading size="lg">Вы уверены?</Heading>
+          <Heading size="lg">{header || 'Вы уверены?'}</Heading>
           <AlertDialogCloseButton>
             <Icon as={CloseIcon} />
           </AlertDialogCloseButton>
@@ -195,28 +211,80 @@ export const DeletionModal = observer(({onConfirm, text, isOpen, hide, deleteUUI
             <Button
               size="lg"
               variant="outline"
-              action="negative"
-              bg="#ffffff"
+              action="secondary"
               onPress={() => {
-                if (deleteUUID) {
-                  onConfirm(deleteUUID);
-                }
                 hide();
+                onReject && onReject();
               }}
             >
-              <ButtonText>Удалить</ButtonText>
+              <ButtonText>{noText || 'Нет'}</ButtonText>
             </Button>
 
             <Button
               size="lg"
               bg={ACTIVE_COLOR}
-              onPress={hide}
+              onPress={() => {
+                onAccept();
+                hide();
+              }}
             >
-              <ButtonText>Не удалять</ButtonText>
+              <ButtonText>{yesText || 'Да'}</ButtonText>
             </Button>
           </ButtonGroup>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   )
+});
+
+interface DeletionModalProps {
+  deleteUUID?: string
+  onAccept: (uuid: string) => void
+  text: string
+  hide: () => void
+  isOpen: boolean
+}
+
+export const DeletionModal = observer(({onAccept, text, isOpen, hide, deleteUUID} : DeletionModalProps) => {
+  return (
+    <AlertModal
+      text={text}
+      yesText="Удалить"
+      noText="Не удалять"
+      hide={hide}
+      isOpen={isOpen}
+      onAccept={() => deleteUUID && onAccept(deleteUUID)}
+    />
+  );
+});
+
+interface ModalProps {
+  isOpen: boolean
+  hide: () => void
+  ref?: React.RefObject<any>
+  footer?: JSX.Element
+}
+
+export const Modal = observer(({isOpen, hide, ref, children, footer}: ModalProps & React.PropsWithChildren) => {
+  return (
+    <GluestackModal
+      isOpen={isOpen}
+      onClose={() => hide()}
+      size='full'
+      finalFocusRef={ref}
+      padding={20}
+    >
+      <ModalBackdrop/>
+      <ModalContent>
+        <ModalBody>
+          {children}
+        </ModalBody>
+        <ModalFooter
+          justifyContent="space-around"
+        >
+          {footer}
+        </ModalFooter>
+      </ModalContent>
+    </GluestackModal>
+  );
 });

@@ -3,10 +3,21 @@ import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
 import { TryOnResultCard} from "./stores/TryOnStore";
+import { Gender, Privacy } from "./stores/common";
+import { User } from "./stores/ProfileStore";
 
 export interface ImageSourceType {
   uri: string
 }
+
+export interface LoginSuccessResponse {
+    token: string
+    user_id: string
+    user_name: string
+    email: string
+    privacy: Privacy
+    gender: Gender
+  } 
 
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
@@ -34,6 +45,16 @@ interface GarmentResponse {
   tags: string[],
   seasons: Season[],
   tryonable: boolean,
+}
+
+export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
+    return {
+        name: resp.user_name,
+        uuid: resp.user_id,
+        privacy: resp.privacy,
+        email: resp.email,
+        gender: resp.gender,
+    }
 }
 
 export const convertGarmentResponse = (cloth: GarmentResponse) => {
