@@ -4,6 +4,10 @@ import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
 import { TryOnResultCard} from "./stores/TryOnStore";
 
+export interface ImageSourceType {
+  uri: string
+}
+
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
     return { 

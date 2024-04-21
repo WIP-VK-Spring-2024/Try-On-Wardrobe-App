@@ -7,6 +7,7 @@ import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import { RobotoText } from './common';
 
 import ImageModal from 'react-native-image-modal';
+import { ImageSourceType } from '../utils';
 
 export const CARD_SIZE = {
   height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
@@ -82,7 +83,7 @@ export const ListImage = observer((props: ListImageProps) => {
   },
 );
 
-export const ModalListImage = observer((props: { source: string | ImageSourcePropType }) => {
+export const ModalListImage = observer((props: { source: ImageSourceType }) => {
     return (
       <ImageModal
         {...props}

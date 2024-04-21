@@ -76,6 +76,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
         Icon={NewsPaperIcon}
         targetScreen='Feed'
         text='Лента'
+        navigation={navigation}
         size={normalSize}
       />
 

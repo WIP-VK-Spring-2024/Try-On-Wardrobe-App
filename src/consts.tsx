@@ -1,15 +1,8 @@
 import {Dimensions} from 'react-native';
 
-// export const ACTIVE_COLOR = '#E5989B';
-// export const BASE_COLOR = '#6D597A';
-
-// export const ACTIVE_COLOR = '#E5989B';
-// export const BASE_COLOR = '#444444';
-
 export const PRIMARY_COLOR = '#E6CCB2';
 export const SECONDARY_COLOR = '#B08968';
 export const ACTIVE_COLOR = '#9C6644';
-// export const ACTIVE_COLOR = '#823038';
 
 export const BASE_COLOR = '#F0F0F0';
 export const HEADER_COLOR = '#FFFFFF';
