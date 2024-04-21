@@ -13,10 +13,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import { appState } from "../stores/AppState";
 import FastImage from "react-native-fast-image";
 import { Image } from "@gluestack-ui/themed";
+import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
 
 
 interface PostResponse {
   uuid: string
+  created_at: string
   updated_at: string
   outfit_id: string
   outfit_image: string
@@ -26,6 +28,7 @@ interface PostData {
   uuid: string
   outfit_id: string
   outfit_image: ImageType
+  created_at: string
 }
 
 interface PostCardProps {
@@ -69,37 +72,35 @@ interface FeedScreenProps {
 }
 
 export const FeedScreen = observer((props: FeedScreenProps) => {
-  const [data, setData] = useState<PostData[]>([]);
-
   useFocusEffect(() => {
     appState.setScreen('Feed');
   })
 
-  useEffect(() => {
+  const fetchData = (limit: number, since: string) => {
     const time = new Date();
-    ajax.apiGet(`/posts?limit=100&since=${time.toISOString()}`,{
-      credentials: true
-    }).then((resp: any) => {
-      console.log(resp);
-
-      resp.json().then((json: PostResponse[]) => {
-        console.log(json);
-        setData(json.map(item => ({
-          ...item,
-          outfit_image: {
-            type: 'remote',
-            uri: item.outfit_image
-          }
-        })));
+      return ajax.apiGet(`/posts?limit=${limit}&since=${since}`,{
+        credentials: true
+      }).then((resp: any) => {
+        console.log(resp);
+  
+        return resp.json().then((json: PostResponse[]) => {
+          console.log(json);
+          const data = json.map(item => ({
+            ...item,
+            outfit_image: {
+              type: 'remote',
+              uri: item.outfit_image
+            }
+          }));
+          return data;
+        })
       })
-    })
-  }, [])
+  }
 
   const renderItem = ((data: ListRenderItemInfo<PostData>) => {
     const {item} = data;
     console.log(item)
   
-
     return (
       <PostCard
         data={item}
@@ -116,9 +117,9 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
     <View height="100%">
       <Header/>
 
-      <FlatList
+      <InfiniteScrollList<PostData>
         numColumns={3}
-        data={data}
+        fetchData={fetchData}
         keyExtractor={item => item.uuid}
         renderItem={renderItem}
 
