@@ -34,7 +34,7 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
             uuid: res.uuid,
             name: 'Без названия',
             image: {
-                uri: `cut/${res.uuid}`,
+                uri: res.image,
                 type: 'remote'
             },
             tags: [],
