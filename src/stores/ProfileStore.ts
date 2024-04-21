@@ -9,7 +9,7 @@ export interface User {
     privacy: Privacy
 }
 
-interface Subscription {
+export interface Subscription {
     name: string
     uuid: string
 }

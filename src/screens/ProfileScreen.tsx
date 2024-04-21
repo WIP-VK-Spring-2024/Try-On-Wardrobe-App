@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { profileStore } from "../stores/ProfileStore";
+import { profileStore, Subscription } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
 import { Avatar, AvatarFallbackText, View, Pressable, ChevronLeftIcon, Button, ButtonText, Heading } from "@gluestack-ui/themed";
 import { RobotoText, AlertModal, Modal } from "../components/common";
@@ -12,6 +12,8 @@ import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
 import { SexSelector } from "../components/LoginForms"
 import { PrivacySelector } from "../components/PrivacySelector"
+import { updateUserSettings } from "../requests/user"
+import SearchIcon from "../../assets/icons/search.svg"
 
 const iconSize = 25
 
@@ -42,11 +44,9 @@ const UserInfo = observer(({navigation, onLogout, onSettings}: UserInfoProps) =>
       <BackButton navigation={navigation} flex={2} />
 
       <View flexDirection="row" alignItems="center" flex={10} gap={20}>
-        <View>
-          <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
-            <AvatarFallbackText>{profileStore.name}</AvatarFallbackText>
-          </Avatar>
-        </View>
+        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
+          <AvatarFallbackText>{profileStore.name}</AvatarFallbackText>
+        </Avatar>
 
         <View>
           <RobotoText fontSize={18}>{profileStore.name}</RobotoText>
@@ -62,7 +62,7 @@ const UserInfo = observer(({navigation, onLogout, onSettings}: UserInfoProps) =>
         alignItems="center"
         marginRight={5}>
         <Pressable onPress={() => onSettings()}>
-          <SettingsIcon width={iconSize} height={iconSize} stroke="#000000" />
+          <SettingsIcon width={iconSize} height={iconSize} fill="#000000" />
         </Pressable>
         <Pressable onPress={() => onLogout()}>
           <LogoutIcon
@@ -89,6 +89,7 @@ const SettingsModal = observer((props: {isOpen: boolean, hide: () => void}) => {
       size="lg"
       action="primary"
       onPress={() => {
+        updateUserSettings(gender, privacy);
         props.hide();
       }}>
       <ButtonText>Сохранить</ButtonText>
@@ -108,9 +109,83 @@ const SettingsModal = observer((props: {isOpen: boolean, hide: () => void}) => {
   );
 });
 
+interface SubProps {
+  uuid: string
+  name: string
+  navigation: any
+}
+
+const Sub = observer(({uuid, name, navigation}: SubProps) => {
+  return (
+    <Pressable
+      alignItems="center"
+      w={`${100 * subRowsNum / displayedSubsNum}%`}
+      onPress={() => {} /* navigation.navigate('') */}>
+      <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="md">
+        <AvatarFallbackText>{name}</AvatarFallbackText>
+      </Avatar>
+      <RobotoText numberOfLines={1}>{name}</RobotoText>
+    </Pressable>
+  );
+});
+
+interface SubBlockProps {
+  subs: Subscription[]
+  navigation: any
+}
+
+const displayedSubsNum = 5
+const subRowsNum = 1
+
+const SubsBlock = observer(({subs, navigation}: SubBlockProps) => {
+  return (
+    <View padding="$3" gap={10} marginTop={10}>
+      <View flexDirection="row" alignItems="center">
+        <RobotoText fontSize={18} marginRight={10}>Подписки</RobotoText>
+        <SearchIcon fill={"#000000"} width={20} height={20}/>
+      </View>
+        {[...Array(subRowsNum)].map((e, i) =>
+          <View flexDirection="row" justifyContent="space-evenly" key={i}>
+            {subs.slice(0, displayedSubsNum/subRowsNum).map((item, j) => (
+              <Sub
+                uuid={item.uuid}
+                name={item.name}
+                navigation={navigation}
+                key={j}
+              />))}
+          </View>
+        )}
+    </View>
+  );
+}); 
+
+const makeStubSubs = () => [
+  {
+    uuid: '123',
+    name: 'Anastasiaaaaaaaaaaaaaaaaa',
+  },
+  {
+    uuid: '345',
+    name: 'Leoniddddddddddddddddd',
+  },
+  {
+    uuid: '123',
+    name: 'Victor',
+  },
+  {
+    uuid: '123',
+    name: 'Timofey',
+  },
+]
+
 export const ProfileScreen = observer(({navigation}: {navigation: any}) => {
   const [logoutModalShown, setLogoutModalShown] = useState(false);
   const [settingsModalShown, setSettingsModalShown] = useState(false);
+  
+  let stubSubs: Subscription[] = []
+  for (let i = 0; i < 3; ++i) {
+    stubSubs = stubSubs.concat(makeStubSubs())
+  }
 
   return (
     <BaseScreen navigation={navigation} header={null} footer={null}>
@@ -119,6 +194,9 @@ export const ProfileScreen = observer(({navigation}: {navigation: any}) => {
         onLogout={() => setLogoutModalShown(true)}
         onSettings={() => setSettingsModalShown(true)}
       />
+
+      <SubsBlock navigation={navigation} subs={stubSubs}/>
+
       <AlertModal
         isOpen={logoutModalShown}
         hide={() => setLogoutModalShown(false)}

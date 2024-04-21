@@ -60,7 +60,7 @@ const TryOnComponentsBlock = observer(({userPhoto, garments, navigation} : TryOn
   );
 });
 
-export const TryOnResultScreen = observer((props: {route: any, navigation: any}) => {
+export const TryOnCardScreen = observer((props: {route: any, navigation: any}) => {
   const tryOnResult = props.route.params.tryOnResult as TryOnResultCard;
   const header = <BackHeader navigation={props.navigation} fontSize={24} text="Результат примерки" />
 

@@ -34,7 +34,7 @@ const PersonListCard = observer(
         h={CARD_SIZE.height}>
         <ListImage source={source} />
         <Pressable position='absolute' top={8} right={8} onPress={onDelete}>
-          <TrashIcon width={25} height={25} stroke="#000000"/>
+          <TrashIcon width={25} height={25} fill="#000000"/>
         </Pressable>
       </Pressable>
     );
