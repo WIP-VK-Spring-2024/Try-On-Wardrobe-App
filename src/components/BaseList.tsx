@@ -7,6 +7,7 @@ import AddBtnIcon from '../../assets/icons/add-btn.svg';
 import { RobotoText } from './common';
 
 import ImageModal from 'react-native-image-modal';
+import { ImageSourceType } from '../utils';
 
 
 const divideIntoPairs = (items: any[]) => {
@@ -69,7 +70,7 @@ export const ListImage = observer((props: { source: string | ImageSourcePropType
   },
 );
 
-export const ModalListImage = observer((props: { source: string | ImageSourcePropType }) => {
+export const ModalListImage = observer((props: { source: ImageSourceType }) => {
     return (
       <ImageModal
         {...props}

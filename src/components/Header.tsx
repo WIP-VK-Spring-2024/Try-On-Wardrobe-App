@@ -3,7 +3,7 @@ import React, { PropsWithChildren, ReactNode } from 'react';
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
 import {PRIMARY_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
-import { StackActions } from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 
 import FilterIcon from '../../assets/icons/filter.svg';
 import SettingsIcon from '../../assets/icons/settings.svg';
@@ -18,6 +18,8 @@ import { garmentScreenFilteredGarmentStore,
 
 import { FilterStore } from '../stores/FilterStore';
 import { GarmentCard } from '../stores/GarmentStore';
+import { ajax } from '../requests/common';
+import { cacheManager } from '../cacheManager/cacheManager';
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -41,12 +43,31 @@ interface HeaderProps {
 }
 
 export const Header = observer(({ rightMenu }: HeaderProps) => {
+  const navigation = useNavigation();
+
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full">
-          <AvatarFallbackText>{login}</AvatarFallbackText>
-        </Avatar>
+        <Pressable
+          onPress={() => {
+            ajax.apiPost('/logout', {
+              credentials: true
+            }).then(resp => {
+              console.log(resp);
+              cacheManager.deleteToken();
+              navigation.navigate('Login');
+            }).catch(reason => {
+              console.error(reason);
+            })
+          }}
+        >
+          <Avatar 
+            bg={PRIMARY_COLOR} 
+            borderRadius="$full"
+          >
+            <AvatarFallbackText>{login}</AvatarFallbackText>
+          </Avatar>
+        </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
           Try-On
         </RobotoText>

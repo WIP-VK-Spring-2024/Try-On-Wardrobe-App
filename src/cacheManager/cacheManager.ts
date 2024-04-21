@@ -95,6 +95,11 @@ export class CacheManager {
 
     }
 
+    async deleteToken() {
+        const path = this.joinDataDirPath('/token.tkn');
+        return RNFS.unlink(path);
+    }
+
     async writeToken() {
         if (appState.JWTToken === undefined) {
             console.error('unable to save undefined token');

@@ -16,8 +16,6 @@ interface InputProps {
 }
 
 export const LoginInput = observer((props: InputProps) => {
-  const [value, setValue] = useState(props.value);
-
   return (
     <FormControl
       size="md"
@@ -32,12 +30,9 @@ export const LoginInput = observer((props: InputProps) => {
       <Input>
         <InputField
           type="text"
-          value={value} 
+          value={props.value} 
           placeholder="логин" 
-          onChangeText={setValue}
-          onEndEditing={()=>{
-            props.setValue(value);
-          }}
+          onChangeText={props.setValue}
         />
       </Input>
     </FormControl>
@@ -45,8 +40,6 @@ export const LoginInput = observer((props: InputProps) => {
 })
 
 export const EmailInput = observer((props: InputProps) => {
-  const [value, setValue] = useState(props.value);
-
   return (
     <FormControl
       size="md"
@@ -61,12 +54,9 @@ export const EmailInput = observer((props: InputProps) => {
       <Input>
         <InputField
           type="text"
-          value={value} 
+          value={props.value} 
           placeholder="почта@mail.com"
-          onChangeText={setValue}
-          onEndEditing={()=>{
-            props.setValue(value);
-          }}
+          onChangeText={props.setValue}
         />
       </Input>
     </FormControl>
@@ -74,8 +64,6 @@ export const EmailInput = observer((props: InputProps) => {
 })
 
 export const PasswordInput = observer((props: InputProps) => {
-  const [value, setValue] = useState(props.value);
-
   return (
     <FormControl
       size="md"
@@ -90,12 +78,9 @@ export const PasswordInput = observer((props: InputProps) => {
       <Input>
         <InputField 
           type="password"
-          value={value} 
+          value={props.value} 
           placeholder="пароль" 
-          onChangeText={setValue}
-          onEndEditing={()=>{
-            props.setValue(value);
-          }}
+          onChangeText={props.setValue}
         />
       </Input>
       {/* <FormControlHelper>

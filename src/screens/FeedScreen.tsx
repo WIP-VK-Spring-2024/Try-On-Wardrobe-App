@@ -95,7 +95,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
     })
   }, [])
 
-  const renderItem: ListRenderItem<PostData> = ((data: ListRenderItemInfo<PostState>) => {
+  const renderItem = ((data: ListRenderItemInfo<PostData>) => {
     const {item} = data;
     console.log(item)
   

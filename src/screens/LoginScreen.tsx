@@ -56,18 +56,41 @@ const LoginTab = observer((props: TabProps) => {
 
     ajax.apiPost('/login', {
       body: JSON.stringify(params)
-    }).then(resp => {
+    }).then(async resp => {
       console.log(resp);
-      resp.json().then((json: {token: string, user_id: string}) => {
+
+      interface LoginSuccessResponse {
+        token: string, 
+        user_id: string
+      } 
+
+      interface ErrorResponse {
+        msg: string
+      }
+
+      type LoginResponse = LoginSuccessResponse | ErrorResponse;
+
+      resp.json().then((json: LoginResponse) => {
+        
+        if ('msg' in json) {
+          console.error(json.msg);
+          return false;
+        }
+        
         console.log(json);
         appState.login(
           json.token,
           json.user_id
         );
+
         cacheManager.writeToken();
+
         initCentrifuge();
         initStores();
+
         props.navigation.navigate('Home');
+
+        return true;
       })
     }).catch(reason => {
       console.error(reason);
