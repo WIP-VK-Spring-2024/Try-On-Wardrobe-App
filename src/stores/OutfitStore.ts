@@ -1,6 +1,8 @@
 import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
 import { GarmentCard, garmentStore } from './GarmentStore';
+import { Image } from 'react-native';
+import { getImageSource } from '../utils';
 
 interface OutfitItemRectProps {
     x?: number
@@ -149,20 +151,36 @@ export class Outfit {
         this.items = this.items.concat(items);
     }
 
-    addGarments(garments: GarmentCard[]) {
-        const cardToItem = (garment: GarmentCard) => {
+    async addGarments(garments: GarmentCard[]) {
+        const getDimensions = (img: ImageType): Promise<{width: number, height: number}> => {
+            return new Promise((resolve, reject) => {
+                Image.getSize(getImageSource(img).uri, (width: number, height: number) => {
+                    resolve({width, height});
+                })
+            })
+        }
+
+        const cardToItem = async (garment: GarmentCard) => {
+            const dimensions = await getDimensions(garment.image);
+            const aspectRatio = dimensions.width / dimensions.height;
             return new OutfitItem({
                 garmentUUID: garment.uuid!,
                 rect: new OutfitItemRect({
                     x: 200,
                     y: 300,
-                    width: 200,
+                    width: 200 * aspectRatio,
                     height: 200,
                 })
             })
         }
 
-        this.addItems(garments.map(cardToItem));
+        const items = await Promise.all(garments.map(cardToItem));
+
+        this.addItems(items);
+
+        // Image.getSize(getImageSource(item.image).uri, (width, height) => {
+        //     console.log(width, height);
+        // })
     }
 
     removeGarment(garment: GarmentCard) {

@@ -18,7 +18,7 @@ import { RotateHandle } from "./RotateHandle";
 import { ScaleHandle } from "./ScaleHandle";
 import { GestureDetectorView } from "./GestureDetectorView";
 import { EditorMenu } from "./EditorMenu";
-import { GarmentRect } from "../../screens/OutfitEditorScreen";
+import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen";
 import { Outfit } from "../../stores/OutfitStore";
 
 interface OutfitEditorProps {

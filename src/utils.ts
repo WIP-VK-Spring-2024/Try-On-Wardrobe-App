@@ -113,6 +113,9 @@ export function getUnique<G> (arr: G[]) {
   return [...new Set(arr)];
 }
 
+export function getLast (arr: string): string;
+export function getLast<T> (arr: T[]): T;
+
 export function getLast<T> (arr: string | T[]) {
   return arr[arr.length - 1];
 }

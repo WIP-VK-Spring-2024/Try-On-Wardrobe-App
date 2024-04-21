@@ -1,20 +1,20 @@
-import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import { BaseScreen } from "./BaseScreen";
+import { observer } from "mobx-react-lite";
+import { BaseScreen } from "../BaseScreen";
 import { FormControl, FormControlHelper, FormControlLabel, Textarea } from "@gluestack-ui/themed";
 import { TextareaInput } from "@gluestack-ui/themed";
 import { FormControlHelperText } from "@gluestack-ui/themed";
 import { View } from "@gluestack-ui/themed";
 import { CheckboxGroup } from "@gluestack-ui/themed";
-import { outfitGenFormTagsStore, outfitPurposeStore } from "../stores/OutfitGenStores";
-import { Checkbox } from "../components/Checkbox";
-import { RobotoText } from "../components/common";
+import { outfitGenFormTagsStore, outfitPurposeStore } from "../../stores/OutfitGenStores";
+import { Checkbox } from "../../components/Checkbox";
+import { RobotoText } from "../../components/common";
 import { Divider } from "@gluestack-ui/themed";
-import { TagCheckboxBlock } from "../components/TagCheckboxBlock";
-import { BackHeader } from "../components/Header";
-import { ButtonFooter } from "../components/Footer";
-import { apiEndpoint } from "../../config";
-import { ajax } from "../requests/common";
+import { TagCheckboxBlock } from "../../components/TagCheckboxBlock";
+import { BackHeader } from "../../components/Header";
+import { ButtonFooter } from "../../components/Footer";
+import { apiEndpoint } from "../../../config";
+import { ajax } from "../../requests/common";
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {

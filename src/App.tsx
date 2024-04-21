@@ -17,17 +17,18 @@ import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
-import { OutfitEditorScreen } from './screens/OutfitEditorScreen';
+import { OutfitEditorScreen } from './screens/outfit/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
-import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
-import { OutfitGenFormScreen } from './screens/OutfitGenForm';
-import { OutfitGenResultScreen } from './screens/OutfitGenResult';
+import { OutfitScreen } from './screens/outfit/OutfitScreen';
+import { OutfitSelectionScreen } from './screens/outfit/OutfitSelectionScreen';
+import { OutfitGenFormScreen } from './screens/outfit/OutfitGenForm';
+import { OutfitGenResultScreen } from './screens/outfit/OutfitGenResult';
 import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
-import { TryOnResultScreen as TryOnCardScreen } from './screens/TryOnResultScreen';
+import { TryOnCardScreen } from './screens/TryOnCardScreen';
+import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
 
 export const Stack = createNativeStackNavigator();
 
