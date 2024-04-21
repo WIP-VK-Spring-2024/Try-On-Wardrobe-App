@@ -1,25 +1,25 @@
 import React, { PropsWithChildren } from "react";
 import { observer } from "mobx-react-lite";
-import { BaseScreen } from './BaseScreen';
-import { GarmentCard } from "../stores/GarmentStore";
+import { BaseScreen } from '../BaseScreen';
+import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
-import { RobotoText } from "../components/common";
-import { getImageSource } from "../utils";
-import { Outfit, OutfitItem, outfitStore } from "../stores/OutfitStore";
+import { RobotoText } from "../../components/common";
+import { getImageSource } from "../../utils";
+import { Outfit, OutfitItem, outfitStore } from "../../stores/OutfitStore";
 
-import TrashIcon from '../../assets/icons/trash.svg';
-import AddBtnIcon from '../../assets/icons/add-btn.svg';
-import { MultipleSelectionGarmentList } from "../components/GarmentList";
-import { BackHeader, GarmentHeaderButtons } from "../components/Header";
-import { ButtonFooter } from "../components/Footer";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
-import { outfitScreenGarmentSelectionStore, outfitScreenTypeSelectionStore, outfitScreenSubtypeSelectionStore } from "../store";
+import { MultipleSelectionGarmentList } from "../../components/GarmentList";
+import { BackHeader, GarmentHeaderButtons } from "../../components/Header";
+import { ButtonFooter } from "../../components/Footer";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../../consts";
+import { outfitScreenGarmentSelectionStore, outfitScreenTypeSelectionStore, outfitScreenSubtypeSelectionStore } from "../../store";
 import { StackActions } from "@react-navigation/native";
-import { deleteOutfit } from "../requests/outfit";
-import { TypeFilter } from "../components/FilterBlock"
+import { deleteOutfit } from "../../requests/outfit";
+import { TypeFilter } from "../../components/FilterBlock"
 
-import DotsIcon from '../../assets/icons/dots-vertical.svg';
-import HangerIcon from '../../assets/icons/hanger.svg';
+import DotsIcon from '../../../assets/icons/dots-vertical.svg';
+import HangerIcon from '../../../assets/icons/hanger.svg';
+import TrashIcon from '../../../assets/icons/trash.svg';
+import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -136,53 +136,6 @@ const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => 
     </Pressable>
   )
 })
-
-interface OutfitGarmentSelectionScreenProps {
-  navigation: any
-  route: any
-}
-
-export const OutfitGarmentSelectionScreen = observer(
-  (props: OutfitGarmentSelectionScreenProps) => {
-
-    const outfit = props.route.params.outfit;
-
-    const header = (
-      <BackHeader
-        rightMenu={<GarmentHeaderButtons />}
-        navigation={props.navigation}
-        text="Одежда"
-      />
-    )
-
-    const footer = outfitScreenGarmentSelectionStore.somethingIsSelected
-      ? <ButtonFooter
-        onPress={()=>{
-          outfit.addGarments(outfitScreenGarmentSelectionStore.selectedItems);
-          outfitScreenGarmentSelectionStore.clearSelectedItems();
-          props.navigation.dispatch(StackActions.pop(1));
-          props.navigation.navigate("Editor", {outfit: outfit});
-        }}
-      />
-      : undefined
-
-    return (
-      <BaseScreen 
-        navigation={props.navigation}
-        header={header}
-        footer={footer}
-      >
-        <TypeFilter
-            typeStore={outfitScreenTypeSelectionStore}
-            subtypeStore={outfitScreenSubtypeSelectionStore}
-        />
-
-        <MultipleSelectionGarmentList 
-          store={outfitScreenGarmentSelectionStore}
-        />
-      </BaseScreen>
-    )
-});
 
 interface HeaderMenuProps {
   onDelete: () => void

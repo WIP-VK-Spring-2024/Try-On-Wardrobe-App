@@ -8,94 +8,15 @@ import { AvatarFallbackText } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
 
-import ForwardIcon from '../../assets/icons/forward.svg';
-import SendIcon from '../../assets/icons/send.svg';
 import { getImageSource } from "../utils";
 import { Image } from "@gluestack-ui/themed";
 import { BackHeader } from "../components/Header";
+import { PostComment, PostCommentProps } from "../components/feed/PostComment";
+import { AddCommentForm } from "../components/feed/AddCommentForm";
 
-interface PostCommentAvatarColumnProps {
-  authorName: string
-}
-
-const PostCommentAvatarColumn = observer((props: PostCommentAvatarColumnProps) => {
-  return (
-    <View
-      marginTop={10}
-    >
-      <Avatar bg={PRIMARY_COLOR} borderRadius="$full">
-        <AvatarFallbackText>{props.authorName}</AvatarFallbackText>
-      </Avatar>
-    </View>
-  )
-})
-
-interface PostCommentContentColumnProps {
-  authorName: string
-  text: string
-}
-
-const PostCommentContentColumn = observer((props: PostCommentContentColumnProps) => {
-  return (
-    <View
-      flexDirection="column"
-      margin={10}
-      flexShrink={1}
-    >
-      <View>
-        <RobotoText
-          fontSize={18}
-          fontWeight='bold'
-        >
-          {props.authorName}
-        </RobotoText>
-      </View>
-
-      <View
-        flex={1}
-      >
-        <RobotoText
-          width="100%"
-          flex={1}
-          flexWrap="wrap"
-          flexShrink={1}
-          fontSize={16}
-        >
-          {props.text}
-        </RobotoText>
-      </View>
-    </View>
-  )
-})
-
-interface PostCommentProps extends 
-  PostCommentAvatarColumnProps, 
-  PostCommentContentColumnProps {
-  
-}
-  
-interface PostCommentFullProps extends PostCommentProps {
-    active: boolean
-    onPress?: () => void
-}
-
-const PostComment = observer((props: PostCommentFullProps) => {
-  return (
-    <Pressable
-      flexDirection="row" 
-      backgroundColor={props.active ? "#ffefd5" : "white"}
-      padding={10}
-      w="100%"
-      onPress={props.onPress}
-    >
-      <PostCommentAvatarColumn authorName={props.authorName}/>
-      <PostCommentContentColumn authorName={props.authorName} text={props.text}/>
-    </Pressable>
-  )
-})
 
 interface PostCommentBlockProps {
-  posts: PostCommentProps[]
+  comments: PostCommentProps[]
 };
 
 export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
@@ -108,51 +29,15 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
       gap={10}
     >
       {
-        props.posts.map((post, i) => (
+        props.comments.map((comment, i) => (
           <PostComment
             key={i}
-            authorName={post.authorName}
-            text={post.text}
+            authorName={comment.authorName}
+            text={comment.text}
             active={i === activeId}
           />
         ))
       }
-    </View>
-  )
-})
-
-const AddCommentForm = observer(() => {
-  const [value, setValue] = useState("");
-  const [height, setHeight] = useState(25);
-
-  return (
-    <View
-      flexDirection="row"
-    >
-      <Input
-        backgroundColor="white"
-        flex={1}
-        isDisabled={false}
-        isInvalid={false}
-        isReadOnly={false}
-        height={height}
-        >
-        <InputField
-          multiline={true}
-          type="text"
-          placeholder="Комментарий"
-          value={value}
-          onChangeText={setValue}
-          onContentSizeChange={(e) => {
-            setHeight(e.nativeEvent.contentSize.height)
-          }}
-        />
-        <Pressable
-          onPress={()=>console.log('send')}
-        >
-          <SendIcon width={40} height={40} fill={ACTIVE_COLOR}/>
-        </Pressable>
-      </Input>
     </View>
   )
 })
@@ -165,13 +50,28 @@ interface PostScreenProps {
 export const PostScreen = observer((props: PostScreenProps) => {
   const postData = props.route.params;
   
+  const [comments, setComments] = useState([
+    {
+      authorName: "nikstarling",
+      text: "this is some long-long post text. It's purpose is to test rendering of comment"
+    },
+    {
+      authorName: "nikstarling",
+      text: "this is some long-long post text. It's purpose is to test rendering of comment"
+    },
+  ])
+
+  const addComment = (comment: PostCommentProps) => {
+    setComments([...comments, comment]);
+  }
+
   console.log(props.route.params)
 
   return (
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост"/>}
       navigation={props.navigation}
-      footer={<AddCommentForm/>}
+      footer={<AddCommentForm addComment={addComment}/>}
     >
       <View
         w="100%"
@@ -195,16 +95,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
         </View>
           
         <PostCommentBlock
-          posts={[
-            {
-              authorName: "nikstarling",
-              text: "this is some long-long post text. It's purpose is to test rendering of comment"
-            },
-            {
-              authorName: "nikstarling",
-              text: "this is some long-long post text. It's purpose is to test rendering of comment"
-            },
-          ]}
+          comments={comments}
         />
 
       </View>

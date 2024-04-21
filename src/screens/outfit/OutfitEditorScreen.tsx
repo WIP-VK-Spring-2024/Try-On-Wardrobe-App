@@ -1,26 +1,26 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { OutfitEditor } from "../components/editor/Editor";
-import { BackHeader } from "../components/Header";
+import { OutfitEditor } from "../../components/editor/Editor";
+import { BackHeader } from "../../components/Header";
 import { Pressable, View } from "@gluestack-ui/themed";
 
-import SaveIcon from '../../assets/icons/save.svg';
-import { ACTIVE_COLOR } from "../consts";
+import { ACTIVE_COLOR } from "../../consts";
 import { useSharedValue } from "react-native-reanimated";
-import { RectangleWithPayload } from "../components/editor/models";
+import { RectangleWithPayload } from "../../components/editor/models";
 import { autorun } from "mobx";
-import { itemFromRect, loadSkImage, rectFromItem } from "../components/editor/utils";
+import { itemFromRect, loadSkImage, rectFromItem } from "../../components/editor/utils";
 import { useCanvasRef } from "@shopify/react-native-skia";
 
-import RNFS from 'react-native-fs';
-import { Outfit, outfitStore } from "../stores/OutfitStore";
+import { Outfit, outfitStore } from "../../stores/OutfitStore";
 import { StackActions } from "@react-navigation/native";
-import { updateOutfit, uploadOutfit } from "../requests/outfit";
-import { appState } from "../stores/AppState";
-import { ConnectionErrorAlert, SuccessAlert } from "../components/MessageAlert";
-import { cacheManager } from "../cacheManager/cacheManager";
-import { getOutfitImageName } from "../cacheManager/utils";
+import { updateOutfit, uploadOutfit } from "../../requests/outfit";
+import { appState } from "../../stores/AppState";
+import { ConnectionErrorAlert, SuccessAlert } from "../../components/MessageAlert";
+import { cacheManager } from "../../cacheManager/cacheManager";
+import { getOutfitImageName } from "../../cacheManager/utils";
 
+import RNFS from 'react-native-fs';
+import SaveIcon from '../../../assets/icons/save.svg';
 
 interface OutfitEditorHeaderProps {
   navigation: any

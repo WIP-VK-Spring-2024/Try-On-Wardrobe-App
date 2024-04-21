@@ -1,23 +1,24 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef, useState } from "react";
-import { BaseScreen } from "./BaseScreen";
+import { BaseScreen } from "../BaseScreen";
 import { Canvas, CanvasProps, Image, Rect, Skia, SkiaDomView, SkImage, useCanvasRef } from "@shopify/react-native-skia";
-import { garmentStore } from "../stores/GarmentStore";
-import { ImageType } from "../models";
-import { getImageSource } from "../utils";
+import { garmentStore } from "../../stores/GarmentStore";
+import { ImageType } from "../../models";
+import { getImageSource } from "../../utils";
 import { View } from "@gluestack-ui/themed";
-import { ACTIVE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { BackHeader } from "../components/Header";
+import { ACTIVE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../../consts";
+import { BackHeader } from "../../components/Header";
 
-import HeartIcon from '../../assets/icons/heart.svg';
-import FilledHeartIcon from '../../assets/icons/heart-filled.svg';
 import { Pressable } from "@gluestack-ui/themed";
 
 import RNFS from 'react-native-fs';
-import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
-import { uploadOutfit } from "../requests/outfit";
+import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../../stores/OutfitStore";
+import { uploadOutfit } from "../../requests/outfit";
 import { StyleProp, ViewStyle } from "react-native";
-import { outfitGenUUIDStore } from "../stores/OutfitGenStores";
+import { outfitGenUUIDStore } from "../../stores/OutfitGenStores";
+
+import FilledHeartIcon from '../../../assets/icons/heart-filled.svg';
+import HeartIcon from '../../../assets/icons/heart.svg';
 
 const MARGIN = 10;
 const GAP = 10;

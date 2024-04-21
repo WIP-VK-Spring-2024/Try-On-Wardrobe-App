@@ -1,13 +1,13 @@
 import React from 'react';
-import { BaseScreen } from './BaseScreen';
+import { BaseScreen } from '../BaseScreen';
 import { observer } from 'mobx-react-lite';
 import { Pressable } from 'react-native';
-import { AddItemCard, BaseList, ListImage } from '../components/BaseList';
-import { getImageSource } from '../utils';
-import { Outfit, outfitStore } from '../stores/OutfitStore';
-import { Header } from '../components/Header';
-import { FilterModal } from '../components/FilterModal'
-import { outfitScreenStyleSelectionStore, outfitScreenTagsSelectionStore } from '../store';
+import { AddItemCard, BaseList, ListImage } from '../../components/BaseList';
+import { getImageSource } from '../../utils';
+import { Outfit, outfitStore } from '../../stores/OutfitStore';
+import { Header } from '../../components/Header';
+import { FilterModal } from '../../components/FilterModal'
+import { outfitScreenStyleSelectionStore, outfitScreenTagsSelectionStore } from '../../store';
 
 interface OutfitListProps {
   navigation: any

@@ -1,5 +1,5 @@
 import { toJS } from "mobx"
-import { GarmentRect } from "../../screens/OutfitEditorScreen"
+import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen"
 import { OutfitItem, OutfitItemRect } from "../../stores/OutfitStore"
 import { ImageType } from "../../models"
 import { Skia } from "@shopify/react-native-skia"

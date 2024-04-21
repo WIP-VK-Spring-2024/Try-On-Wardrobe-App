@@ -16,16 +16,17 @@ import { GarmentScreen } from './screens/GarmentScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
-import { OutfitEditorHeader, OutfitEditorScreen } from './screens/OutfitEditorScreen';
+import { OutfitEditorHeader, OutfitEditorScreen } from './screens/outfit/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { OutfitGarmentSelectionScreen, OutfitScreen } from './screens/OutfitScreen';
-import { OutfitSelectionScreen } from './screens/OutfitSelectionScreen';
-import { OutfitGenFormScreen } from './screens/OutfitGenForm';
-import { OutfitGenResultScreen } from './screens/OutfitGenResult';
+import { OutfitScreen } from './screens/outfit/OutfitScreen';
+import { OutfitSelectionScreen } from './screens/outfit/OutfitSelectionScreen';
+import { OutfitGenFormScreen } from './screens/outfit/OutfitGenForm';
+import { OutfitGenResultScreen } from './screens/outfit/OutfitGenResult';
 import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
+import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
 
 export const Stack = createNativeStackNavigator();
 

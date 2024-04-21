@@ -77,7 +77,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
 
   useEffect(() => {
     const time = new Date();
-    ajax.apiGet(`/posts?limit=10&since=${time.toISOString()}`,{
+    ajax.apiGet(`/posts?limit=100&since=${time.toISOString()}`,{
       credentials: true
     }).then((resp: any) => {
       console.log(resp);
