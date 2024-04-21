@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseList, AddItemCard, CARD_SIZE, ModalListImage } from './BaseList';
+import { BaseList, AddItemCard, CARD_SIZE, ModalListImage, ListImage } from './BaseList';
 import { Pressable } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 import { tryOnStore } from '../stores/TryOnStore';
@@ -33,7 +33,7 @@ const TryOnResultCard = observer(
                 onPress={onPress}
                 w="49%"
                 h={CARD_SIZE.height}>
-                <ModalListImage source={source} />
+                <ListImage source={source} />
             </Pressable>
         );
     },
@@ -46,6 +46,7 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
             onPress={()=>{
               navigation.navigate('TryOnCard', {tryOnResult: item});
             }}
+            // onPress={() => {}}
             uuid={item.uuid}
             rating={item.rating}
         />

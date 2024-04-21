@@ -1,40 +1,44 @@
 import {makeObservable, observable, action, computed, runInAction} from 'mobx';
 import { ImageType } from '../models';
 
-interface UserPhoto {
-    uuid: string,
-    image: ImageType
+export interface UserPhoto {
+  uuid: string,
+  image: ImageType
 }
 
 class UserPhotoStore {
-    photos: UserPhoto[]
+  photos: UserPhoto[];
 
-    constructor(photos?: UserPhoto[]) {
-        this.photos = photos || [];
+  constructor(photos?: UserPhoto[]) {
+    this.photos = photos || [];
 
-        makeObservable(this, {
-            photos: observable,
+    makeObservable(this, {
+      photos: observable,
 
-            setPhotos: action,
-            addPhoto: action,
-            removePhoto: action,
-        })
+      setPhotos: action,
+      addPhoto: action,
+      removePhoto: action,
+    });
+  }
+
+  setPhotos(photos: UserPhoto[]) {
+    this.photos = photos;
+  }
+
+  addPhoto(photo: UserPhoto) {
+    this.photos.push(photo);
+  }
+
+  getPhotoByUUID(uuid: string) {
+    return this.photos.find((item) => item.uuid === uuid)
+  }
+
+  removePhoto(uuid: string) {
+    const idx = this.photos.findIndex(photo => photo.uuid == uuid);
+    if (idx != -1) {
+      this.photos.splice(idx, 1);
     }
-
-    setPhotos(photos: UserPhoto[]) {
-        this.photos = photos;
-    }
-
-    addPhoto(photo: UserPhoto) {
-        this.photos.push(photo);
-    }
-
-    removePhoto(uuid: string) {
-      const idx = this.photos.findIndex((photo) => photo.uuid == uuid)
-      if (idx != -1) {
-        this.photos.splice(idx, 1)
-      }
-    }
+  }
 }
 
 export const userPhotoStore = new UserPhotoStore();

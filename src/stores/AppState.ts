@@ -14,11 +14,9 @@ class AppStateStore {
     createMenuVisible: boolean
     filterModalVisible: boolean
 
-    deleteModalVisible: boolean;
-    deleteUUID: string | undefined;
-
     JWTToken: string | undefined
     userID: string | undefined
+    userName: string
 
     screen: Screen
   
@@ -27,26 +25,25 @@ class AppStateStore {
       this.successMessage = undefined
       this.createMenuVisible = false
       this.filterModalVisible = false;
-      this.deleteModalVisible = false;
       this.screen = 'Home'
+      this.userName = ''
       
       makeObservable(this, {
         error: observable,
         successMessage: observable,
         createMenuVisible: observable,
         filterModalVisible: observable,
-        deleteModalVisible: observable,
+        userName: observable,
         screen: observable,
   
         setError: action,
+        setUserName: action,
         setSuccessMessage: action,
         closeError: action,
         closeSuccessMessage: action,
         setCreateMenuVisible: action,
         setFilterModalVisible: action,
         toggleCreateMenuVisible: action,
-        openDeleteModal: action,
-        hideDeleteModal: action,
         setScreen: action,
   
         hasError: computed
@@ -65,6 +62,10 @@ class AppStateStore {
     setScreen(screen: Screen) {
       this.screen = screen;
     }
+  
+    setUserName(name: string) {
+      this.userName = name;
+    }
 
     setSuccessMessage(msg: string | undefined) {
       this.successMessage = msg;
@@ -80,16 +81,6 @@ class AppStateStore {
   
     toggleCreateMenuVisible() {
       this.createMenuVisible = !this.createMenuVisible;
-    }
-
-    openDeleteModal(deleteUUID: string) {
-      this.deleteModalVisible = true;
-      this.deleteUUID = deleteUUID;
-    }
-
-    hideDeleteModal() {
-      this.deleteModalVisible = false;
-      this.deleteUUID = undefined;
     }
   
     closeError() {

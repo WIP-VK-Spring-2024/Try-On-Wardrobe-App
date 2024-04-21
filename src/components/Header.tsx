@@ -10,7 +10,6 @@ import SettingsIcon from '../../assets/icons/settings.svg';
 import SearchIcon from '../../assets/icons/search.svg';
 import { appState } from '../stores/AppState';
 import { observer } from 'mobx-react-lite';
-import { login } from '../../config'
 
 import { garmentScreenFilteredGarmentStore,
          tryOnScreenFilteredGarmentStore,
@@ -65,7 +64,7 @@ export const Header = observer(({ rightMenu }: HeaderProps) => {
             bg={PRIMARY_COLOR} 
             borderRadius="$full"
           >
-            <AvatarFallbackText>{login}</AvatarFallbackText>
+            <AvatarFallbackText>{appState.userName}</AvatarFallbackText>
           </Avatar>
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">

@@ -26,15 +26,13 @@ import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
+import { TryOnResultScreen as TryOnCardScreen } from './screens/TryOnResultScreen';
 
 export const Stack = createNativeStackNavigator();
 
 const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 
 RNFS.mkdir(pictures_path);
-
-// initStores();
-// loginFunc();
 
 const App = observer((): JSX.Element => {
   useEffect(() => {
@@ -82,6 +80,8 @@ const App = observer((): JSX.Element => {
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
         <Stack.Screen name="TryOn" component={TryOnMainScreen} />
+
+        <Stack.Screen name="TryOnCard" component={TryOnCardScreen} />
 
         <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
 

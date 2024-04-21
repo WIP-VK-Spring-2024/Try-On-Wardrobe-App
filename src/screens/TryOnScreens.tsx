@@ -28,6 +28,7 @@ import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
 import { PRIMARY_COLOR } from "../consts";
 import { appState } from "../stores/AppState";
 import { deleteUserPhoto } from "../requests/user_photo"
+import { useFocusEffect } from "@react-navigation/native";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -134,6 +135,9 @@ export const PersonSelectionScreen = observer(
   ({ navigation }: { navigation: any }) => {
     const [infoShown, setInfoShown] = useState(false);
 
+    const [deletionModalShown, setDeletionModalShown] = useState(false);
+    const [deleteUUID, setDeleteUUID] = useState<string | undefined>(undefined);
+
     const tooltip = (
       <View w="100%" justifyContent="center">
         <Tooltip
@@ -176,7 +180,10 @@ export const PersonSelectionScreen = observer(
     return (
       <>
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
-          <PeopleList navigation={navigation} />
+          <PeopleList navigation={navigation} onItemDelete={(item) => {
+            setDeleteUUID(item.uuid);
+            setDeletionModalShown(true);
+          }} />
         </BaseScreen>
         <FilterModal
           styleSelectionStore={tryOnScreenStyleSelectionStore}
@@ -185,6 +192,12 @@ export const PersonSelectionScreen = observer(
         <DeletionModal
           onConfirm={deleteUserPhoto}
           text="Удалить ваше фото?"
+          isOpen={deletionModalShown}
+          deleteUUID={deleteUUID}
+          hide={() => {
+            setDeleteUUID(undefined);
+            setDeletionModalShown(false);
+          }}
         />
       </>
     );

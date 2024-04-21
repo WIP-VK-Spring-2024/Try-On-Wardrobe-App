@@ -274,6 +274,10 @@ export class GarmentStore {
     return this.garments.find(garment => garment.uuid === uuid);
   }
 
+  getGarmentsByUUID(uuids: string[]) {
+    return this.garments.filter(garment => uuids.includes(garment.uuid || ''));
+  }
+
   get subtypes() {
     return this.types.map(type => type.subtypes)
                      .reduce((total, subs) => total.concat(subs));

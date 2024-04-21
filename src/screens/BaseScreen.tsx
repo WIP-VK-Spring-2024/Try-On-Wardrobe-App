@@ -27,6 +27,7 @@ export const BaseScreen = observer((props: BaseScreenProps & React.PropsWithChil
       if (props.screen) {
         appState.setScreen(props.screen);
       }
+      appState.hideDeleteModal()
       appState.setCreateMenuVisible(false);
     }, [props.screen])
   );

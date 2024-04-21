@@ -78,6 +78,7 @@ export const initStores = () => {
         credentials: true
     }).then(async data => {
         data.json().then(async results => {
+            // console.log(results)
             tryOnStore.setResults(results.map(convertTryOnResponse));
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))

@@ -23,7 +23,6 @@ import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts"
 import  CloseIcon from '../../assets/icons/cross.svg'
 import DotsIcon from '../../assets/icons/dots-vertical.svg'
 import TrashIcon from '../../assets/icons/trash.svg'
-import { appState } from '../stores/AppState';
 
 export const RobotoText = observer((props: any) => {
   return (
@@ -167,16 +166,18 @@ export const DeleteMenu = (props: DeleteMenuProps) => {
 }
 
 interface DeletionModalProps {
+  deleteUUID?: string
   onConfirm: (uuid: string) => void
-  ref?: React.RefObject<any>
-  text: string;
+  text: string
+  hide: () => void
+  isOpen: boolean
 }
 
-export const DeletionModal = observer(({onConfirm, ref, text} : DeletionModalProps) => {
+export const DeletionModal = observer(({onConfirm, text, isOpen, hide, deleteUUID} : DeletionModalProps) => {
   return (
     <AlertDialog
-      isOpen={appState.deleteModalVisible}
-      onClose={appState.hideDeleteModal}
+      isOpen={isOpen}
+      onClose={hide}
     >
       <AlertDialogBackdrop />
       <AlertDialogContent>
@@ -197,10 +198,10 @@ export const DeletionModal = observer(({onConfirm, ref, text} : DeletionModalPro
               action="negative"
               bg="#ffffff"
               onPress={() => {
-                if (appState.deleteUUID) {
-                  onConfirm(appState.deleteUUID);
+                if (deleteUUID) {
+                  onConfirm(deleteUUID);
                 }
-                appState.hideDeleteModal();
+                hide();
               }}
             >
               <ButtonText>Удалить</ButtonText>
@@ -209,7 +210,7 @@ export const DeletionModal = observer(({onConfirm, ref, text} : DeletionModalPro
             <Button
               size="lg"
               bg={ACTIVE_COLOR}
-              onPress={() => appState.hideDeleteModal()}
+              onPress={hide}
             >
               <ButtonText>Не удалять</ButtonText>
             </Button>

@@ -5,8 +5,6 @@ import { EmailInput, LoginInput, PasswordInput, SexSelector } from "../component
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts";
 import { Tabs } from "../components/Tabs";
 import { RobotoText } from "../components/common";
-import { apiEndpoint } from "../../config";
-import { joinPath } from "../utils";
 import { appState } from "../stores/AppState";
 import { initCentrifuge } from "../requests/centrifuge";
 import { initStores } from "../requests/init";
@@ -60,8 +58,9 @@ const LoginTab = observer((props: TabProps) => {
       console.log(resp);
 
       interface LoginSuccessResponse {
-        token: string, 
+        token: string
         user_id: string
+        user_name: string
       } 
 
       interface ErrorResponse {
@@ -83,6 +82,7 @@ const LoginTab = observer((props: TabProps) => {
           json.user_id
         );
 
+        appState.setUserName(json.user_name)
         cacheManager.writeToken();
 
         initCentrifuge();

@@ -126,6 +126,7 @@ export class CacheManager {
                     json.token,
                     json.user_id
                 );
+                appState.setUserName(json.user_name)
 
                 return this.writeToken();
             });

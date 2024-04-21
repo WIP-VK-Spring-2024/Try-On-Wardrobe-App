@@ -63,7 +63,7 @@ interface TryOnResultResponse {
   image: string;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 }
 
 export const convertTryOnResponse = (result: TryOnResultResponse) => {

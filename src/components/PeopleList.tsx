@@ -12,6 +12,7 @@ import { createUserPhotoFromGallery } from '../requests/imageCreation'
 
 import TrashIcon from "../../assets/icons/trash.svg"
 import { appState } from '../stores/AppState';
+import { UserPhoto } from '../stores/UserPhotoStore';
 
 interface PersonListCardProps {
   source: string | ImageSourcePropType;
@@ -40,13 +41,13 @@ const PersonListCard = observer(
   },
 );
 
-export const PeopleList = observer(({navigation}: {navigation: any}) => {
+export const PeopleList = observer(({navigation, onItemDelete}: {navigation: any, onItemDelete: (item: UserPhoto) => void}) => {
     const people = userPhotoSelectionStore.items.map((item, i) => (
       <PersonListCard
         navigation={navigation}
         source={getImageSource(item.image)}
         id={i}
-        onDelete={() => appState.openDeleteModal(item.uuid)}
+        onDelete={() => onItemDelete(item)}
       />
     ));
   
