@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
 import { ACTIVE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
@@ -11,12 +11,13 @@ import { Pressable } from "@gluestack-ui/themed";
 import { getImageSource } from "../utils";
 import { Image } from "@gluestack-ui/themed";
 import { BackHeader } from "../components/Header";
-import { PostComment, PostCommentProps } from "../components/feed/PostComment";
+import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
+import { ajax } from "../requests/common";
 
 
 interface PostCommentBlockProps {
-  comments: PostCommentProps[]
+  comments: PostCommentTreeProps[]
 };
 
 export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
@@ -30,10 +31,11 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
     >
       {
         props.comments.map((comment, i) => (
-          <PostComment
+          <PostCommentTree
             key={i}
             authorName={comment.authorName}
             text={comment.text}
+            replies={comment.replies}
             active={i === activeId}
           />
         ))
@@ -53,17 +55,61 @@ export const PostScreen = observer((props: PostScreenProps) => {
   const [comments, setComments] = useState([
     {
       authorName: "nikstarling",
-      text: "this is some long-long post text. It's purpose is to test rendering of comment"
+      text: "this is some long-long post text. It's purpose is to test rendering of comment",
+      replies: [
+        {
+          authorName: "nikstarling",
+          text: "this is some long-long post text. It's purpose is to test rendering of comment",
+          replies: [
+            {
+              authorName: "nikstarling",
+              text: "this is some long-long post text. It's purpose is to test rendering of comment",
+              replies: [
+                {
+                  authorName: "nikstarling",
+                  text: "this is some long-long post text. It's purpose is to test rendering of comment",
+                },
+              ]
+            },
+            {
+              authorName: "nikstarling",
+              text: "this is some long-long post text. It's purpose is to test rendering of comment",
+              replies: [
+                {
+                  authorName: "nikstarling",
+                  text: "this is some long-long post text. It's purpose is to test rendering of comment",
+                },
+              ]
+            },
+          ]
+        },
+      ]
     },
     {
       authorName: "nikstarling",
-      text: "this is some long-long post text. It's purpose is to test rendering of comment"
+      text: "this is some long-long post text. It's purpose is to test rendering of comment",
     },
   ])
 
   const addComment = (comment: PostCommentProps) => {
     setComments([...comments, comment]);
   }
+
+  useEffect(() => {
+    console.log(postData.uuid)
+    ajax.apiGet(`/posts/${postData.uuid}/comments`, {
+      credentials: true
+    }).then(resp => {
+      console.log(resp);
+
+      resp.json()
+        .then(json => {
+          console.log(json)
+        })
+        .catch(reason => console.error(reason))
+    })
+      .catch(reason => console.error(reason));
+  })
 
   console.log(props.route.params)
 

@@ -8,13 +8,11 @@ import { Pressable } from "@gluestack-ui/themed";
 import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
 import { ImageType } from "../models";
 import { ImageSourceType, getImageSource } from "../utils";
-import { FlatList, ImageSourcePropType, ListRenderItem, ListRenderItemInfo } from "react-native";
+import { ListRenderItemInfo } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { appState } from "../stores/AppState";
 import FastImage from "react-native-fast-image";
-import { Image } from "@gluestack-ui/themed";
-import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
-
+import { InfiniteScrollList } from "../components/InfiniteScrollList";
 
 interface PostResponse {
   uuid: string
@@ -22,6 +20,7 @@ interface PostResponse {
   updated_at: string
   outfit_id: string
   outfit_image: string
+  user_name: string
 }
 
 interface PostData {
@@ -29,6 +28,7 @@ interface PostData {
   outfit_id: string
   outfit_image: ImageType
   created_at: string
+  user_name: string
 }
 
 interface PostCardProps {
@@ -77,14 +77,11 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
   })
 
   const fetchData = (limit: number, since: string) => {
-    const time = new Date();
       return ajax.apiGet(`/posts?limit=${limit}&since=${since}`,{
         credentials: true
       }).then((resp: any) => {
-        console.log(resp);
   
         return resp.json().then((json: PostResponse[]) => {
-          console.log(json);
           const data = json.map(item => ({
             ...item,
             outfit_image: {
@@ -99,14 +96,15 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
 
   const renderItem = ((data: ListRenderItemInfo<PostData>) => {
     const {item} = data;
-    console.log(item)
   
     return (
       <PostCard
         data={item}
         onPress={() => {
           props.navigation.navigate("Post", {
-            image: item.outfit_image
+            image: item.outfit_image,
+            uuid: item.uuid,
+            user_name: item.user_name
           })
         }}
       />
