@@ -16,7 +16,7 @@ import { GarmentScreen } from './screens/GarmentScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
+import { CurrentUserProfileScreen, OtherUserProfileScreen } from './screens/ProfileScreen';
 import { OutfitEditorScreen } from './screens/outfit/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitScreen } from './screens/outfit/OutfitScreen';
@@ -81,7 +81,8 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Profile" component={CurrentUserProfileScreen} />
+        <Stack.Screen name="OtherProfile" component={OtherUserProfileScreen} />
 
         <Stack.Screen name="TryOn" component={TryOnMainScreen} />
 

@@ -26,7 +26,7 @@ export const searchUsers = (query: string, since: string, limit?: number) => {
         limit: limit?.toString() || '16'
     })
 
-    ajax.apiGet('/users?'+urlParams.toString())
+    ajax.apiGet('/users?'+urlParams.toString(), {credentials: true})
         .then(resp => resp.json())
         .then(json => {
             const users: Subscription[] = json;
@@ -35,3 +35,24 @@ export const searchUsers = (query: string, since: string, limit?: number) => {
         })
         .catch(error => processNetworkError(error))
 }
+
+export const getSubs = () => {
+    ajax.apiGet('/users/subbed', {credentials: true})
+        .then(resp => resp.json())
+        .then(json => {
+            const subs: Subscription[] = json;
+            subs.forEach(sub => sub.isSubbed = true);
+            profileStore.currentUser?.setSubs(subs);
+        })
+        .catch(error => processNetworkError(error))
+}
+
+export const userSub = (uuid: string) => {
+    return ajax.apiPost(`/users/${uuid}/sub`, {credentials: true})
+                .catch(error => processNetworkError(error));
+};
+
+export const userUnsub = (uuid: string) => {
+    return ajax.apiDelete(`/users/${uuid}/sub`, {credentials: true})
+                .catch(error => processNetworkError(error));
+};

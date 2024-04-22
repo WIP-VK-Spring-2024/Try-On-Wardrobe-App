@@ -49,7 +49,7 @@ export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
         <Pressable
           onPress={() => {
-              navigation.navigate('Profile', {user: profileStore.currentUser});
+              navigation.navigate('Profile');
           }}
         >
           <Avatar 

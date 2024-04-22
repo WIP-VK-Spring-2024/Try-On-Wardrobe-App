@@ -37,6 +37,8 @@ export class User {
             setName: action,
             setGender: action,
             setSubs: action,
+            addSub: action,
+            removeSub: action,
         });
     }
 
@@ -55,11 +57,23 @@ export class User {
     setSubs(subs: Subscription[]) {
         this.subs = subs
     }
+
+    addSub(sub: Subscription) {
+        this.subs.unshift(sub);
+    }
+
+    removeSub(uuid: string) {
+        const idx = this.subs.findIndex(sub => sub.uuid === uuid);
+        if (idx != -1) {
+            this.subs.splice(idx, 1);
+        }
+    }
 }
 
 export interface Subscription {
     name: string
     uuid: string
+    isSubbed?: boolean
 }
 
 class ProfileStore {

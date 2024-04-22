@@ -15,18 +15,16 @@ import { RobotoText, AlertModal, Modal } from "../components/common";
 import SettingsIcon from "../../assets/icons/settings.svg"
 import LogoutIcon from "../../assets/icons/logout.svg"
 import { BaseScreen } from "./BaseScreen";
-import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
-import { StackActions } from '@react-navigation/native'
+import { PRIMARY_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
+import { StackActions, useFocusEffect } from '@react-navigation/native'
 import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
 import { SexSelector } from "../components/LoginForms"
 import { PrivacySelector } from "../components/PrivacySelector"
-import { updateUserSettings, searchUsers } from "../requests/user"
+import { updateUserSettings, searchUsers, userSub, userUnsub, getSubs } from "../requests/user"
 import SearchIcon from "../../assets/icons/search.svg"
 import { Tabs } from "../components/Tabs"
 import { SearchInput } from "../components/SearchInput"
-import { InfiniteScrollList } from "../components/InfiniteScrollList"
-import { ListRenderItemInfo } from "react-native"
 
 const iconSize = 25
 
@@ -45,26 +43,26 @@ const BackButton = (props: {navigation: any, flex?: number}) => {
   );
 };
 
-interface UserInfoProps {
-  onSettings?: () => void
+interface UserHeaderProps {
+  onSettings: () => void
   navigation: any
-  onLogout?: () => void
+  onLogout: () => void
   user: User
 }
 
-const UserInfo = observer(({navigation, onLogout, onSettings, user}: UserInfoProps) => {
+const UserHeader = observer(({navigation, onLogout, onSettings, user}: UserHeaderProps) => {
   return (
     <View flexDirection="row" alignItems="center" $base-padding="$2">
       <BackButton navigation={navigation} flex={3} />
 
       <View flexDirection="row" alignItems="center" flex={10} gap={20}>
         <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
-          <AvatarFallbackText>{user.name}</AvatarFallbackText>
+          <AvatarFallbackText numberOfLines={1}>{user.name}</AvatarFallbackText>
         </Avatar>
 
         <View>
-          <RobotoText fontSize={18}>{user.name}</RobotoText>
-          <RobotoText fontSize={14}>{user.email}</RobotoText>
+          <RobotoText fontSize={18} numberOfLines={1}>{user.name}</RobotoText>
+          <RobotoText fontSize={14} numberOfLines={1}>{user.email}</RobotoText>
         </View>
       </View>
 
@@ -75,24 +73,75 @@ const UserInfo = observer(({navigation, onLogout, onSettings, user}: UserInfoPro
         justifyContent="flex-end"
         alignItems="center"
         marginRight={5}>
+        <Pressable onPress={() => onSettings()}>
+          <SettingsIcon width={iconSize} height={iconSize} fill="#000000" />
+        </Pressable>
 
-        {onSettings &&
-          <Pressable onPress={() => onSettings()}>
-            <SettingsIcon width={iconSize} height={iconSize} fill="#000000" />
-          </Pressable>}
 
-        {onLogout &&
-          <Pressable onPress={() => onLogout()}>
-            <LogoutIcon
-              width={iconSize}
-              height={iconSize}
-              fill="#000000"
-              style={{
-                transform: [{ rotate: '180deg' }],
-              }}
-            />
-          </Pressable>}
+        <Pressable onPress={() => onLogout()}>
+          <LogoutIcon
+            width={iconSize}
+            height={iconSize}
+            fill="#000000"
+            style={{
+              transform: [{ rotate: '180deg' }],
+            }}
+          />
+        </Pressable>
       </View>
+    </View>
+  );
+});
+
+interface OtherUserHeaderProps {
+  navigation: any
+  user: Subscription
+}
+
+const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
+  const [isSubbed, setIsSubbed] = useState(user.isSubbed);
+
+  return (
+    <View flexDirection="row"  alignItems="center" $base-padding="$2">
+      <BackButton navigation={navigation} flex={2}/>
+
+      <View flexDirection="row" alignItems="center" gap={20} flex={6}>
+        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
+          <AvatarFallbackText>{user.name}</AvatarFallbackText>
+        </Avatar>
+        <RobotoText fontSize={18} numberOfLines={1}>{user.name}</RobotoText>
+      </View>
+
+      
+      <Button
+        flex={4}
+        marginRight={5}
+        marginLeft={100}
+        size="xs"
+        // variant={isSubbed ? 'solid' : undefined}
+        action={isSubbed ? 'negative' : 'primary'}
+        bgColor={isSubbed ? "#bb0000" : ACTIVE_COLOR}
+        onPress={() => {
+          if (isSubbed) {
+            userUnsub(user.uuid)
+              .then(_ => {
+                setIsSubbed(false);
+                profileStore.currentUser?.removeSub(user.uuid);
+              });
+          } else {
+            userSub(user.uuid)
+              .then(_ => {
+                setIsSubbed(true);
+                user.isSubbed = true;
+                profileStore.currentUser?.addSub(user);
+              });
+          }
+        }}
+        >
+        <RobotoText fontSize={14} color="#ffffff">{
+          isSubbed? 'Отписаться' : 'Подписаться'}
+        </RobotoText>
+      </Button>
     </View>
   );
 });
@@ -162,7 +211,7 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
     [query],
   );
 
-  const subsTabContents = (
+  const subsTabContents = subs.length > 0 ?(
     <ScrollView>
       <SubsList
         subs={subs.filter(searchPredicate)}
@@ -170,7 +219,7 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
         rowSize={subsRowSize}
       />
     </ScrollView>
-  );
+  ) : NoSubsMessage;
 
   const allUsersTabContents = (
     <ScrollView>
@@ -215,21 +264,20 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
 });
 
 interface SubProps {
-  uuid: string
-  name: string
+  sub: Subscription
   navigation: any
 }
 
-const Sub = observer(({uuid, name, navigation}: SubProps) => {
+const Sub = observer(({sub, navigation}: SubProps) => {
   return (
     <Pressable
       alignItems="center"
       w={`${100 / subsRowSize}%`}
-      onPress={() => {} /* navigation.navigate('') */}>
+      onPress={() => navigation.navigate('OtherProfile', {user: sub})}>
       <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="md">
-        <AvatarFallbackText>{name}</AvatarFallbackText>
+        <AvatarFallbackText>{sub.name}</AvatarFallbackText>
       </Avatar>
-      <RobotoText numberOfLines={1}>{name}</RobotoText>
+      <RobotoText numberOfLines={1}>{sub.name}</RobotoText>
     </Pressable>
   );
 });
@@ -243,6 +291,15 @@ interface SubBlockProps {
 const displayedSubsNum = 4;
 const subsRowSize = 4;
 
+const NoSubsMessage = (
+  <>
+    <RobotoText>У вас пока нет подписок.</RobotoText>
+    <RobotoText>
+      Найдите интересующих вас авторов в ленте или в поиске!
+    </RobotoText>
+  </>
+);
+
 const SubsBlock = observer(({subs, navigation, onSearch}: SubBlockProps) => {
   return (
     <View flexDirection="row">
@@ -254,13 +311,16 @@ const SubsBlock = observer(({subs, navigation, onSearch}: SubBlockProps) => {
             <SearchIcon fill={'#000000'} width={20} height={20} />
           </Pressable>
         </View>
-
-        <SubsList
-          subs={subs}
-          navigation={navigation}
-          rowSize={subsRowSize}
-          displayedNum={displayedSubsNum}
-        />
+        {subs.length > 0 ? (
+          <SubsList
+            subs={subs}
+            navigation={navigation}
+            rowSize={subsRowSize}
+            displayedNum={displayedSubsNum}
+          />
+        ) : (
+          NoSubsMessage
+        )}
       </View>
       <View flex={1} />
     </View>
@@ -283,8 +343,7 @@ const SubsList = observer(({subs, navigation, rowSize, displayedNum}: SubsListPr
         <View flexDirection="row" key={i}>
           {subs.slice(rowSize * i, rowSize * (i + 1)).map((item, j) => (
             <Sub
-              uuid={item.uuid}
-              name={item.name}
+              sub={item}
               navigation={navigation}
               key={j}
             />))}
@@ -313,33 +372,36 @@ const makeStubSubs = () => [
   },
 ];
 
-export const ProfileScreen = observer(({navigation, route}: {navigation: any, route: any}) => {
-  const user: User = route.params.user
-  const isCurrentUser = user.uuid === profileStore.currentUser?.uuid
-  
-  return isCurrentUser
-    ? <CurrentUserProfileScreen navigation={navigation} />
-    : <OtherUserProfileScreen navigation={navigation} user={user} />;
-});
-
 export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any}) => {
   const [logoutModalShown, setLogoutModalShown] = useState(false);
   const [settingsModalShown, setSettingsModalShown] = useState(false);
   const [searchModalShown, setSearchModalShown] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setLogoutModalShown(false);
+        setSettingsModalShown(false);
+        setSearchModalShown(false);
+      };
+    }, []),
+  );
+
+  useEffect(() => {
+    getSubs();
+  }, []);
   
-  let stubSubs: Subscription[] = []
+  let stubSubs: Subscription[] = [];
   for (let i = 0; i < 3; ++i) {
-    stubSubs = stubSubs.concat(makeStubSubs())
-    stubSubs = stubSubs.concat(makeStubSubs().reverse())
+    stubSubs = stubSubs.concat(makeStubSubs());
+    stubSubs = stubSubs.concat(makeStubSubs().reverse());
   }
 
-  const subs = profileStore.currentUser?.subs.length === 0
-              ? stubSubs
-              : profileStore.currentUser!.subs;
+  const subs = profileStore.currentUser?.subs || [];
 
   return (
     <BaseScreen navigation={navigation} header={null} footer={null}>
-      <UserInfo
+      <UserHeader
         user={profileStore.currentUser!}
         navigation={navigation}
         onLogout={() => setLogoutModalShown(true)}
@@ -378,15 +440,17 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
   );
 });
 
-export const OtherUserProfileScreen = observer(({navigation, user}: {navigation: any, user: User}) => {
-  let stubSubs: Subscription[] = []
+export const OtherUserProfileScreen = observer(({navigation, route}: {navigation: any, route: any}) => {
+  const user: Subscription = route.params.user;
+
+  let stubSubs: Subscription[] = [];
   for (let i = 0; i < 3; ++i) {
-    stubSubs = stubSubs.concat(makeStubSubs())
+    stubSubs = stubSubs.concat(makeStubSubs());
   }
 
   return (
     <BaseScreen navigation={navigation} header={null} footer={null}>
-      <UserInfo
+      <OtherUserHeader
         user={user}
         navigation={navigation}
       />
