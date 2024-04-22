@@ -1,7 +1,6 @@
-import { Button, CheckboxGroup, Divider, ModalBody, ModalContent, ModalFooter } from "@gluestack-ui/themed";
-// import { Modal, ModalBackdrop } from "@gluestack-ui/themed";
+import { Button, CheckboxGroup, Divider } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React, { useRef } from "react";
+import React from "react";
 import { RobotoText, Modal } from "./common";
 import { ButtonText } from "@gluestack-ui/themed";
 import { appState } from "../stores/AppState";

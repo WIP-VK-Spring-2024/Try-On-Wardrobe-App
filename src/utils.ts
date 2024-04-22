@@ -48,13 +48,13 @@ interface GarmentResponse {
 }
 
 export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
-    return {
+    return new User({
         name: resp.user_name,
         uuid: resp.user_id,
         privacy: resp.privacy,
         email: resp.email,
         gender: resp.gender,
-    }
+    })
 }
 
 export const convertGarmentResponse = (cloth: GarmentResponse) => {

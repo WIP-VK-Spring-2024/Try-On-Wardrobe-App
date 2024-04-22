@@ -29,7 +29,7 @@ import {
 } from '@gluestack-ui/themed';
 
 import { StyledComponentProps } from '@gluestack-style/react/lib/typescript/types';
-import { StyleProp, TextProps, TextStyle, ViewProps, ViewStyle } from 'react-native';
+import { DimensionValue, StyleProp, TextProps, TextStyle, ViewProps, ViewStyle } from 'react-native';
 
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts"
 import DotsIcon from '../../assets/icons/dots-vertical.svg'
@@ -263,9 +263,11 @@ interface ModalProps {
   hide: () => void
   ref?: React.RefObject<any>
   footer?: JSX.Element
+  h?: DimensionValue
+  scrollEnabled?: boolean
 }
 
-export const Modal = observer(({isOpen, hide, ref, children, footer}: ModalProps & React.PropsWithChildren) => {
+export const Modal = observer(({isOpen, hide, ref, children, footer, h, scrollEnabled}: ModalProps & React.PropsWithChildren) => {
   return (
     <GluestackModal
       isOpen={isOpen}
@@ -275,8 +277,11 @@ export const Modal = observer(({isOpen, hide, ref, children, footer}: ModalProps
       padding={20}
     >
       <ModalBackdrop/>
-      <ModalContent>
-        <ModalBody>
+      <ModalContent h={h}>
+        <ModalBody scrollEnabled={scrollEnabled || false}>
+          <Pressable position='absolute' top={10} right={0} zIndex={1} onPress={() => hide()}>
+            <CloseIcon />
+          </Pressable>
           {children}
         </ModalBody>
         <ModalFooter

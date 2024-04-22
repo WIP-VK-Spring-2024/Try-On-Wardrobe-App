@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { PropsWithChildren, useState } from "react";
 import { EmailInput, LoginInput, PasswordInput, SexSelector } from "../components/LoginForms";
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts";
-import { Tabs } from "../components/Tabs";
+import { Tabs, TabContentContainer } from "../components/Tabs";
 import { RobotoText } from "../components/common";
 import { appState } from "../stores/AppState";
 import { initCentrifuge } from "../requests/centrifuge";
@@ -28,16 +28,6 @@ const LoginBtn = observer((props: LoginBtnProps) => {
     >
       <RobotoText color="#ffffff" textAlign="center">{props.text}</RobotoText>
     </Pressable>
-  )
-})
-
-const TabContentContainer = observer((props: PropsWithChildren) => {
-  return (
-    <View
-      flexDirection="column"
-      gap={10}
-      {...props}
-    />
   )
 })
 
@@ -179,6 +169,8 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen = observer((props: LoginScreenProps) => {
+  const [tab, setTab] = useState('login');
+
   return (
     <View
       w="100%"
@@ -195,7 +187,8 @@ export const LoginScreen = observer((props: LoginScreenProps) => {
         gap={20}
       >
         <Tabs
-          value="login"
+          value={tab}
+          setValue={setTab}
           tabs={[
             {
               value: 'login',

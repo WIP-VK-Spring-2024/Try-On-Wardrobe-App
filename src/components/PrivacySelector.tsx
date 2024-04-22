@@ -7,7 +7,7 @@ import { View, RadioGroup } from "@gluestack-ui/themed"
 
 export const PrivacySelector = observer((props: InputProps<Privacy>) => {
   return (
-    <View>
+    <View gap={5}>
       <RobotoText>Статус аккаунта</RobotoText>
       <RadioGroup 
         value={props.value} 

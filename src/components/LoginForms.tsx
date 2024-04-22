@@ -94,7 +94,7 @@ export const PasswordInput = observer((props: InputProps<string>) => {
 export const SexSelector = observer((props: InputProps<Gender>) => {
 
   return (
-    <View>
+    <View gap={5}>
       <RobotoText>Пол</RobotoText>
       <RadioGroup 
         value={props.value} 

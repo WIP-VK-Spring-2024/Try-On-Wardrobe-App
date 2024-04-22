@@ -1,4 +1,4 @@
-import { Divider, Pressable, View } from "@gluestack-ui/themed";
+import { Divider, Pressable, View, ScrollView } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { DimensionValue } from "react-native";
@@ -11,6 +11,16 @@ interface TabHeaderProps {
   onSelect?: ()=>void
   wPercent?: number
 }
+
+export const TabContentContainer = observer((props: React.PropsWithChildren) => {
+  return (
+    <View
+      flexDirection="column"
+      gap={10}
+      {...props}
+    />
+  )
+})
 
 const TabHeader = observer((props: TabHeaderProps) => {
   return (
@@ -38,23 +48,22 @@ interface TabProps {
 }
 
 interface TabsProps {
-  tabs: TabProps[],
-  value?: string
+  tabs: TabProps[]
+  value: string
+  setValue: (value: string) => void
 }
 
-export const Tabs = observer((props: TabsProps) => {
-  const [value, setValue] = useState(props.value);
-
+export const Tabs = observer(({tabs, value, setValue}: TabsProps) => {
   return (
     <View>
       <View
         flexDirection="row"
       >
         {
-          props.tabs.map((tab, i) => (
+          tabs.map((tab, i) => (
             <TabHeader
               key={i}
-              wPercent={100 / props.tabs.length}
+              wPercent={100 / tabs.length}
               text={tab.header}
               isActive={tab.value === value}
               onSelect={()=>setValue(tab.value)}
@@ -67,11 +76,10 @@ export const Tabs = observer((props: TabsProps) => {
 
       <View>
         {
-          props.tabs.find(tab => tab.value === value)?.content
+          tabs.find(tab => tab.value === value)?.content
         }
       </View>
 
     </View>
   )
 })
-

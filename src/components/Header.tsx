@@ -49,14 +49,14 @@ export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
         <Pressable
           onPress={() => {
-              navigation.navigate('Profile');
+              navigation.navigate('Profile', {user: profileStore.currentUser});
           }}
         >
           <Avatar 
             bg={PRIMARY_COLOR} 
             borderRadius="$full"
           >
-            <AvatarFallbackText>{profileStore.name}</AvatarFallbackText>
+            <AvatarFallbackText>{profileStore.currentUser?.name}</AvatarFallbackText>
           </Avatar>
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
