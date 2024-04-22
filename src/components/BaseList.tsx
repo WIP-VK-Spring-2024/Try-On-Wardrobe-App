@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, Box, Pressable} from '@gluestack-ui/themed';
+import {Image, Box, Pressable, View} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
 import {BASE_COLOR, ADD_BTN_COLOR, FOOTER_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH} from '../consts';
 import { ImageSourcePropType} from 'react-native';
@@ -97,8 +97,13 @@ export const ModalListImage = observer((props: { source: ImageSourceType }) => {
   },
 );
 
+interface AddItemCardProps {
+  text?: string
+  onPress?: () => void 
+}
+
 export const AddItemCard = observer(
-  ({ text, onPress }: { text: string; onPress: () => void }) => {
+  ({ text, onPress, children } : AddItemCardProps & React.PropsWithChildren) => {
     return (
       <Pressable
         borderRadius={CARD_PROPS.borderRadius}
@@ -110,14 +115,18 @@ export const AddItemCard = observer(
         flexDirection="row"
         alignItems="center"
         justifyContent="center"
-        gap={10}
-      >
-        <AddBtnIcon
-          width={45}
-          height={45}
-          fill={ADD_BTN_COLOR}
-          stroke={FOOTER_COLOR} />
-        <RobotoText fontSize={16}>{text}</RobotoText>
+        gap={10}>
+        {children ||
+          <>
+            <AddBtnIcon
+              width={45}
+              height={45}
+              fill={ADD_BTN_COLOR}
+              stroke={FOOTER_COLOR}
+            />
+            <RobotoText fontSize={16}>{text || 'Добавить'}</RobotoText>
+          </>
+        }
       </Pressable>
     );
   },

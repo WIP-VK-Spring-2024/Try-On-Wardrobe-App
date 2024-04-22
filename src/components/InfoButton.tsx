@@ -17,7 +17,6 @@ export const Tooltip = observer(
   ({isOpen, hide, top, bottom, margin, children}: TooltipProps & React.PropsWithChildren) => {
     return (
       <View
-        // onPress={props.hide}
         flexDirection="row"
         display={isOpen ? 'flex' : 'none'}
         position="absolute"
@@ -26,11 +25,11 @@ export const Tooltip = observer(
         bottom={bottom}
         top={top}
         backgroundColor={CARD_PROPS.backgroundColor}
-        zIndex={1}
+        // zIndex={1}
         padding={8}
         borderRadius={CARD_PROPS.borderRadius}
-        borderColor={ACTIVE_COLOR}
-        borderWidth={2}>
+        elevation={5}
+        >
         <View flex={1}>
           <InfoIcon width={25} height={25} fill="#000000"/>
         </View>

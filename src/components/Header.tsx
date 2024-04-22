@@ -140,7 +140,7 @@ export const BackHeader = (props: BackHeaderProps & React.PropsWithChildren) => 
             color="#000"
             numberOfLines={props.textOverflowEllipsis ? 1 : undefined}
             textAlign="center"
-            fontSize={props.fontSize || 32}>
+            fontSize={props.fontSize || 24}>
             {props.text}
           </RobotoText>
         )}

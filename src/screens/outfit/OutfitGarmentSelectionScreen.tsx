@@ -7,9 +7,6 @@ import { StackActions } from "@react-navigation/native";
 import { BaseScreen } from "../BaseScreen";
 import { TypeFilter } from "../../components/FilterBlock";
 import { MultipleSelectionGarmentList } from "../../components/GarmentList";
-import { Image } from "react-native";
-import { getImageSource } from "../../utils";
-
 
 interface OutfitGarmentSelectionScreenProps {
   navigation: any
@@ -25,7 +22,7 @@ export const OutfitGarmentSelectionScreen = observer(
       <BackHeader
         rightMenu={<GarmentHeaderButtons />}
         navigation={props.navigation}
-        text="Одежда"
+        text="Выберите одежду"
       />
     )
 
@@ -38,7 +35,7 @@ export const OutfitGarmentSelectionScreen = observer(
           props.navigation.navigate("Editor", {outfit: outfit});
         }}
       />
-      : undefined
+      : null;
 
     return (
       <BaseScreen 
