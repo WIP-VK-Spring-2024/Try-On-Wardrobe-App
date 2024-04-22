@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
-import { Pressable, View } from "@gluestack-ui/themed";
+import { CloseIcon, Pressable, View } from "@gluestack-ui/themed";
 import InfoIcon from "../../assets/icons/info.svg";
-import { RobotoText } from "./common";
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
 import { CARD_PROPS } from "./BaseList";
-import { Pre } from "@expo/html-elements";
 
 interface TooltipProps {
-  shown: boolean
+  isOpen: boolean
   hide: () => void
   top?: number;
   bottom?: number;
@@ -17,24 +14,33 @@ interface TooltipProps {
 }
 
 export const Tooltip = observer(
-  (props: TooltipProps & React.PropsWithChildren) => {
+  ({isOpen, hide, top, bottom, margin, children}: TooltipProps & React.PropsWithChildren) => {
     return (
-      <Pressable
-        onPress={props.hide}
-        display={props.shown ? 'flex' : 'none'}
+      <View
+        // onPress={props.hide}
+        flexDirection="row"
+        display={isOpen ? 'flex' : 'none'}
         position="absolute"
-        marginHorizontal={props.margin}
+        marginHorizontal={margin}
         w="90%"
-        bottom={props.bottom}
-        top={props.top}
+        bottom={bottom}
+        top={top}
         backgroundColor={CARD_PROPS.backgroundColor}
         zIndex={1}
         padding={8}
         borderRadius={CARD_PROPS.borderRadius}
         borderColor={ACTIVE_COLOR}
         borderWidth={2}>
-        {props.children}
-      </Pressable>
+        <View flex={1}>
+          <InfoIcon width={25} height={25} fill="#000000"/>
+        </View>
+        <View flex={9}>
+          {children}
+        </View>
+        <Pressable flex={1} onPress={hide}>
+          <CloseIcon />
+        </Pressable>
+      </View>
     );
   },
 );
@@ -47,10 +53,8 @@ interface InfoButtonProps {
 
 export const InfoButton = observer(({size, onPress, fill}: InfoButtonProps) => {
   return (
-    <>
-      <Pressable onPress={onPress}>
-        <InfoIcon width={size} height={size} fill={fill} />
-      </Pressable>
-    </>
+    <Pressable onPress={onPress}>
+      <InfoIcon width={size} height={size} fill={fill} />
+    </Pressable>
   );
 });

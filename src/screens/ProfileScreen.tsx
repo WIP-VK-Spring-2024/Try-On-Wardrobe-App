@@ -144,7 +144,7 @@ const SubsBlock = observer(({subs, navigation}: SubBlockProps) => {
         <RobotoText fontSize={18} marginRight={10}>Подписки</RobotoText>
         <SearchIcon fill={"#000000"} width={20} height={20}/>
       </View>
-        {[...Array(subRowsNum)].map((e, i) =>
+        {[...Array(subRowsNum)].map((_, i) =>
           <View flexDirection="row" justifyContent="space-evenly" key={i}>
             {subs.slice(0, displayedSubsNum/subRowsNum).map((item, j) => (
               <Sub

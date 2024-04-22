@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BaseList, CARD_SIZE, CARD_PROPS, ListImage } from './BaseList';
 import { Pressable, View } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
-import { BASE_COLOR, ACTIVE_COLOR, WINDOW_WIDTH } from '../consts';
+import { BASE_COLOR, ACTIVE_COLOR, WINDOW_WIDTH, PRIMARY_COLOR } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
 import InfoIcon from '../../assets/icons/info.svg';
@@ -133,12 +133,7 @@ const DisableableClothesListCard = observer(
         )}
 
         {disabled && !infoShown && (
-          <ForbiddenIcon
-            fill={ACTIVE_COLOR}
-            style={style.overlay}
-            width={forbiddenIconSize}
-            height={forbiddenIconSize}
-          />
+          <View {...CARD_PROPS} bgColor='#00000044' position='absolute' />
         )}
       </Pressable>
     );

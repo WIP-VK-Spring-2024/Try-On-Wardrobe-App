@@ -51,9 +51,9 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
 
   const tooltip = (
     <Tooltip
-      shown={infoShown}
+      isOpen={infoShown}
       hide={() => setInfoShown(false)}
-      top={-150}
+      top={-170}
       margin={20}
       >
       <RobotoText fontSize={tooltipFontSize}>
@@ -141,7 +141,7 @@ export const PersonSelectionScreen = observer(
     const tooltip = (
       <View w="100%" justifyContent="center">
         <Tooltip
-          shown={infoShown}
+          isOpen={infoShown}
           hide={() => setInfoShown(false)}
           top={-210}
           margin={20}>
