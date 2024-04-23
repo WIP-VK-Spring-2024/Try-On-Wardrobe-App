@@ -7,10 +7,10 @@ import { RobotoText } from "../common";
 import { Pressable } from "@gluestack-ui/themed";
 
 
-import LikeIcon from '../../../assets/icons/my-like.svg';
-import DislikeIcon from '../../../assets/icons/my-dislike.svg';
 import ProfileIcon from '../../../assets/icons/profile.svg';
 import ReplyIcon from '../../../assets/icons/reply.svg';
+import { RatingBlock, RatingBlockProps, RatingStatus, getRatingFromStatus } from "./RatingBlock";
+import { ajax } from "../../requests/common";
 
 
 interface PostCommentAvatarColumnProps {
@@ -82,69 +82,13 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
 export interface PostCommentProps extends 
   PostCommentAvatarColumnProps, 
   PostCommentContentColumnProps {
-  
+    uuid: string
+    rating: number
+    ratingStatus: RatingStatus
 }
 
-export type RatingStatus = 'liked' | 'disliked' | undefined
+interface PostCommentFooterProps extends RatingBlockProps {
 
-interface RatingBlockProps {
-  rating: number
-  status: RatingStatus
-
-  setStatus: (status: RatingStatus) => void
-}
-
-export const RatingBlock = observer((props: RatingBlockProps) => {
-  const icon_size = 16;
-
-  const toggleRatingStatus = (status: RatingStatus) => {
-    return () => {
-      if (props.status === status) {
-        props.setStatus(undefined);
-      } else {
-        props.setStatus(status);
-      }
-    }
-  }
-
-  return (
-    <View
-      flexDirection="row"
-      justifyContent="center"
-      alignItems="center"
-      gap={5}
-    >
-      <Pressable
-        padding={5}
-        onPress={toggleRatingStatus('liked')}
-      >
-        <LikeIcon 
-          width={icon_size}
-          height={icon_size} 
-          stroke="#000000"
-          fill={props.status === 'liked' ? PRIMARY_COLOR: "#ffffff"}
-        />
-      </Pressable>
-
-      <RobotoText fontSize={14}>{props.rating}</RobotoText>
-
-      <Pressable
-        padding={5}
-        onPress={toggleRatingStatus('disliked')}
-      >
-        <DislikeIcon
-          width={icon_size}
-          height={icon_size}
-          stroke={"#000000"}
-          fill={props.status === 'disliked' ? PRIMARY_COLOR : "#ffffff"}
-        />
-      </Pressable>
-    </View>
-  )
-})
-
-interface PostCommentFooterProps extends RatingBlockProps{
-  
 }
 
 const PostCommentFooter = observer((props: PostCommentFooterProps) => {
@@ -153,7 +97,8 @@ const PostCommentFooter = observer((props: PostCommentFooterProps) => {
   return (
     <View
       flexDirection="row"
-      justifyContent="center"
+      justifyContent="flex-start"
+      paddingLeft={40}
       alignItems="center"
       gap={40}
     >
@@ -188,7 +133,31 @@ interface PostCommentFullProps extends PostCommentProps {
 }
 
 export const PostComment = observer((props: PostCommentFullProps) => {
-  const [status, setStatus] = useState<RatingStatus>(undefined);
+  const [rating, setRating] = useState<number>(props.rating);
+  const [ratingStatus, setRatingStatus] = useState<RatingStatus>(props.ratingStatus);
+
+  console.log(props, rating, ratingStatus)
+
+  const updateRatingStatus = (status: RatingStatus) => {
+    setRatingStatus(status);
+ 
+    const rating = getRatingFromStatus(status);
+
+    setRating(props.rating + rating);
+
+    const rateBody = {
+      rating: rating
+    }
+
+    ajax.apiPost(`/comments/${props.uuid}/rate`, {
+      credentials: true,
+      body: JSON.stringify(rateBody)
+    })
+      .then(resp => {
+        console.log(resp);
+      })
+      .catch(reason => console.error(reason));
+  }
 
   return (
     <Pressable
@@ -206,9 +175,9 @@ export const PostComment = observer((props: PostCommentFullProps) => {
       </View>
       {/* <Divider h="$0.5" marginTop={5} marginBottom={5}/> */}
       <PostCommentFooter
-        rating={300}
-        status={status}
-        setStatus={setStatus}
+        rating={rating}
+        status={ratingStatus}
+        setStatus={updateRatingStatus}
       />
     </Pressable>
   )

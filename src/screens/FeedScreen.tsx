@@ -29,6 +29,8 @@ interface PostData {
   outfit_image: ImageType
   created_at: string
   user_name: string
+  user_rating: number
+  rating: number
 }
 
 interface PostCardProps {
@@ -101,10 +103,13 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
       <PostCard
         data={item}
         onPress={() => {
+          console.log('item:', item)
           props.navigation.navigate("Post", {
             image: item.outfit_image,
             uuid: item.uuid,
-            user_name: item.user_name
+            user_name: item.user_name,
+            user_rating: item.user_rating,
+            rating: item.rating,
           })
         }}
       />

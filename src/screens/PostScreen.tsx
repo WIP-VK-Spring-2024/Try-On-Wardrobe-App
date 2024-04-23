@@ -11,12 +11,11 @@ import { Pressable } from "@gluestack-ui/themed";
 import { getImageSource } from "../utils";
 import { Image } from "@gluestack-ui/themed";
 import { BackHeader } from "../components/Header";
-import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps, RatingBlock, RatingStatus } from "../components/feed/PostComment";
+import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
 
-import LikeIcon from '../../../assets/icons/my-like.svg';
-import DislikeIcon from '../../../assets/icons/my-dislike.svg';
+import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
 
 
 interface PostCommentBlockProps {
@@ -36,10 +35,13 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
         props.comments.map((comment, i) => (
           <PostCommentTree
             key={i}
+            uuid={comment.uuid}
             authorName={comment.authorName}
             text={comment.text}
             replies={comment.replies}
             active={i === activeId}
+            rating={comment.rating}
+            ratingStatus={comment.ratingStatus}
           />
         ))
       }
@@ -55,26 +57,51 @@ interface PostScreenProps {
 export const PostScreen = observer((props: PostScreenProps) => {
   const postData = props.route.params;
   
-  const [ratingStatus, setRatingStatus] = useState<RatingStatus>(undefined);
+  const [ratingStatus, setRatingStatus] = useState<RatingStatus>(getStatusFromRating(postData.user_rating));
+  const [rating, setRating] = useState<number>(postData.rating);
+
+  const updateRatingStatus = (status: RatingStatus) => {
+    setRatingStatus(status);
+
+    const rating = getRatingFromStatus(status);
+
+    setRating(postData.rating + rating);
+
+    const rateBody = {
+      rating: rating
+    }
+
+    ajax.apiPost(`/posts/${postData.uuid}/rate`, {
+      credentials: true,
+      body: JSON.stringify(rateBody)
+    })
+      .then(resp => {
+        console.log(resp);
+      })
+      .catch(reason => console.error(reason));
+  }
   
-  const [comments, setComments] = useState([
-    {
-      authorName: "nikstarling",
-      text: "this is some long-long post text. It's purpose is to test rendering of comment",
-    },
-    {
-      authorName: "nikstarling",
-      text: "this is some long-long post text. It's purpose is to test rendering of comment",
-    },
-  ])
+  const [comments, setComments] = useState<PostCommentProps[]>([])
 
   const addComment = (comment: PostCommentProps) => {
-    setComments([...comments, comment]);
+    const commentBody = {
+      body: comment.text
+    };
+
+    ajax.apiPost(`/posts/${postData.uuid}/comments`, {
+      credentials: true,
+      body:JSON.stringify(commentBody)
+    })
+      .then(resp => {
+        console.log(resp);
+        setComments([...comments, comment]);
+      })
+      .catch(reason => console.error(reason));
   }
 
   useEffect(() => {
     console.log(postData.uuid)
-    ajax.apiGet(`/posts/${postData.uuid}/comments`, {
+    ajax.apiGet(`/posts/${postData.uuid}/comments?limit=10&since=${(new Date()).toISOString()}`, {
       credentials: true
     }).then(resp => {
       console.log(resp);
@@ -82,11 +109,21 @@ export const PostScreen = observer((props: PostScreenProps) => {
       resp.json()
         .then(json => {
           console.log(json)
+
+          const responseToComment = (response: any) => ({
+            text: response.body,
+            authorName: response.user_name,
+            rating: response.rating,
+            ratingStatus: getStatusFromRating(response.user_rating),
+            uuid: response.uuid
+          })
+
+          setComments(json.map(responseToComment));
         })
         .catch(reason => console.error(reason))
     })
       .catch(reason => console.error(reason));
-  })
+  }, [])
 
   console.log(props.route.params)
 
@@ -136,10 +173,10 @@ export const PostScreen = observer((props: PostScreenProps) => {
             gap={10}
           >
             <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
-              <AvatarFallbackText>Nikita</AvatarFallbackText>
+              <AvatarFallbackText>{postData.user_name}</AvatarFallbackText>
             </Avatar>
 
-            <RobotoText fontWeight='bold'>Nikita</RobotoText>
+            <RobotoText fontWeight='bold'>{postData.user_name}</RobotoText>
           </View>
 
           <Pressable>
@@ -147,9 +184,9 @@ export const PostScreen = observer((props: PostScreenProps) => {
           </Pressable>
 
           <RatingBlock
-            rating={200}
+            rating={rating}
             status={ratingStatus}
-            setStatus={setRatingStatus}
+            setStatus={updateRatingStatus}
           />
         </View>
 
