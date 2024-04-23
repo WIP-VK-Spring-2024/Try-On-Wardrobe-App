@@ -65,7 +65,7 @@ export const SubsBlock = observer((props: SubBlockProps) => {
   return (
     <View flexDirection="row">
       <View flex={1} />
-      <View gap={10} marginTop={20} flex={8}>
+      <View gap={10} flex={8}>
         <View flexDirection="row" alignItems="center" gap={10}>
           <RobotoText fontSize={18}>Подписки</RobotoText>
           <Pressable onPress={() => props.onSearch()}>

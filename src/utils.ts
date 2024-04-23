@@ -3,7 +3,7 @@ import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
 import { TryOnResultCard} from "./stores/TryOnStore";
-import { Gender, Privacy } from "./stores/common";
+import { Gender, Privacy, PostData } from "./stores/common";
 import { User } from "./stores/ProfileStore";
 
 export interface ImageSourceType {
@@ -55,6 +55,16 @@ export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
         email: resp.email,
         gender: resp.gender,
     })
+}
+
+export const convertPostResponse = (item: any): PostData => {
+    return {
+      ...item,
+      outfit_image: {
+        type: 'remote',
+        uri: item.outfit_image,
+      },
+    };
 }
 
 export const convertGarmentResponse = (cloth: GarmentResponse) => {

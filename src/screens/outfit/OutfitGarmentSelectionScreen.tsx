@@ -7,7 +7,7 @@ import { StackActions } from "@react-navigation/native";
 import { BaseScreen } from "../BaseScreen";
 import { TypeFilter } from "../../components/FilterBlock";
 import { MultipleSelectionGarmentList } from "../../components/GarmentList";
-import { NoClothesText } from "../../components/NoClothesText";
+import { NoClothesMessage } from "../../components/NoClothesMessage";
 
 interface OutfitGarmentSelectionScreenProps {
   navigation: any
@@ -52,7 +52,7 @@ export const OutfitGarmentSelectionScreen = observer(
             />
           </>
         ) : (
-          <NoClothesText afterIconText="в главном меню!"/>
+          <NoClothesMessage afterIconText="в главном меню!"/>
         )}
       </BaseScreen>
     );

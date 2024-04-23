@@ -29,7 +29,7 @@ import { PRIMARY_COLOR } from "../consts";
 import { appState } from "../stores/AppState";
 import { deleteUserPhoto } from "../requests/user_photo"
 import { useFocusEffect } from "@react-navigation/native";
-import { NoClothesText } from "../components/NoClothesText";
+import { NoClothesMessage } from "../components/NoClothesMessage";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -135,7 +135,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
           />
         </>
       ) : (
-        <NoClothesText afterIconText="в главном меню!" />
+        <NoClothesMessage afterIconText="в главном меню!" />
       )}
     </BaseScreen>
   );

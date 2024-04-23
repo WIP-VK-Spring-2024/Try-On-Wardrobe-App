@@ -4,7 +4,7 @@ import { RobotoText } from "./common";
 import { ACTIVE_COLOR } from "../consts";
 import AddIcon from "../../assets/icons/add-btn.svg"
 
-export const NoClothesText = (props: {afterIconText?: string}) => {
+export const NoClothesMessage = (props: {afterIconText?: string}) => {
   return (
     <View w="100%" marginTop={10}>
       <View flexDirection="row">

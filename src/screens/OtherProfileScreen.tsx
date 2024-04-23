@@ -9,9 +9,14 @@ import {
 } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
 import { BaseScreen } from "./BaseScreen";
-import { PRIMARY_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
+import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
 import { userSub, userUnsub } from "../requests/user"
 import { BackButton } from "../components/Profile"
+import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
+import { PostData } from "../stores/common"
+import { ajax } from "../requests/common"
+import { convertPostResponse } from "../utils";
+import { PostList } from "../components/Posts";
 
 interface OtherUserHeaderProps {
   navigation: any
@@ -36,7 +41,6 @@ const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
       <Button
         flex={4}
         marginRight={5}
-        // marginLeft={100}
         size="xs"
         action={isSubbed ? 'negative' : 'primary'}
         bgColor={isSubbed ? "#bb0000" : ACTIVE_COLOR}
@@ -68,14 +72,33 @@ const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
 export const OtherUserProfileScreen = observer(({navigation, route}: {navigation: any, route: any}) => {
   const user: Subscription = route.params.user;
 
+  const fetchUserPosts: FetchDataType<PostData> = React.useCallback(
+    (limit: number, since: string) => {
+      const urlParams = new URLSearchParams({
+        limit: limit.toString(),
+        since: since,
+      });
+      return ajax
+        .apiGet(`/users/${user.uuid}/posts?` + urlParams.toString(), {
+          credentials: true,
+        })
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          return json.map(convertPostResponse);
+        });
+    },
+    [user.uuid],
+  );
+
   return (
-    <BaseScreen navigation={navigation} header={null} footer={null}>
+    <View height="100%">
       <OtherUserHeader
         user={user}
         navigation={navigation}
       />
-
-      {/* <SubsBlock navigation={navigation} subs={stubSubs} /> */}
-    </BaseScreen>
+      <PostList fetchData={fetchUserPosts} navigation={navigation}/>
+    </View>
   );
 });

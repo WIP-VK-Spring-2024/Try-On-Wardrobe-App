@@ -12,7 +12,7 @@ import { FilterModal } from "../components/FilterModal";
 import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { ACTIVE_COLOR } from "../consts";
-import { NoClothesText } from "../components/NoClothesText"
+import { NoClothesMessage } from "../components/NoClothesMessage"
 
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useFocusEffect(
@@ -48,7 +48,7 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
             <StaticGarmentList navigation={navigation} />
           </>
         ) : (
-          <NoClothesText />
+          <NoClothesMessage />
         )}
       </BaseScreen>
       <FilterModal

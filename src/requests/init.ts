@@ -8,6 +8,7 @@ import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
 import { ajax } from "./common"
+import { getSubs } from "./user";
 
 const typesRequest = ajax.apiGet('/types').then(data => {
     return data.json().then(types => {
@@ -24,6 +25,8 @@ const stylesRequest = ajax.apiGet('/styles').then(data => {
 }).catch(err => processNetworkError(err))
 
 export const initStores = () => {
+    getSubs();
+
     const remoteGarments = ajax.apiGet('/clothes', {
         credentials: true
     }).then(async data => {

@@ -1,3 +1,5 @@
+import { ImageType } from "../models"
+
 export enum Rating {
   None = 0,
   Like = 1,
@@ -7,3 +9,11 @@ export enum Rating {
 export type Gender = 'male' | 'female'
 
 export type Privacy = 'private' | 'public'
+
+export interface PostData {
+    uuid: string
+    outfit_id: string
+    outfit_image: ImageType
+    created_at: string
+  }
+  

@@ -13,17 +13,19 @@ import {
 import { RobotoText, AlertModal, Modal } from "../components/common";
 import SettingsIcon from "../../assets/icons/settings.svg"
 import LogoutIcon from "../../assets/icons/logout.svg"
-import { BaseScreen } from "./BaseScreen";
 import { PRIMARY_COLOR, ACTIVE_COLOR} from "../consts";
 import { useFocusEffect } from '@react-navigation/native'
 import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
 import { SexSelector } from "../components/LoginForms"
 import { PrivacySelector } from "../components/PrivacySelector"
-import { updateUserSettings, searchUsers, getSubs } from "../requests/user"
+import { updateUserSettings, searchUsers } from "../requests/user"
+import { ajax } from "../requests/common"
 import { Tabs } from "../components/Tabs"
 import { SearchInput } from "../components/SearchInput"
 import { BackButton, SubsList, NoSubsMessage, SubsBlock } from "../components/Profile"
+import { PostList } from "../components/Posts";
+import { convertPostResponse } from "../utils"
 
 const iconSize = 25
 
@@ -199,7 +201,6 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
   );
 });
 
-
 const displayedSubsNum = 4;
 const subsRowSize = 4;
 
@@ -218,14 +219,27 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
     }, []),
   );
 
-  useEffect(() => {
-    getSubs();
-  }, []);
-  
   const subs = profileStore.currentUser?.subs || [];
 
+  const fetchLikedPosts = (limit: number, since: string) => {
+    const urlParams = new URLSearchParams({
+      limit: limit.toString(),
+      since: since,
+    });
+    return ajax
+      .apiGet("/posts/liked?" + urlParams.toString(), {
+        credentials: true,
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        return json.map(convertPostResponse);
+      });
+  };
+
   return (
-    <BaseScreen navigation={navigation} header={null} footer={null}>
+    <View h="100%" gap={25}>
       <UserHeader
         user={profileStore.currentUser!}
         navigation={navigation}
@@ -240,6 +254,11 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         rowSize={subsRowSize}
         displayedNum={displayedSubsNum}
       />
+
+      <View >
+        <RobotoText textAlign='center'>Вам понравилось</RobotoText>
+        <PostList fetchData={fetchLikedPosts} navigation={navigation} />
+      </View>
 
       <AlertModal
         isOpen={logoutModalShown}
@@ -263,6 +282,6 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         subs={subs}
         navigation={navigation}
       />
-    </BaseScreen>
+    </View>
   );
 });
