@@ -41,10 +41,16 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
       flexDirection="column"
       margin={10}
       flexShrink={1}
+      gap={5}
     >
       <View
-        w="100%"
+        flexDirection="row"
+        gap={10}
+        alignItems="center"
       >
+        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
+          <AvatarFallbackText>{props.authorName}</AvatarFallbackText>
+        </Avatar>
         <RobotoText
           w="100%"
           fontSize={18}
@@ -79,17 +85,17 @@ export interface PostCommentProps extends
   
 }
 
-type RatingStatus = 'liked' | 'disliked' | undefined
+export type RatingStatus = 'liked' | 'disliked' | undefined
 
-interface PostCommentFooterProps {
+interface RatingBlockProps {
   rating: number
   status: RatingStatus
 
   setStatus: (status: RatingStatus) => void
 }
 
-const PostCommentFooter = observer((props: PostCommentFooterProps) => {
-  const icon_size = 20;
+export const RatingBlock = observer((props: RatingBlockProps) => {
+  const icon_size = 16;
 
   const toggleRatingStatus = (status: RatingStatus) => {
     return () => {
@@ -106,58 +112,77 @@ const PostCommentFooter = observer((props: PostCommentFooterProps) => {
       flexDirection="row"
       justifyContent="center"
       alignItems="center"
-      gap={40}
+      gap={5}
     >
-      <View
-        flexDirection="row"
-        justifyContent="center"
-        alignItems="center"
-        gap={5}
+      <Pressable
+        padding={5}
+        onPress={toggleRatingStatus('liked')}
       >
-        <Pressable
-          padding={5}
-          onPress={toggleRatingStatus('liked')}
-        >
-          <LikeIcon 
-            width={icon_size}
-            height={icon_size} 
-            stroke="#000000"
-            fill={props.status === 'liked' ? PRIMARY_COLOR: "#ffffff"}
-          />
-        </Pressable>
+        <LikeIcon 
+          width={icon_size}
+          height={icon_size} 
+          stroke="#000000"
+          fill={props.status === 'liked' ? PRIMARY_COLOR: "#ffffff"}
+        />
+      </Pressable>
 
-        <RobotoText fontSize={14}>{props.rating}</RobotoText>
-
-        <Pressable
-          padding={5}
-          onPress={toggleRatingStatus('disliked')}
-        >
-          <DislikeIcon
-            width={icon_size}
-            height={icon_size}
-            stroke={"#000000"}
-            fill={props.status === 'disliked' ? PRIMARY_COLOR : "#ffffff"}
-          />
-        </Pressable>
-      </View>
+      <RobotoText fontSize={14}>{props.rating}</RobotoText>
 
       <Pressable
+        padding={5}
+        onPress={toggleRatingStatus('disliked')}
+      >
+        <DislikeIcon
+          width={icon_size}
+          height={icon_size}
+          stroke={"#000000"}
+          fill={props.status === 'disliked' ? PRIMARY_COLOR : "#ffffff"}
+        />
+      </Pressable>
+    </View>
+  )
+})
+
+interface PostCommentFooterProps extends RatingBlockProps{
+  
+}
+
+const PostCommentFooter = observer((props: PostCommentFooterProps) => {
+  const icon_size = 16;
+
+  return (
+    <View
+      flexDirection="row"
+      justifyContent="center"
+      alignItems="center"
+      gap={40}
+    >
+      <RatingBlock
+        rating={props.rating}
+        status={props.status}
+        setStatus={props.setStatus}
+      />
+
+      {/* <Pressable
         padding={5}
       >
         <ProfileIcon width={icon_size + 3} height={icon_size + 3} stroke="#000000"/>
-      </Pressable>
+      </Pressable> */}
 
       <Pressable
         padding={5}
+        flexDirection="row"
+        alignItems="flex-start"
       >
         <ReplyIcon width={icon_size + 5} height={icon_size + 5} stroke="#000000"/>
+        <RobotoText fontSize={14}>Ответить</RobotoText>
       </Pressable>
     </View>
   )
 })
   
 interface PostCommentFullProps extends PostCommentProps {
-    active: boolean
+    active?: boolean
     onPress?: () => void
     onLongPress?: () => void
 }
@@ -176,10 +201,10 @@ export const PostComment = observer((props: PostCommentFullProps) => {
         flexDirection="row"
         gap={5}
       >
-        <PostCommentAvatarColumn authorName={props.authorName}/>
+        {/* <PostCommentAvatarColumn authorName={props.authorName}/> */}
         <PostCommentContentColumn authorName={props.authorName} text={props.text}/>
       </View>
-      <Divider h="$0.5" marginTop={5} marginBottom={5}/>
+      {/* <Divider h="$0.5" marginTop={5} marginBottom={5}/> */}
       <PostCommentFooter
         rating={300}
         status={status}

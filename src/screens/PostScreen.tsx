@@ -11,9 +11,12 @@ import { Pressable } from "@gluestack-ui/themed";
 import { getImageSource } from "../utils";
 import { Image } from "@gluestack-ui/themed";
 import { BackHeader } from "../components/Header";
-import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
+import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps, RatingBlock, RatingStatus } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
+
+import LikeIcon from '../../../assets/icons/my-like.svg';
+import DislikeIcon from '../../../assets/icons/my-dislike.svg';
 
 
 interface PostCommentBlockProps {
@@ -52,38 +55,12 @@ interface PostScreenProps {
 export const PostScreen = observer((props: PostScreenProps) => {
   const postData = props.route.params;
   
+  const [ratingStatus, setRatingStatus] = useState<RatingStatus>(undefined);
+  
   const [comments, setComments] = useState([
     {
       authorName: "nikstarling",
       text: "this is some long-long post text. It's purpose is to test rendering of comment",
-      replies: [
-        {
-          authorName: "nikstarling",
-          text: "this is some long-long post text. It's purpose is to test rendering of comment",
-          replies: [
-            {
-              authorName: "nikstarling",
-              text: "this is some long-long post text. It's purpose is to test rendering of comment",
-              replies: [
-                {
-                  authorName: "nikstarling",
-                  text: "this is some long-long post text. It's purpose is to test rendering of comment",
-                },
-              ]
-            },
-            {
-              authorName: "nikstarling",
-              text: "this is some long-long post text. It's purpose is to test rendering of comment",
-              replies: [
-                {
-                  authorName: "nikstarling",
-                  text: "this is some long-long post text. It's purpose is to test rendering of comment",
-                },
-              ]
-            },
-          ]
-        },
-      ]
     },
     {
       authorName: "nikstarling",
@@ -138,8 +115,45 @@ export const PostScreen = observer((props: PostScreenProps) => {
             source={getImageSource(postData.image)}
             resizeMode="contain"
             />
+
         </View>
-          
+      
+        <View
+          w="100%"
+          backgroundColor="#ffffff"
+          padding={10}
+          flexDirection="row"
+          paddingRight={30}
+          paddingLeft={30}
+          justifyContent="space-between"
+          alignItems="center"
+          gap={10}
+        >
+          <View
+            flexDirection="row"
+            justifyContent="center"
+            alignItems="center"
+            gap={10}
+          >
+            <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
+              <AvatarFallbackText>Nikita</AvatarFallbackText>
+            </Avatar>
+
+            <RobotoText fontWeight='bold'>Nikita</RobotoText>
+          </View>
+
+          <Pressable>
+            <RobotoText>Подписаться</RobotoText>
+          </Pressable>
+
+          <RatingBlock
+            rating={200}
+            status={ratingStatus}
+            setStatus={setRatingStatus}
+          />
+        </View>
+
+
         <PostCommentBlock
           comments={comments}
         />
