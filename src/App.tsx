@@ -16,7 +16,9 @@ import { GarmentScreen } from './screens/GarmentScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
-import { OutfitEditorHeader, OutfitEditorScreen } from './screens/outfit/OutfitEditorScreen';
+import { CurrentUserProfileScreen } from './screens/ProfileScreen';
+import { OtherUserProfileScreen } from './screens/OtherProfileScreen';
+import { OutfitEditorScreen } from './screens/outfit/OutfitEditorScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { OutfitScreen } from './screens/outfit/OutfitScreen';
 import { OutfitSelectionScreen } from './screens/outfit/OutfitSelectionScreen';
@@ -26,6 +28,7 @@ import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
+import { TryOnCardScreen } from './screens/TryOnCardScreen';
 import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
 
 export const Stack = createNativeStackNavigator();
@@ -33,9 +36,6 @@ export const Stack = createNativeStackNavigator();
 const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
 
 RNFS.mkdir(pictures_path);
-
-// initStores();
-// loginFunc();
 
 const App = observer((): JSX.Element => {
   useEffect(() => {
@@ -82,11 +82,17 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="Person" component={PersonSelectionScreen} />
 
+        <Stack.Screen name="Profile" component={CurrentUserProfileScreen} />
+        <Stack.Screen name="OtherProfile" component={OtherUserProfileScreen} />
+
         <Stack.Screen name="TryOn" component={TryOnMainScreen} />
+
+        <Stack.Screen name="TryOnCard" component={TryOnCardScreen} />
 
         <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
 
         <Stack.Screen name="Result" component={ResultScreen} />
+
         <Stack.Screen name="Garment" component={GarmentScreen} />
 
         <Stack.Screen name="OutfitSelection" component={OutfitSelectionScreen} />

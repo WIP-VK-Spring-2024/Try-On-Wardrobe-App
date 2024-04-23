@@ -1,11 +1,12 @@
 import RNFS from 'react-native-fs';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
-import { staticEndpoint } from '../../config';
 import { arrayComp, getOutfitImageName } from './utils';
-import { getImageSource, joinPath } from '../utils';
+import { LoginSuccessResponse, getImageSource, joinPath } from '../utils';
 import { Outfit, outfitStore } from '../stores/OutfitStore';
 import { appState } from '../stores/AppState';
 import { ajax } from '../requests/common';
+import { profileStore } from '../stores/ProfileStore';
+import { convertLoginResponse } from "../utils"
 
 // saves:
 // - images
@@ -117,8 +118,6 @@ export class CacheManager {
                 'X-Session-Id': oldToken
             }
         }).then(resp => {
-            console.log(resp);
-
             return resp.json().then(json => {
                 console.log(json);
 
@@ -126,6 +125,7 @@ export class CacheManager {
                     json.token,
                     json.user_id
                 );
+                profileStore.setUser(convertLoginResponse(json))
 
                 return this.writeToken();
             });

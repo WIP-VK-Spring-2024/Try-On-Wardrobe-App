@@ -4,17 +4,12 @@ import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, Alert
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
-import { CustomSelect, IconWithCaption, RobotoText, UpdateableText } from '../components/common';
+import { CustomSelect, IconWithCaption, RobotoText, UpdateableText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
-import { Icon } from '@gluestack-ui/themed';
-import { AlertDialogFooter } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { ButtonText } from '@gluestack-ui/themed';
-import { CloseIcon } from '@gluestack-ui/themed';
 import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
-import { apiEndpoint } from '../../config';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
 
@@ -30,16 +25,17 @@ import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
-import { autorun } from 'mobx';
 
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
 
-export const GarmentHeader = (props: {route: any, navigation: any}) => {
+export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
     <BackHeader
       navigation={props.navigation}
-      text="Карточка"
+      text={props.name || "Карточка"}
+      fontSize={24}
+      textOverflowEllipsis={true}
       rightMenu={
       <Pressable
         onPress={async ()=>{
@@ -56,6 +52,20 @@ export const GarmentHeader = (props: {route: any, navigation: any}) => {
     />
   )
 };
+
+const GarmentImage = observer(({garment} : {garment: GarmentCard}) => {
+  return (
+    <ImageModal
+      source={getImageSource(garment.image)}
+      style={{
+        width: WINDOW_WIDTH - 30,
+        height: WINDOW_HEIGHT / 2,
+      }}
+      overlayBackgroundColor={BASE_COLOR + 'a0'}
+      resizeMode="contain"
+    />
+  )
+});
 
 export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
@@ -116,98 +126,57 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
       .catch(res => console.error(res))
   }
 
+  const GarmentNameInput = observer(
+    () => {
+      return (
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="center"
+          alignItems="center"
+          gap={20}>
+          <View flex={1}></View>
+          <View flex={10}>
+            <UpdateableText
+              numberOfLines={1}
+              text={garment.name}
+              inEditing={inEditing}
+              onUpdate={(text: string) => {
+                garment.setName(text);
+              }}
+            />
+          </View>
+          <Pressable
+            flex={1}
+            onPress={() => {
+              setInEditing((oldInEditing: boolean) => !oldInEditing);
+            }}>
+            <EditIcon stroke="#000000" />
+          </Pressable>
+        </Box>
+      );
+    },
+  );
+
   const CloseAlertDialog = observer(() => {
-    const closeDialog = () => {
-      setShowAlertDialog(false);
-      props.navigation.dispatch(StackActions.pop(1));
-    }
     return (
-      <AlertDialog
+      <AlertModal
+        header="Сохранение"
+        text="Вы действительно хотите выйти, не сохранив изменения?"
+        noText='Сбросить'
+        yesText='Сохранить'
         isOpen={showAlertDialog}
-        onClose={() => {
-          setShowAlertDialog(false);
+        hide={() => setShowAlertDialog(false)}
+        onAccept={() => {
+          garment.saveChanges();
+          props.navigation.dispatch(StackActions.pop(1));
         }}
-      >
-        <AlertDialogBackdrop />
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <Heading size="lg">Сохранение</Heading>
-            <AlertDialogCloseButton>
-              <Icon as={CloseIcon} />
-            </AlertDialogCloseButton>
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <RobotoText size="sm">
-              Вы действительно хотите выйти, не сохранив изменения?
-            </RobotoText>
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <ButtonGroup space="lg">
-              <Button
-                variant="outline"
-                action="secondary"
-                onPress={() => {
-                  garment.clearChanges();
-                  closeDialog();
-                }}
-              >
-                <ButtonText>Сбросить</ButtonText>
-              </Button>
-              <Button
-                bg={ACTIVE_COLOR}
-                onPress={() => {
-                  garment.saveChanges();
-                  closeDialog();
-                }}
-              >
-                <ButtonText>Сохранить</ButtonText>
-              </Button>
-            </ButtonGroup>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    )
-  });
-
-  const GarmentImage = observer(() => {
-    return (
-      <ImageModal
-        source={getImageSource(garment.image)}
-        style={{
-          width: WINDOW_WIDTH - 30,
-          height: WINDOW_HEIGHT / 2,
+        onReject={() => {
+          garment.clearChanges();
+          props.navigation.dispatch(StackActions.pop(1));
         }}
-        overlayBackgroundColor={BASE_COLOR + 'a0'}
-        resizeMode="contain"
       />
-    )
-  });
-
-  const GarmentNameInput = observer(() => {
-    return (
-      <Box
-        display="flex" 
-        flexDirection="row"
-        justifyContent='center'
-        alignItems='center'
-        gap={20}
-      >
-        <View flex={1}></View>
-        <UpdateableText
-          text={garment.name}
-          inEditing={inEditing}
-          onUpdate={(text: string)=>{garment.setName(text)}}
-        />
-        <Pressable
-          flex={1}
-          onPress={() => {
-            setInEditing((oldInEditing: boolean) => !oldInEditing);
-          }}
-        >
-          <EditIcon stroke="#000000"/>
-        </Pressable>
-      </Box>
-    )
+    );
   });
 
   const SeasonIconPressable = (props: React.PropsWithChildren & {season: Season}) => {
@@ -414,7 +383,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   return (
     <BaseScreen 
       navigation={props.navigation}
-      header={<GarmentHeader route={props.route} navigation={props.navigation}/>}
+      header={<GarmentHeader route={props.route} navigation={props.navigation} name={garment.name}/>}
       footer={
         <ButtonFooter text='Сохранить' onPress={saveChanges}/>
       }
@@ -428,7 +397,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         marginRight={20}
         marginBottom={100}
       >
-        <GarmentImage/>
+        <GarmentImage garment={garment}/>
         <GarmentNameInput/>
         <GarmentSeasonIcons/>
         <GarmentTypeSelector />

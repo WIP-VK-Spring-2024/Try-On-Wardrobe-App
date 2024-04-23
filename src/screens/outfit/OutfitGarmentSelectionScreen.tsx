@@ -7,9 +7,7 @@ import { StackActions } from "@react-navigation/native";
 import { BaseScreen } from "../BaseScreen";
 import { TypeFilter } from "../../components/FilterBlock";
 import { MultipleSelectionGarmentList } from "../../components/GarmentList";
-import { Image } from "react-native";
-import { getImageSource } from "../../utils";
-
+import { NoClothesMessage } from "../../components/NoClothesMessage";
 
 interface OutfitGarmentSelectionScreenProps {
   navigation: any
@@ -25,7 +23,7 @@ export const OutfitGarmentSelectionScreen = observer(
       <BackHeader
         rightMenu={<GarmentHeaderButtons />}
         navigation={props.navigation}
-        text="Одежда"
+        text="Выберите одежду"
       />
     )
 
@@ -38,22 +36,24 @@ export const OutfitGarmentSelectionScreen = observer(
           props.navigation.navigate("Editor", {outfit: outfit});
         }}
       />
-      : undefined
+      : null;
 
     return (
-      <BaseScreen 
-        navigation={props.navigation}
-        header={header}
-        footer={footer}
-      >
-        <TypeFilter
-            typeStore={outfitScreenTypeSelectionStore}
-            subtypeStore={outfitScreenSubtypeSelectionStore}
-        />
-
-        <MultipleSelectionGarmentList
-          store={outfitScreenGarmentSelectionStore}
-        />
+      <BaseScreen navigation={props.navigation} header={header} footer={footer}>
+        {outfitScreenGarmentSelectionStore.items.length > 0 ? (
+          <>
+            {' '}
+            <TypeFilter
+              typeStore={outfitScreenTypeSelectionStore}
+              subtypeStore={outfitScreenSubtypeSelectionStore}
+            />
+            <MultipleSelectionGarmentList
+              store={outfitScreenGarmentSelectionStore}
+            />
+          </>
+        ) : (
+          <NoClothesMessage afterIconText="в главном меню!"/>
+        )}
       </BaseScreen>
-    )
+    );
 });

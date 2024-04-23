@@ -1,27 +1,31 @@
-import React from 'react';
-import { BaseList, ListImage } from './BaseList';
-import { Image, Pressable } from '@gluestack-ui/themed';
+import React, { useEffect, useState } from 'react';
+import { BaseList, CARD_SIZE, CARD_PROPS, ListImage } from './BaseList';
+import { Pressable, View } from '@gluestack-ui/themed';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
-import { BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from '../consts';
+import { BASE_COLOR, ACTIVE_COLOR, WINDOW_WIDTH, PRIMARY_COLOR } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
+import {NoClothesMessage} from './components/NoClothesMessage';
+
 import { observer } from 'mobx-react-lite';
 import { garmentScreenGarmentSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
 import { MultipleSelectionStore } from '../stores/SelectionStore';
-import { GarmentCard } from '../stores/GarmentStore';
+import { GARMENT_TYPE_DRESS, GarmentCard } from '../stores/GarmentStore';
+import { RobotoText } from './common';
+import { tryOnValidationStore } from '../stores/TryOnStore';
 
 const style = StyleSheet.create({
   overlay: {
-    width: 3,
-    height: 3,
     position: 'absolute',
     right: 10,
     top: 10,
-    // bottom: 10,
   },
 });
+
+const overlaySize = WINDOW_WIDTH / 10;
+const forbiddenIconSize = WINDOW_WIDTH / 12;
 
 interface ClothesListCardProps {
   source: string | ImageSourcePropType;
@@ -35,19 +39,13 @@ const ClothesListCard = observer(
     selected,
     onPress,
   } : ClothesListCardProps) => {
-    const overlaySize = WINDOW_WIDTH / 10;
-
     return (
-      <Pressable
-        bg={BASE_COLOR}
-        onPress={onPress}
-        w="49%"
-        h={WINDOW_HEIGHT / 3}>
+      <Pressable bg={BASE_COLOR} onPress={onPress} w="49%" h={CARD_SIZE.height}>
         <ListImage source={source} />
+
         {selected && (
           <SelectedIcon
-            // stroke={PRIMARY_COLOR}
-            fill={PRIMARY_COLOR}
+            fill={ACTIVE_COLOR}
             style={style.overlay}
             width={overlaySize}
             height={overlaySize}
@@ -82,10 +80,87 @@ interface MultipleSelectionGarmentListProps {
 export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
   const clothes = props.store.items.map((item) => {
     const selected = props.store.selectedItems.includes(item)
+
     return <ClothesListCard
-      source={getImageSource(item.image)}
-      selected={selected}
-      onPress={() => props.store.toggle(item)}
+        source={getImageSource(item.image)}
+        selected={selected}
+        onPress={() => props.store.toggle(item)}
+    />
+  })
+
+  return <BaseList items={clothes} />
+})
+
+interface DisableableClothesListCardProps extends ClothesListCardProps {
+  disabled: boolean
+  info?: JSX.Element
+}
+
+const DisableableClothesListCard = observer(
+  ({
+    source,
+    selected,
+    onPress,
+    disabled,
+    info
+  } : DisableableClothesListCardProps) => {
+    const [infoShown, setInfoShown] = useState(false);
+
+    useEffect(() => {
+      if (disabled == false) {
+        setInfoShown(false);
+      }
+    }, [disabled])
+
+    return (
+      <Pressable
+        bg={BASE_COLOR}
+        onPress={() => disabled ? setInfoShown(!infoShown)
+                                : onPress()}
+        w="49%"
+        h={CARD_SIZE.height}>
+        {infoShown ? <View {...CARD_PROPS} alignItems='center' justifyContent='center'>{info}</View> 
+                   : <ListImage source={source} opacity={disabled ? 0.4 : 1} />}
+
+        {selected && (
+          <SelectedIcon
+            fill={ACTIVE_COLOR}
+            style={style.overlay}
+            width={overlaySize}
+            height={overlaySize}
+          />
+        )}
+
+        {disabled && !infoShown && (
+          <View {...CARD_PROPS} bgColor='#00000044' position='absolute' />
+        )}
+      </Pressable>
+    );
+  },
+);
+
+interface DisableableSelectionGarmentListProps {
+    store: MultipleSelectionStore<GarmentCard>
+    disabledPredicate: (item: GarmentCard) => boolean
+}
+
+export const DisableableSelectionGarmentList = observer((props: DisableableSelectionGarmentListProps) => {
+  const clothes = props.store.items.map((item) => {
+    const selected = props.store.selectedItems.includes(item)
+    const disabled = !selected && (props.disabledPredicate ? props.disabledPredicate(item) : false);
+
+    const msg = item.type?.name === GARMENT_TYPE_DRESS
+              ? 'Вы уже выбрали другие вещи для примерки. Платья невозможно примерять с любыми другими вещами'
+              : tryOnValidationStore.selectedTypes.has(GARMENT_TYPE_DRESS)
+                  ? 'Вы уже выбрали вещь категории "Платья" для примерки. Платья невозможно примерять с любыми другими вещами'
+                  : `При примерке нескольких вещей возможно выбрать только одну вещь категории "${item.type?.name}"`
+
+    return <DisableableClothesListCard
+        source={getImageSource(item.image)}
+        selected={selected}
+        disabled={disabled}
+        onPress={() => props.store.toggle(item)}
+        info={<RobotoText>{msg}</RobotoText>}
     />
   })
 

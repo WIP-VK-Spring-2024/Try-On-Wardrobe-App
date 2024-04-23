@@ -31,7 +31,9 @@ const PostCommentAvatarColumn = observer((props: PostCommentAvatarColumnProps) =
 
 interface PostCommentContentColumnProps {
   authorName: string
+  authorUUID: string
   text: string
+  navigation: any
 }
 
 const PostCommentContentColumn = observer((props: PostCommentContentColumnProps) => {
@@ -43,10 +45,16 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
       flexShrink={1}
       gap={5}
     >
-      <View
+      <Pressable
         flexDirection="row"
         gap={10}
         alignItems="center"
+        onPress={() => {
+          props.navigation.navigate('OtherProfile', {user: {
+            name: props.authorName,
+            uuid: props.authorUUID
+          }})
+        }}
       >
         <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
           <AvatarFallbackText>{props.authorName}</AvatarFallbackText>
@@ -58,7 +66,7 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
         >
           {props.authorName}
         </RobotoText>
-      </View>
+      </Pressable>
 
       <View
         w="100%"
@@ -171,7 +179,12 @@ export const PostComment = observer((props: PostCommentFullProps) => {
         gap={5}
       >
         {/* <PostCommentAvatarColumn authorName={props.authorName}/> */}
-        <PostCommentContentColumn authorName={props.authorName} text={props.text}/>
+        <PostCommentContentColumn 
+          authorName={props.authorName}
+          authorUUID={props.authorUUID}
+          text={props.text}
+          navigation={props.navigation}
+        />
       </View>
       {/* <Divider h="$0.5" marginTop={5} marginBottom={5}/> */}
       <PostCommentFooter

@@ -1,11 +1,7 @@
 import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker';
-import { apiEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from '../stores/GarmentStore';
 import { userPhotoStore } from '../stores/UserPhotoStore';
 import { appState } from '../stores/AppState';
-import { Outfit } from '../stores/OutfitStore';
-
-import RNFS from 'react-native-fs';
 import { ajax } from './common';
 
 const uploadGarmentImage = (image: ImageOrVideo) => {

@@ -116,14 +116,20 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
   );
 });
 
-export const ButtonFooter = observer(({text, onPress}: {text?: string, onPress: () => void}) => {
+interface ButtonFooterProps {
+  text?: string;
+  onPress: () => void;
+}
+
+export const ButtonFooter = observer(({text, onPress, children}: ButtonFooterProps & React.PropsWithChildren) => {
   return (
-    <Button onPress={() => onPress()} bgColor={SECONDARY_COLOR} h={65}>
+    <Button paddingHorizontal={0} onPress={onPress} bgColor={SECONDARY_COLOR} h={65} w="100%" justifyContent="center">
       <Center>
         <RobotoText color="white" fontSize="$3xl">
           {text || 'Выбрать'}
         </RobotoText>
       </Center>
+      {children}
     </Button>
   );
 });

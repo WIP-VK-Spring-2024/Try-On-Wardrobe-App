@@ -2,9 +2,15 @@ import {makeObservable, observable, action, computed} from 'mobx';
 
 export type Screen = 'Home' | 'TryOn' | 'Feed' | 'OutfitSelection'
 
+export const processNetworkError = (err: any) => {
+  console.log(err);
+  appState.setError('network')
+}
+
 class AppStateStore {
     error: string | undefined
     successMessage: string | undefined
+
     createMenuVisible: boolean
     filterModalVisible: boolean
 
@@ -43,6 +49,11 @@ class AppStateStore {
     login(JWTToken: string, userID: string) {
       this.JWTToken = JWTToken;
       this.userID = userID;
+    }
+
+    logout() {
+      this.JWTToken = undefined;
+      this.userID = undefined;
     }
     
     setError(error: string | undefined) {

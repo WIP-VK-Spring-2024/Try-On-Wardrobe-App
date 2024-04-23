@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, FlatListProps, StyleSheetProperties } from
 import { ajax } from "../requests/common";
 import { getLast } from "../utils";
 import { RefreshControl } from "@gluestack-ui/themed";
+import { useFocusEffect } from "@react-navigation/native";
 
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
 

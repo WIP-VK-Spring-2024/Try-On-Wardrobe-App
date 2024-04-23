@@ -1,18 +1,22 @@
 import { View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Header } from "../components/Header";
 import { ajax } from "../requests/common";
 import { Footer } from "../components/Footer";
 import { Pressable } from "@gluestack-ui/themed";
 import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
 import { ImageType } from "../models";
-import { ImageSourceType, getImageSource } from "../utils";
-import { ListRenderItemInfo } from "react-native";
+import { ImageSourceType, getImageSource, convertPostResponse } from "../utils";
+import { FlatList, ImageSourcePropType, ListRenderItem, ListRenderItemInfo } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { appState } from "../stores/AppState";
 import FastImage from "react-native-fast-image";
-import { InfiniteScrollList } from "../components/InfiniteScrollList";
+import { Image } from "@gluestack-ui/themed";
+import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
+import { PostData } from "../stores/common"
+import { PostList } from "../components/Posts";
+
 
 interface PostResponse {
   uuid: string
@@ -21,16 +25,6 @@ interface PostResponse {
   outfit_id: string
   outfit_image: string
   user_name: string
-}
-
-interface PostData {
-  uuid: string
-  outfit_id: string
-  outfit_image: ImageType
-  created_at: string
-  user_name: string
-  user_rating: number
-  rating: number
 }
 
 interface PostCardProps {
@@ -84,13 +78,8 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
       }).then((resp: any) => {
   
         return resp.json().then((json: PostResponse[]) => {
-          const data = json.map(item => ({
-            ...item,
-            outfit_image: {
-              type: 'remote',
-              uri: item.outfit_image
-            }
-          }));
+          console.log(json);
+          const data = json.map(convertPostResponse);
           return data;
         })
       })
@@ -98,7 +87,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
 
   const renderItem = ((data: ListRenderItemInfo<PostData>) => {
     const {item} = data;
-  
+
     return (
       <PostCard
         data={item}
@@ -110,6 +99,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
             user_name: item.user_name,
             user_rating: item.user_rating,
             rating: item.rating,
+            user_id: item.user_id,
           })
         }}
       />
@@ -118,27 +108,12 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
   
   return (
     <View height="100%">
-      <Header/>
+      <Header navigation={props.navigation}/>
 
-      <InfiniteScrollList<PostData>
-        numColumns={3}
+      <PostList 
         fetchData={fetchData}
-        keyExtractor={item => item.uuid}
+        navigation={props.navigation}
         renderItem={renderItem}
-
-        style={{
-          width: "100%",
-          padding: 10,
-        }}
-
-        contentContainerStyle={{
-          gap: 10,
-        }}
-
-        columnWrapperStyle={{
-          gap: 10,
-        }}
-
       />
       
       <Footer navigation={props.navigation}/>

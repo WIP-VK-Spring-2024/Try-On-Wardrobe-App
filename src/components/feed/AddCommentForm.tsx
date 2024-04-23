@@ -9,8 +9,12 @@ import { ACTIVE_COLOR } from "../../consts";
 
 import ForwardIcon from '../../../assets/icons/forward.svg';
 import SendIcon from '../../../assets/icons/send.svg';
+import { ajax } from "../../requests/common";
+import { appState } from "../../stores/AppState";
+import { profileStore } from "../../stores/ProfileStore";
 
 interface AddCommentFormProps {
+  navigation: any
   addComment: (comment: PostCommentProps) => void
 }
 
@@ -43,8 +47,13 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
         <Pressable
           onPress={()=>{
             props.addComment({
-              authorName: 'anon',
-              text: value
+              uuid: '0',
+              authorName: profileStore.currentUser!.name,
+              authorUUID: appState.userID!,
+              text: value,
+              rating: 0,
+              ratingStatus: undefined,
+              navigation: props.navigation
             });
             setValue('');
           }}

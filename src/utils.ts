@@ -1,12 +1,23 @@
 import { ImageType } from "./models";
-import RNFS from 'react-native-fs';
+import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
-import { Rating, TryOnResultCard} from "./stores/TryOnStore";
+import { TryOnResultCard} from "./stores/TryOnStore";
+import { Gender, Privacy, PostData } from "./stores/common";
+import { User } from "./stores/ProfileStore";
 
 export interface ImageSourceType {
   uri: string
 }
+
+export interface LoginSuccessResponse {
+    token: string
+    user_id: string
+    user_name: string
+    email: string
+    privacy: Privacy
+    gender: Gender
+  } 
 
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
@@ -36,6 +47,26 @@ interface GarmentResponse {
   tryonable: boolean,
 }
 
+export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
+    return new User({
+        name: resp.user_name,
+        uuid: resp.user_id,
+        privacy: resp.privacy,
+        email: resp.email,
+        gender: resp.gender,
+    })
+}
+
+export const convertPostResponse = (item: any): PostData => {
+    return {
+      ...item,
+      outfit_image: {
+        type: 'remote',
+        uri: item.outfit_image,
+      },
+    };
+}
+
 export const convertGarmentResponse = (cloth: GarmentResponse) => {
   const garmentType = garmentStore.getTypeByUUID(cloth.type_id);
   const garmentSubtype = garmentStore.getSubTypeByUUID(cloth.subtype_id);
@@ -63,7 +94,7 @@ interface TryOnResultResponse {
   image: string;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 }
 
 export const convertTryOnResponse = (result: TryOnResultResponse) => {

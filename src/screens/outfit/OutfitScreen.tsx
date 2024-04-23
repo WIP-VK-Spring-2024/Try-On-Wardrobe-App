@@ -3,19 +3,14 @@ import { observer } from "mobx-react-lite";
 import { BaseScreen } from '../BaseScreen';
 import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
-import { RobotoText } from "../../components/common";
+import { RobotoText, DeleteMenu } from "../../components/common";
 import { getImageSource } from "../../utils";
-import { Outfit, OutfitItem, outfitStore } from "../../stores/OutfitStore";
+import { Outfit, OutfitItem } from "../../stores/OutfitStore";
 
-import { MultipleSelectionGarmentList } from "../../components/GarmentList";
-import { BackHeader, GarmentHeaderButtons } from "../../components/Header";
-import { ButtonFooter } from "../../components/Footer";
+import { BackHeader } from "../../components/Header";
 import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../../consts";
-import { outfitScreenGarmentSelectionStore, outfitScreenTypeSelectionStore, outfitScreenSubtypeSelectionStore } from "../../store";
 import { StackActions } from "@react-navigation/native";
 import { deleteOutfit } from "../../requests/outfit";
-import { TypeFilter } from "../../components/FilterBlock"
-
 import DotsIcon from '../../../assets/icons/dots-vertical.svg';
 import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
@@ -39,30 +34,6 @@ const NonTryOnAbleBadge = () => {
       <BadgeText>{notTryOnAbleText}</BadgeText>
       <BadgeIcon as={SlashIcon} ml="$2" />
     </Badge>
-  )
-}
-
-interface DeleteMenuProps {
-  onPress: () => void;
-}
-
-const DeleteMenu = (props: DeleteMenuProps) => {
-  return (
-    <Menu
-      placement="bottom right"
-      trigger={({ ...triggerProps }) => {
-        return (
-          <Pressable {...triggerProps}>
-              <DotsIcon width={40} height={40}/>
-          </Pressable>
-        )
-      }}
-    >
-      <MenuItem key="Delete" textValue="Delete" gap={10} onPress={props.onPress}>
-        <TrashIcon width={25} height={25}/>
-        <RobotoText>удалить</RobotoText>
-      </MenuItem>
-    </Menu>
   )
 }
 
@@ -202,6 +173,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     <BaseScreen 
       navigation={props.navigation} 
       header={header}
+      // footer={null}
     >
       <Pressable
         onPress={() => props.navigation.navigate('Editor', {outfit: outfit})}

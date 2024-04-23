@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
-import {PRIMARY_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
+import {PRIMARY_COLOR, ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
 import { StackActions, useNavigation } from '@react-navigation/native';
 
@@ -10,7 +10,6 @@ import SettingsIcon from '../../assets/icons/settings.svg';
 import SearchIcon from '../../assets/icons/search.svg';
 import { appState } from '../stores/AppState';
 import { observer } from 'mobx-react-lite';
-import { login } from '../../config'
 
 import { garmentScreenFilteredGarmentStore,
          tryOnScreenFilteredGarmentStore,
@@ -20,6 +19,7 @@ import { FilterStore } from '../stores/FilterStore';
 import { GarmentCard } from '../stores/GarmentStore';
 import { ajax } from '../requests/common';
 import { cacheManager } from '../cacheManager/cacheManager';
+import { profileStore } from '../stores/ProfileStore';
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -40,32 +40,23 @@ const HeaderBase = (props: PropsWithChildren) => {
 
 interface HeaderProps {
   rightMenu?: ReactNode
+  navigation: any
 }
 
-export const Header = observer(({ rightMenu }: HeaderProps) => {
-  const navigation = useNavigation();
-
+export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
   return (
     <HeaderBase>
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
         <Pressable
           onPress={() => {
-            ajax.apiPost('/logout', {
-              credentials: true
-            }).then(resp => {
-              console.log(resp);
-              cacheManager.deleteToken();
-              navigation.navigate('Login');
-            }).catch(reason => {
-              console.error(reason);
-            })
+              navigation.navigate('Profile');
           }}
         >
           <Avatar 
             bg={PRIMARY_COLOR} 
             borderRadius="$full"
           >
-            <AvatarFallbackText>{login}</AvatarFallbackText>
+            <AvatarFallbackText>{profileStore.currentUser?.name}</AvatarFallbackText>
           </Avatar>
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
@@ -124,37 +115,40 @@ interface BackHeaderProps {
   navigation: any
   fontSize?: number
   rightMenu?: ReactNode
-  text: string
+  text?: string
+  textOverflowEllipsis?: boolean;
   onBackPress?: ()=>void
 }
 
-export const BackHeader = (props: BackHeaderProps) => {
+export const BackHeader = (props: BackHeaderProps & React.PropsWithChildren) => {
   const onBackPress = props.onBackPress || (() => {props.navigation.dispatch(StackActions.pop(1));})
 
   return (
     <HeaderBase>
       <Pressable
-        display='flex'
-        flexDirection='row'
-        justifyContent='space-between'
-        alignItems='flex-end'
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="flex-end"
         flex={3}
-        gap={3}
-        onPress={onBackPress}
-      >
-        <ChevronLeftIcon size="xl" color={PRIMARY_COLOR} />
+        onPress={onBackPress}>
+        <ChevronLeftIcon size="xl" color={ACTIVE_COLOR} />
       </Pressable>
-      <RobotoText
-        color="#000"
-        flex={10}
-        textAlign='center'
-        fontSize={props.fontSize || 32}
-      >
-        {props.text}
-      </RobotoText>
-      <View flex={3} display='flex' alignItems='flex-end' marginRight={5}>
+
+      <View flex={10} alignItems="center">
+        {props.children || (
+          <RobotoText
+            color="#000"
+            numberOfLines={props.textOverflowEllipsis ? 1 : undefined}
+            textAlign="center"
+            fontSize={props.fontSize || 24}>
+            {props.text}
+          </RobotoText>
+        )}
+      </View>
+
+      <View flex={3} alignItems="flex-end" marginRight={5}>
         {props.rightMenu}
       </View>
     </HeaderBase>
-  )
+  );
 };

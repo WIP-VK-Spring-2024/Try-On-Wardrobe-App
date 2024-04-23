@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, Box, Pressable} from '@gluestack-ui/themed';
+import {Image, Box, Pressable, View} from '@gluestack-ui/themed';
 import {observer} from 'mobx-react-lite';
 import {BASE_COLOR, ADD_BTN_COLOR, FOOTER_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH} from '../consts';
 import { ImageSourcePropType} from 'react-native';
@@ -9,6 +9,10 @@ import { RobotoText } from './common';
 import ImageModal from 'react-native-image-modal';
 import { ImageSourceType } from '../utils';
 
+export const CARD_SIZE = {
+  height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
+  width: (WINDOW_WIDTH - 30) / 2,
+};
 
 const divideIntoPairs = (items: any[]) => {
     let item_pairs = [];
@@ -56,15 +60,24 @@ export const BaseList = observer((props: BaseListProps) => {
     );
 });
 
-export const ListImage = observer((props: { source: string | ImageSourcePropType }) => {
+interface ListImageProps {
+  source: string | ImageSourcePropType
+  opacity?: number
+}
+
+export const CARD_PROPS = {
+  width: CARD_SIZE.width,
+  height: CARD_SIZE.height,
+  borderRadius: 20,
+  backgroundColor: "#ffffff"
+}
+
+export const ListImage = observer((props: ListImageProps) => {
     return (
       <Image
         {...props}
-        width={(WINDOW_WIDTH - 30) / 2}
-        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
+        {...CARD_PROPS}
         alt=""
-        borderRadius={20}
-        backgroundColor="#ffffff"
       />
     );
   },
@@ -75,8 +88,8 @@ export const ModalListImage = observer((props: { source: ImageSourceType }) => {
       <ImageModal
         {...props}
         style={{
-          width: (WINDOW_WIDTH - 30) / 2,
-          height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
+          width: CARD_SIZE.width,
+          height: CARD_SIZE.height,
           borderRadius: 20
         }}
       />
@@ -84,27 +97,36 @@ export const ModalListImage = observer((props: { source: ImageSourceType }) => {
   },
 );
 
+interface AddItemCardProps {
+  text?: string
+  onPress?: () => void 
+}
+
 export const AddItemCard = observer(
-  ({ text, onPress }: { text: string; onPress: () => void }) => {
+  ({ text, onPress, children } : AddItemCardProps & React.PropsWithChildren) => {
     return (
       <Pressable
-        borderRadius={20}
-        backgroundColor="#ffffff"
+        borderRadius={CARD_PROPS.borderRadius}
+        backgroundColor={CARD_PROPS.backgroundColor}
         onPress={onPress}
-        width={(WINDOW_WIDTH - 30) / 2}
-        height={(((WINDOW_WIDTH - 30) / 2) * 3) / 2}
+        width={CARD_SIZE.width}
+        height={CARD_SIZE.height}
         display="flex"
         flexDirection="row"
         alignItems="center"
         justifyContent="center"
-        gap={10}
-      >
-        <AddBtnIcon
-          width={45}
-          height={45}
-          fill={ADD_BTN_COLOR}
-          stroke={FOOTER_COLOR} />
-        <RobotoText fontSize={16}>{text}</RobotoText>
+        gap={10}>
+        {children ||
+          <>
+            <AddBtnIcon
+              width={45}
+              height={45}
+              fill={ADD_BTN_COLOR}
+              stroke={FOOTER_COLOR}
+            />
+            <RobotoText fontSize={16}>{text || 'Добавить'}</RobotoText>
+          </>
+        }
       </Pressable>
     );
   },

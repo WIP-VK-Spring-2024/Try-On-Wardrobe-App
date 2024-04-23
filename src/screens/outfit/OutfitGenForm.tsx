@@ -13,7 +13,6 @@ import { Divider } from "@gluestack-ui/themed";
 import { TagCheckboxBlock } from "../../components/TagCheckboxBlock";
 import { BackHeader } from "../../components/Header";
 import { ButtonFooter } from "../../components/Footer";
-import { apiEndpoint } from "../../../config";
 import { ajax } from "../../requests/common";
 
 const PurposeCheckboxGroup = observer(() => {
@@ -114,7 +113,7 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
       header={
         <BackHeader 
           navigation={props.navigation}
-          text='Создание комплекта'
+          text='Создание образа'
         />
       }
       footer={footer}

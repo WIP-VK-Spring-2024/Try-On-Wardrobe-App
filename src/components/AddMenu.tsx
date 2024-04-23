@@ -1,112 +1,195 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import Animated, { ZoomIn, ZoomInDown, ZoomInEasyDown, ZoomOut, ZoomOutDown, ZoomOutEasyDown, useAnimatedStyle } from 'react-native-reanimated';
-import { BounceInDown, BounceOutDown } from 'react-native-reanimated';
+import Animated, { ZoomInEasyDown, ZoomOutEasyDown } from 'react-native-reanimated';
 
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
-import { SECONDARY_COLOR } from '../consts';
+import { ACTIVE_COLOR } from '../consts';
 import { Box } from '@gluestack-ui/themed';
-import { Pressable } from '@gluestack-ui/themed';
-import { createGarmentFromCamera, createGarmentFromGallery, createUserPhotoFromGallery } from '../requests/imageCreation';
+import { Pressable, View } from '@gluestack-ui/themed';
+import { createGarmentFromCamera, createGarmentFromGallery } from '../requests/imageCreation';
 import { RobotoText } from './common';
+import { appState } from '../stores/AppState';
 
 import CameraIcon from '../../assets/icons/camera.svg';
 import GalleryIcon from '../../assets/icons/gallery.svg';
+import GarmentIcon from '../../assets/icons/garment.svg';
 import OutfitIcon from '../../assets/icons/outfit.svg';
+import EditorIcon from '../../assets/icons/editor.svg';
+import MagicIcon from '../../assets/icons/magic.svg';
 
 import { garmentStore } from '../stores/GarmentStore';
-import { appState } from '../stores/AppState';
+import { SvgProps } from 'react-native-svg';
+
+import { Outfit } from "../stores/OutfitStore"
+
+const floatingStyle = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginBottom: 10,
+    position: 'absolute',
+    bottom: 70,
+  },
+  menu: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+
+    gap: 10,
+
+    alignSelf: 'center',
+
+    padding: 20,
+
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    shadowColor: '#000000',
+    elevation: 5,
+  },
+  menuItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-start'
+  }
+});
+
+const menuIconSize = 40;
+
+const iconProps = {
+  width: menuIconSize,
+  height: menuIconSize,
+  fill: ACTIVE_COLOR,
+};
+
+const strokeIconProps = {
+  width: menuIconSize,
+  height: menuIconSize,
+  stroke: ACTIVE_COLOR,
+};
+
+const menuEntryFontSize = 18;
+
+type Step = 'main' | 'garment' | 'outfit';
+
+interface MenuItemProps {
+  text: string
+  onPress: () => void
+  Icon: React.FC<SvgProps>
+  stroke?: boolean
+  fontSize?: number
+  iconSize?: number
+}
+
+export const MenuItem = observer(({text, onPress, Icon, stroke, fontSize, iconSize} : MenuItemProps) => {
+  const props = stroke ? strokeIconProps : iconProps;
+
+  return (
+    <Pressable
+      style={floatingStyle.menuItem}
+      onPress={onPress}
+      width={iconSize}
+      height={iconSize}
+    >
+      <Icon {...props}/>
+      <RobotoText fontSize={fontSize || menuEntryFontSize}>{text}</RobotoText>
+    </Pressable>
+)
+});
 
 export const AddMenu = observer((props: {navigation: any}) => {
-  const floatingStyle = StyleSheet.create({
-    container: {
-      width: '100%',
-      margin: 10,
-      position: 'absolute',
-      bottom: 70,
-    },
-    menu: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-
-      gap: 10,
-
-      alignSelf: 'center',
-
-      padding: 20,
-
-      backgroundColor: '#ffffff',
-      borderRadius: 20,
-    },
-    menuItem: {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: 10,
-      alignItems: 'center',
-      justifyContent: 'flex-start'
-    }
-  })
-
-  const seasonIconSize = 40
-
-  const iconProps = {
-    width: seasonIconSize,
-    height: seasonIconSize,
-    fill: SECONDARY_COLOR,
-  };
-
   const openCreatedGarment = () => {
     props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
   }
+
+  const [step, setStep] = useState<Step>('main');
+
+  const MenuBackButton = () => (
+    <Pressable onPress={() => setStep('main')}>
+      <RobotoText textAlign="center" fontSize={menuEntryFontSize}>
+        Назад
+      </RobotoText>
+    </Pressable>
+  );
 
   return (
     <Animated.View
       style={floatingStyle.container}
       entering={ZoomInEasyDown.duration(250)}
-      exiting={ZoomOutEasyDown.duration(250)}
-    >
-      <Box
-        style={floatingStyle.menu}
-      >
-        <Pressable
-          style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createGarmentFromGallery();
-            if (created) {
-              openCreatedGarment();
-            }
-          }}
-        >
-          <GalleryIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Из галереи</RobotoText>
-        </Pressable>
-        <Pressable
-          style={floatingStyle.menuItem}
-          onPress={async () => {
-            const created = await createGarmentFromCamera();
-            if (created) {
-              openCreatedGarment();
-            }
-          }}
-        >
-          <CameraIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Камера</RobotoText>
-        </Pressable>
+      exiting={ZoomOutEasyDown.duration(250)}>
+      <Box style={floatingStyle.menu}>
+        {step === 'main' && (
+          <>
+            <MenuItem
+              onPress={() => setStep('garment')}
+              Icon={GarmentIcon}
+              text="Добавить одежду"
+              stroke={true}
+            />
+            <MenuItem
+              onPress={() => setStep('outfit')}
+              Icon={OutfitIcon}
+              text="Создать образ"
+              stroke={true}
+            />
+          </>
+        )}
 
-        <Pressable 
-          style={floatingStyle.menuItem}
-          onPress={() => {
-            props.navigation.navigate('OutfitGenForm');
-            appState.setCreateMenuVisible(false);
-          }}
-        >
-          <OutfitIcon {...iconProps}/>
-          <RobotoText fontSize={24}>Образ</RobotoText>
-        </Pressable>
+        {step === 'garment' && (
+          <View gap={10}>
+            <MenuItem
+              onPress={async () => {
+                const created = await createGarmentFromGallery();
+                if (created) {
+                  openCreatedGarment();
+                }
+              }}
+              Icon={GalleryIcon}
+              text="Из галереи"
+            />
+
+            <MenuItem
+              onPress={async () => {
+                const created = await createGarmentFromCamera();
+                if (created) {
+                  openCreatedGarment();
+                }
+              }}
+              Icon={CameraIcon}
+              text="Сфотографировать"
+            />
+
+            <MenuBackButton />
+          </View>
+        )}
+
+        {step === 'outfit' && (
+          <View gap={10}>
+            <MenuItem
+              onPress={() => {
+                const newOutfit = new Outfit();
+                props.navigation.navigate('Outfit/Garment', {outfit: newOutfit});
+                appState.setCreateMenuVisible(false);
+              }}
+              Icon={EditorIcon}
+              text="Создать вручную"
+            />
+
+            <MenuItem
+              onPress={() => {
+                props.navigation.navigate('OutfitGenForm');
+                appState.setCreateMenuVisible(false);
+              }}
+              Icon={MagicIcon}
+              text="С помощью ИИ"
+            />
+
+            <MenuBackButton />
+          </View>
+        )}
       </Box>
     </Animated.View>
-  )
+  );
 })

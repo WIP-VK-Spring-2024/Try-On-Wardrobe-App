@@ -19,6 +19,7 @@ import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } f
 
 
 interface PostCommentBlockProps {
+  navigation: any
   comments: PostCommentTreeProps[]
 };
 
@@ -37,11 +38,13 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
             key={i}
             uuid={comment.uuid}
             authorName={comment.authorName}
+            authorUUID={comment.authorUUID}
             text={comment.text}
             replies={comment.replies}
             active={i === activeId}
             rating={comment.rating}
             ratingStatus={comment.ratingStatus}
+            navigation={props.navigation}
           />
         ))
       }
@@ -94,7 +97,11 @@ export const PostScreen = observer((props: PostScreenProps) => {
     })
       .then(resp => {
         console.log(resp);
-        setComments([...comments, comment]);
+        resp.json().then((json) => {
+          console.log(json);
+          comment.uuid = json.uuid;
+          setComments([...comments, comment]);
+        })
       })
       .catch(reason => console.error(reason));
   }
@@ -113,6 +120,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
           const responseToComment = (response: any) => ({
             text: response.body,
             authorName: response.user_name,
+            authorUUID: response.user_id,
             rating: response.rating,
             ratingStatus: getStatusFromRating(response.user_rating),
             uuid: response.uuid
@@ -131,7 +139,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост"/>}
       navigation={props.navigation}
-      footer={<AddCommentForm addComment={addComment}/>}
+      footer={<AddCommentForm addComment={addComment} navigation={props.navigation}/>}
     >
       <View
         w="100%"
@@ -166,18 +174,25 @@ export const PostScreen = observer((props: PostScreenProps) => {
           alignItems="center"
           gap={10}
         >
-          <View
+          <Pressable
             flexDirection="row"
             justifyContent="center"
             alignItems="center"
             gap={10}
+
+            onPress={() => {
+              props.navigation.navigate('OtherProfile', {user: {
+                name: postData.user_name,
+                uuid: postData.user_id
+              }})
+            }}
           >
             <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
               <AvatarFallbackText>{postData.user_name}</AvatarFallbackText>
             </Avatar>
 
             <RobotoText fontWeight='bold'>{postData.user_name}</RobotoText>
-          </View>
+          </Pressable>
 
           <Pressable>
             <RobotoText>Подписаться</RobotoText>
@@ -192,6 +207,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
 
 
         <PostCommentBlock
+          navigation={props.navigation}
           comments={comments}
         />
 

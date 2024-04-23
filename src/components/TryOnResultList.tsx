@@ -1,12 +1,11 @@
 import React from 'react';
-import { BaseList, AddItemCard, ListImage, ModalListImage } from './BaseList';
-import { Pressable, Image } from '@gluestack-ui/themed';
-import { BASE_COLOR, WINDOW_HEIGHT } from '../consts';
+import { BaseList, AddItemCard, CARD_SIZE, ModalListImage, ListImage } from './BaseList';
+import { Pressable } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
-import { tryOnStore, Rating } from '../stores/TryOnStore';
+import { tryOnStore } from '../stores/TryOnStore';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { getImageSource } from '../utils';
-import { RatingButtons } from './TryOnRating';
+import { Rating } from '../stores/common';
 
 const style = StyleSheet.create({
     overlay: {
@@ -33,8 +32,8 @@ const TryOnResultCard = observer(
                 backgroundColor="#ffffff"
                 onPress={onPress}
                 w="49%"
-                h={WINDOW_HEIGHT / 3}>
-                <ModalListImage source={source} />
+                h={CARD_SIZE.height}>
+                <ListImage source={source} />
             </Pressable>
         );
     },
@@ -44,7 +43,10 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
     const cards = tryOnStore.results.map((item) => (
         <TryOnResultCard
             source={getImageSource(item.image)}
-            onPress={() => {}}
+            onPress={()=>{
+              navigation.navigate('TryOnCard', {tryOnResult: item});
+            }}
+            // onPress={() => {}}
             uuid={item.uuid}
             rating={item.rating}
         />

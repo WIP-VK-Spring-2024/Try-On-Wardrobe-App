@@ -5,17 +5,10 @@ import { Divider, FormControl, FormControlLabel, FormControlLabelText, Input, Pr
 import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR } from "../consts";
 import { RobotoText } from "../components/common";
 import { InputField } from "@gluestack-ui/themed";
-import { Radio } from "@gluestack-ui/themed";
-import { RadioIndicator } from "@gluestack-ui/themed";
-import { RadioIcon } from "@gluestack-ui/themed";
-import { CircleIcon } from "@gluestack-ui/themed";
+import { Gender } from "../stores/common";
+import { InputProps, RadioBtn } from "./InputForms"
 
-interface InputProps {
-  value: string,
-  setValue: (value: string) => void,
-}
-
-export const LoginInput = observer((props: InputProps) => {
+export const LoginInput = observer((props: InputProps<string>) => {
   return (
     <FormControl
       size="md"
@@ -39,7 +32,7 @@ export const LoginInput = observer((props: InputProps) => {
   )
 })
 
-export const EmailInput = observer((props: InputProps) => {
+export const EmailInput = observer((props: InputProps<string>) => {
   return (
     <FormControl
       size="md"
@@ -63,7 +56,7 @@ export const EmailInput = observer((props: InputProps) => {
   )
 })
 
-export const PasswordInput = observer((props: InputProps) => {
+export const PasswordInput = observer((props: InputProps<string>) => {
   return (
     <FormControl
       size="md"
@@ -98,37 +91,10 @@ export const PasswordInput = observer((props: InputProps) => {
   )
 })
 
-interface RadioBtnProps {
-  label: string
-  value: string
-  isChecked: boolean
-}
-
-export const RadioBtn = (props: RadioBtnProps) => {
-  const icon = () => <CircleIcon stroke={ACTIVE_COLOR}/>
+export const SexSelector = observer((props: InputProps<Gender>) => {
 
   return (
-    <Radio 
-      value={props.value}
-      size="md" 
-      isInvalid={false} 
-      isDisabled={false}
-    >
-      <RadioIndicator 
-        mr="$2"
-        borderColor={ACTIVE_COLOR}
-      >
-        <RadioIcon as={icon}/>
-      </RadioIndicator>
-      <RadioLabel>{props.label}</RadioLabel>
-    </Radio>
-  )
-}
-
-export const SexSelector = observer((props: InputProps) => {
-
-  return (
-    <View>
+    <View gap={5}>
       <RobotoText>Пол</RobotoText>
       <RadioGroup 
         value={props.value} 

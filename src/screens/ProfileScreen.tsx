@@ -1,0 +1,287 @@
+import React, { useEffect, useState } from "react";
+import { profileStore, Subscription, User } from "../stores/ProfileStore";
+import { observer } from "mobx-react-lite";
+import {
+  Avatar,
+  AvatarFallbackText,
+  View,
+  Pressable,
+  Button,
+  ButtonText,
+  ScrollView,
+} from '@gluestack-ui/themed';
+import { RobotoText, AlertModal, Modal } from "../components/common";
+import SettingsIcon from "../../assets/icons/settings.svg"
+import LogoutIcon from "../../assets/icons/logout.svg"
+import { PRIMARY_COLOR, ACTIVE_COLOR} from "../consts";
+import { useFocusEffect } from '@react-navigation/native'
+import { cacheManager } from "../cacheManager/cacheManager"
+import { appState } from "../stores/AppState"
+import { SexSelector } from "../components/LoginForms"
+import { PrivacySelector } from "../components/PrivacySelector"
+import { updateUserSettings, searchUsers } from "../requests/user"
+import { ajax } from "../requests/common"
+import { Tabs } from "../components/Tabs"
+import { SearchInput } from "../components/SearchInput"
+import { BackButton, SubsList, NoSubsMessage, SubsBlock } from "../components/Profile"
+import { PostList } from "../components/Posts";
+import { convertPostResponse } from "../utils"
+
+const iconSize = 25
+
+interface UserHeaderProps {
+  onSettings: () => void
+  navigation: any
+  onLogout: () => void
+  user: User
+}
+
+const UserHeader = observer(({navigation, onLogout, onSettings, user}: UserHeaderProps) => {
+  return (
+    <View flexDirection="row" alignItems="center" $base-padding="$2">
+      <BackButton navigation={navigation} flex={2} />
+
+      <View flexDirection="row" alignItems="center" flex={9} gap={20}>
+        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
+          <AvatarFallbackText numberOfLines={1}>{user.name}</AvatarFallbackText>
+        </Avatar>
+
+        <View>
+          <RobotoText fontSize={18} numberOfLines={1}>{user.name}</RobotoText>
+          <RobotoText fontSize={14} numberOfLines={1}>{user.email}</RobotoText>
+        </View>
+      </View>
+
+      <View
+        flexDirection="row"
+        gap={10}
+        flex={4}
+        justifyContent="flex-end"
+        alignItems="center"
+        marginRight={5}>
+        <Pressable onPress={() => onSettings()}>
+          <SettingsIcon width={iconSize} height={iconSize} fill="#000000" />
+        </Pressable>
+
+
+        <Pressable onPress={() => onLogout()}>
+          <LogoutIcon
+            width={iconSize}
+            height={iconSize}
+            fill="#000000"
+            style={{
+              transform: [{ rotate: '180deg' }],
+            }}
+          />
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
+const SettingsModal = observer((props: {isOpen: boolean, hide: () => void}) => {
+  const [gender, setGender] = useState(profileStore.currentUser?.gender || 'female');
+  const [privacy, setPrivacy] = useState(profileStore.currentUser?.privacy || 'public');
+
+  const footer = (
+    <Button
+      bgColor={ACTIVE_COLOR}
+      size="lg"
+      action="primary"
+      onPress={() => {
+        updateUserSettings(gender, privacy);
+        props.hide();
+      }}>
+      <ButtonText>Сохранить</ButtonText>
+    </Button>
+  );
+
+  return (
+    <Modal isOpen={props.isOpen} hide={props.hide} footer={footer}>
+      <View marginTop={10} gap={10}>
+        <RobotoText textAlign="center" fontSize={22}>Настройки</RobotoText>
+        <View alignItems="flex-start" gap={15}>
+          <PrivacySelector value={privacy} setValue={setPrivacy}/>
+          <SexSelector value={gender} setValue={setGender}/>
+        </View>
+      </View>
+    </Modal>
+  );
+});
+
+interface SearchUsersModalProps {
+  subs: Subscription[]
+  navigation: any
+  isOpen: boolean
+  hide: () => void
+}
+
+const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsersModalProps) => {
+  const [query, setQuery] = useState('');
+  const [tab, setTab] = useState('subs');
+
+  useEffect(() => {
+    if (tab === 'all') {
+      profileStore.setLastUserName('');
+    }
+  }, [query]);
+
+  useEffect(() => {
+    profileStore.setLastUserName('');
+    profileStore.clearUsers();
+    searchUsers('', '');
+    setTab('subs');
+    setQuery('');
+  }, [isOpen]);
+
+  useEffect(() => {
+    setQuery('');
+  }, [tab]);
+
+  const searchPredicate = React.useCallback(
+    (sub: Subscription) =>
+      query === '' || sub.name.toLowerCase().includes(query.toLowerCase()),
+    [query],
+  );
+
+  const subsTabContents = subs.length > 0 ?(
+    <ScrollView>
+      <SubsList
+        subs={subs.filter(searchPredicate)}
+        navigation={navigation}
+        rowSize={subsRowSize}
+      />
+    </ScrollView>
+  ) : NoSubsMessage;
+
+  const allUsersTabContents = (
+    <ScrollView>
+      <SubsList
+        subs={profileStore.users}
+        navigation={navigation}
+        rowSize={subsRowSize}
+      />
+    </ScrollView>
+  );
+
+  return (
+    <Modal isOpen={isOpen} hide={hide} h="60%">
+      <View marginTop={10} gap={10}>
+        <RobotoText textAlign="center" fontSize={22}>
+          Поиск
+        </RobotoText>
+        <SearchInput
+          value={query}
+          setValue={setQuery}
+          onSearch={() => {
+            if (tab === 'all') {
+              profileStore.clearUsers();
+              searchUsers(query, '');
+            }
+          }}
+        />
+        <Tabs
+          value={tab}
+          setValue={setTab}
+          tabs={[
+            {
+              value: 'subs',
+              header: 'Подписки',
+              content: subsTabContents,
+            },
+            {
+              value: 'all',
+              header: 'Все пользователи',
+              content: allUsersTabContents,
+            },
+          ]}
+        />
+      </View>
+    </Modal>
+  );
+});
+
+const displayedSubsNum = 4;
+const subsRowSize = 4;
+
+export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any}) => {
+  const [logoutModalShown, setLogoutModalShown] = useState(false);
+  const [settingsModalShown, setSettingsModalShown] = useState(false);
+  const [searchModalShown, setSearchModalShown] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setLogoutModalShown(false);
+        setSettingsModalShown(false);
+        setSearchModalShown(false);
+      };
+    }, []),
+  );
+
+  const subs = profileStore.currentUser?.subs || [];
+
+  const fetchLikedPosts = (limit: number, since: string) => {
+    const urlParams = new URLSearchParams({
+      limit: limit.toString(),
+      since: since,
+    });
+    return ajax
+      .apiGet("/posts/liked?" + urlParams.toString(), {
+        credentials: true,
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        return json.map(convertPostResponse);
+      });
+  };
+
+  return (
+    <View h="100%" gap={25}>
+      <UserHeader
+        user={profileStore.currentUser!}
+        navigation={navigation}
+        onLogout={() => setLogoutModalShown(true)}
+        onSettings={() => setSettingsModalShown(true)}
+      />
+
+      <SubsBlock
+        navigation={navigation}
+        subs={subs}
+        onSearch={() => setSearchModalShown(true)}
+        rowSize={subsRowSize}
+        displayedNum={displayedSubsNum}
+      />
+
+      <View >
+        <RobotoText textAlign='center'>Вам понравилось</RobotoText>
+        <PostList fetchData={fetchLikedPosts} navigation={navigation} />
+      </View>
+
+      <AlertModal
+        isOpen={logoutModalShown}
+        hide={() => setLogoutModalShown(false)}
+        text="Вы точно хотите выйти из аккаунта?"
+        onAccept={() => {
+          navigation.navigate('Login');
+          cacheManager.deleteToken();
+          appState.logout();
+        }}
+      />
+
+      <SettingsModal
+        isOpen={settingsModalShown}
+        hide={() => setSettingsModalShown(false)}
+      />
+      
+      <SearchUsersModal
+        isOpen={searchModalShown}
+        hide={() => setSearchModalShown(false)}
+        subs={subs}
+        navigation={navigation}
+      />
+    </View>
+  );
+});

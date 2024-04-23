@@ -3,15 +3,16 @@ import { observer } from "mobx-react-lite";
 import React, { PropsWithChildren, useState } from "react";
 import { EmailInput, LoginInput, PasswordInput, SexSelector } from "../components/LoginForms";
 import { ACTIVE_COLOR, PRIMARY_COLOR } from "../consts";
-import { Tabs } from "../components/Tabs";
+import { Tabs, TabContentContainer } from "../components/Tabs";
 import { RobotoText } from "../components/common";
-import { apiEndpoint } from "../../config";
-import { joinPath } from "../utils";
 import { appState } from "../stores/AppState";
 import { initCentrifuge } from "../requests/centrifuge";
 import { initStores } from "../requests/init";
 import { ajax } from "../requests/common";
 import { cacheManager } from "../cacheManager/cacheManager";
+import { profileStore } from "../stores/ProfileStore";
+import { Gender } from "../stores/common";
+import { convertLoginResponse, LoginSuccessResponse } from "../utils"
 
 interface LoginBtnProps {
   text: string
@@ -30,19 +31,15 @@ const LoginBtn = observer((props: LoginBtnProps) => {
   )
 })
 
-const TabContentContainer = observer((props: PropsWithChildren) => {
-  return (
-    <View
-      flexDirection="column"
-      gap={10}
-      {...props}
-    />
-  )
-})
-
 interface TabProps {
   navigation: any
 }
+
+interface ErrorResponse {
+  msg: string
+}
+
+type LoginResponse = LoginSuccessResponse | ErrorResponse;
 
 const LoginTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
@@ -57,19 +54,6 @@ const LoginTab = observer((props: TabProps) => {
     ajax.apiPost('/login', {
       body: JSON.stringify(params)
     }).then(async resp => {
-      console.log(resp);
-
-      interface LoginSuccessResponse {
-        token: string, 
-        user_id: string
-      } 
-
-      interface ErrorResponse {
-        msg: string
-      }
-
-      type LoginResponse = LoginSuccessResponse | ErrorResponse;
-
       resp.json().then((json: LoginResponse) => {
         
         if ('msg' in json) {
@@ -83,10 +67,14 @@ const LoginTab = observer((props: TabProps) => {
           json.user_id
         );
 
+        profileStore.setUser(convertLoginResponse(json));
         cacheManager.writeToken();
 
         initCentrifuge();
         initStores();
+
+        setLogin('');
+        setPassword('');
 
         props.navigation.navigate('Home');
 
@@ -119,7 +107,7 @@ const SignUpTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [sex, setSex] = useState("female");
+  const [sex, setSex] = useState<Gender>("female");
 
   const signUp = () => {
     const params = {
@@ -130,10 +118,10 @@ const SignUpTab = observer((props: TabProps) => {
     };
 
     ajax.apiPost('/users', {
-      credentials: true,
+      
       body: JSON.stringify(params)
     }).then(resp => {
-      console.log(resp);
+      console.log(params);
       resp.json().then(json => {
         console.log(json);
         resp.json().then((json: {token: string, user_id: string}) => {
@@ -181,6 +169,8 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen = observer((props: LoginScreenProps) => {
+  const [tab, setTab] = useState('login');
+
   return (
     <View
       w="100%"
@@ -197,7 +187,8 @@ export const LoginScreen = observer((props: LoginScreenProps) => {
         gap={20}
       >
         <Tabs
-          value="login"
+          value={tab}
+          setValue={setTab}
           tabs={[
             {
               value: 'login',

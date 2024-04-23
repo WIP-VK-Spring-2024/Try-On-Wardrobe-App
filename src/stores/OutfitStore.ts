@@ -1,9 +1,6 @@
 import {makeObservable, observable, action, computed, runInAction, observe} from 'mobx';
 import { ImageType } from '../models';
-import { staticEndpoint } from '../../config';
 import { GarmentCard, garmentStore } from './GarmentStore';
-import { SkImage } from '@shopify/react-native-skia';
-import { loadSkImage } from '../components/editor/utils';
 import { Image } from 'react-native';
 import { getImageSource } from '../utils';
 

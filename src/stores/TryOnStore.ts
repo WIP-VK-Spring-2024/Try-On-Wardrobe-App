@@ -1,11 +1,9 @@
-import {makeObservable, observable, action} from 'mobx';
+import {makeObservable, observable, action, computed} from 'mobx';
 import { ImageType } from "../models"
-
-export enum Rating {
-  None = 0,
-  Like = 1,
-  Dislike = -1,
-}
+import { MultipleSelectionStore } from './SelectionStore';
+import { GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER, GarmentCard } from './GarmentStore';
+import { tryOnScreenGarmentSelectionStore } from '../store';
+import { Rating } from './common'
 
 export interface TryOnResultCardProps {
   uuid: string;
@@ -13,7 +11,7 @@ export interface TryOnResultCardProps {
   image: ImageType;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 }
 
 export class TryOnResultCard {
@@ -22,7 +20,7 @@ export class TryOnResultCard {
   image: ImageType;
   rating: Rating;
   user_image_id: string;
-  clothes_id: string;
+  clothes_id: string[];
 
   constructor(props: TryOnResultCardProps) {
     this.uuid = props.uuid;
@@ -88,3 +86,45 @@ export class TryOnStore {
 }
 
 export const tryOnStore = new TryOnStore();
+
+class TryOnValidationStore {
+  origin: MultipleSelectionStore<GarmentCard>
+
+  constructor(origin: MultipleSelectionStore<GarmentCard>) {
+    this.origin = origin; 
+
+    makeObservable(this, {
+      origin: observable,
+      selectedTypes: computed,
+      notSelectableTypes: computed,
+    });
+  }
+
+  get selectedTypes(): Set<string> {
+    return new Set(this.origin.selectedItems.map(item => item.type!.name));
+  }
+
+  get notSelectableTypes(): Set<string> {
+    if (this.selectedTypes.has(GARMENT_TYPE_DRESS)) {
+      return new Set([GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER]);
+    }
+
+    const notAvailable = []
+
+    if (this.selectedTypes.has(GARMENT_TYPE_LOWER)) {
+      notAvailable.push(GARMENT_TYPE_LOWER, GARMENT_TYPE_DRESS);
+    }
+
+    if (this.selectedTypes.has(GARMENT_TYPE_UPPER)) {
+      notAvailable.push(GARMENT_TYPE_UPPER, GARMENT_TYPE_DRESS);
+    }
+
+    return new Set(notAvailable);
+  }
+
+  isSelectable(type: string): boolean {
+    return type != '' && !this.notSelectableTypes.has(type)
+  }
+}
+
+export const tryOnValidationStore = new TryOnValidationStore(tryOnScreenGarmentSelectionStore);

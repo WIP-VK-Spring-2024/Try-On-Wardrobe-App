@@ -3,8 +3,7 @@ import { GarmentCard, GarmentType, garmentStore, Updateable } from './stores/Gar
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
 import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
-import { Rating } from './stores/TryOnStore';
-import { SkImage } from '@shopify/react-native-skia';
+import { Rating } from './stores/common'
 
 class ResultStore {
   resultUrl: string | undefined;

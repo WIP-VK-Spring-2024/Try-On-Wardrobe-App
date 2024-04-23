@@ -19,8 +19,13 @@ interface BaseScreenProps {
 }
 
 export const BaseScreen = observer((props: BaseScreenProps & React.PropsWithChildren) => {
-  const header = props.header || <Header/>;
-  const footer = props.footer || <Footer navigation={props.navigation} />;
+  const header = props.header === null
+                ? null
+                : props.header || <Header navigation={props.navigation} />;
+
+  const footer = props.footer === null
+                ? null
+                : props.footer || <Footer navigation={props.navigation} />;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -34,7 +39,7 @@ export const BaseScreen = observer((props: BaseScreenProps & React.PropsWithChil
   return (
     <>
       <View height="100%" {...props}>
-        {header}
+        { header }
         { appState.error==='network' && <ConnectionErrorAlert/> }
         { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
         <ScrollView

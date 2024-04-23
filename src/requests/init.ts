@@ -1,18 +1,14 @@
 import { apiEndpoint } from "../../config";
 import { cacheManager } from "../cacheManager/cacheManager";
-import { appState } from "../stores/AppState";
+import { processNetworkError } from "../stores/AppState";
 import { GarmentCard, garmentStore } from "../stores/GarmentStore";
 import { outfitPurposeStore } from "../stores/OutfitGenStores";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
-import { ajax } from "./common";
-
-const processNetworkError = (err: any) => {
-    console.log(err);
-    appState.setError('network')
-}
+import { ajax } from "./common"
+import { getSubs } from "./user";
 
 const typesRequest = ajax.apiGet('/types').then(data => {
     return data.json().then(types => {
@@ -29,6 +25,8 @@ const stylesRequest = ajax.apiGet('/styles').then(data => {
 }).catch(err => processNetworkError(err))
 
 export const initStores = () => {
+    getSubs();
+
     const remoteGarments = ajax.apiGet('/clothes', {
         credentials: true
     }).then(async data => {
@@ -83,6 +81,7 @@ export const initStores = () => {
         credentials: true
     }).then(async data => {
         data.json().then(async results => {
+            // console.log(results)
             tryOnStore.setResults(results.map(convertTryOnResponse));
         }).catch(err => console.error(err))
     }).catch(err => console.error(err))
