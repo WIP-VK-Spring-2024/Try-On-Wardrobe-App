@@ -6,9 +6,13 @@ import { appState } from "../stores/AppState";
 import { BackHandler } from "react-native";
 import { BaseScreen } from "./BaseScreen";
 import { TypeFilter } from "../components/FilterBlock";
-import { garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
+import { garmentScreenGarmentSelectionStore, garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
 import { FilterModal } from "../components/FilterModal";
+import { View } from "@gluestack-ui/themed";
+import { RobotoText } from "../components/common";
+import { ACTIVE_COLOR } from "../consts";
+import { NoClothesText } from "../components/NoClothesText"
 
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useFocusEffect(
@@ -31,14 +35,21 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
     }, [appState.createMenuVisible])
   )
   
+  
   return (
     <>
-      <BaseScreen navigation={navigation} screen='Home'>
-        <TypeFilter
-          typeStore={garmentScreenTypeSelectionStore}
-          subtypeStore={garmentScreenSubtypeSelectionStore}
-        />
-        <StaticGarmentList navigation={navigation}/>
+      <BaseScreen navigation={navigation} screen="Home">
+        {garmentScreenGarmentSelectionStore.items.length > 0 ? (
+          <>
+            <TypeFilter
+              typeStore={garmentScreenTypeSelectionStore}
+              subtypeStore={garmentScreenSubtypeSelectionStore}
+            />
+            <StaticGarmentList navigation={navigation} />
+          </>
+        ) : (
+          <NoClothesText />
+        )}
       </BaseScreen>
       <FilterModal
         styleSelectionStore={garmentScreenStyleSelectionStore}

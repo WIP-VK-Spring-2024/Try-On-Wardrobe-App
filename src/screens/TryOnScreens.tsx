@@ -29,6 +29,7 @@ import { PRIMARY_COLOR } from "../consts";
 import { appState } from "../stores/AppState";
 import { deleteUserPhoto } from "../requests/user_photo"
 import { useFocusEffect } from "@react-navigation/native";
+import { NoClothesText } from "../components/NoClothesText";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -119,14 +120,23 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
 
   return (
     <BaseScreen navigation={navigation} footer={footer} header={header}>
-      <TypeFilter
-        typeStore={tryOnScreenTypeSelectionStore}
-        subtypeStore={tryOnScreenSubtypeSelectionStore}
-      />
-      <DisableableSelectionGarmentList 
-        store={tryOnScreenGarmentSelectionStore}
-        disabledPredicate={(item) => !tryOnValidationStore.isSelectable(item.type?.name || '')}
-      />
+      {tryOnScreenGarmentSelectionStore.items.length > 0 ? (
+        <>
+          {' '}
+          <TypeFilter
+            typeStore={tryOnScreenTypeSelectionStore}
+            subtypeStore={tryOnScreenSubtypeSelectionStore}
+          />
+          <DisableableSelectionGarmentList
+            store={tryOnScreenGarmentSelectionStore}
+            disabledPredicate={item =>
+              !tryOnValidationStore.isSelectable(item.type?.name || '')
+            }
+          />
+        </>
+      ) : (
+        <NoClothesText afterIconText="в главном меню!" />
+      )}
     </BaseScreen>
   );
 });

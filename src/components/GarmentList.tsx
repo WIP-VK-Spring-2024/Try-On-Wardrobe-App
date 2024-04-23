@@ -5,8 +5,7 @@ import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { BASE_COLOR, ACTIVE_COLOR, WINDOW_WIDTH, PRIMARY_COLOR } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
-import InfoIcon from '../../assets/icons/info.svg';
-import ForbiddenIcon from '../../assets/icons/forbidden.svg';
+import {NoClothesText} from '../components/NoClothesText';
 
 import { observer } from 'mobx-react-lite';
 import { garmentScreenGarmentSelectionStore } from '../store';

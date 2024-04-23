@@ -7,6 +7,7 @@ import { StackActions } from "@react-navigation/native";
 import { BaseScreen } from "../BaseScreen";
 import { TypeFilter } from "../../components/FilterBlock";
 import { MultipleSelectionGarmentList } from "../../components/GarmentList";
+import { NoClothesText } from "../../components/NoClothesText";
 
 interface OutfitGarmentSelectionScreenProps {
   navigation: any
@@ -38,19 +39,21 @@ export const OutfitGarmentSelectionScreen = observer(
       : null;
 
     return (
-      <BaseScreen 
-        navigation={props.navigation}
-        header={header}
-        footer={footer}
-      >
-        <TypeFilter
-            typeStore={outfitScreenTypeSelectionStore}
-            subtypeStore={outfitScreenSubtypeSelectionStore}
-        />
-
-        <MultipleSelectionGarmentList
-          store={outfitScreenGarmentSelectionStore}
-        />
+      <BaseScreen navigation={props.navigation} header={header} footer={footer}>
+        {outfitScreenGarmentSelectionStore.items.length > 0 ? (
+          <>
+            {' '}
+            <TypeFilter
+              typeStore={outfitScreenTypeSelectionStore}
+              subtypeStore={outfitScreenSubtypeSelectionStore}
+            />
+            <MultipleSelectionGarmentList
+              store={outfitScreenGarmentSelectionStore}
+            />
+          </>
+        ) : (
+          <NoClothesText afterIconText="в главном меню!"/>
+        )}
       </BaseScreen>
-    )
+    );
 });

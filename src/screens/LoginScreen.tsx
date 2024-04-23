@@ -118,10 +118,10 @@ const SignUpTab = observer((props: TabProps) => {
     };
 
     ajax.apiPost('/users', {
-      credentials: true,
+      
       body: JSON.stringify(params)
     }).then(resp => {
-      console.log(resp);
+      console.log(params);
       resp.json().then(json => {
         console.log(json);
         resp.json().then((json: {token: string, user_id: string}) => {
