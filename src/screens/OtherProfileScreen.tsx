@@ -55,7 +55,6 @@ const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
             userSub(user.uuid)
               .then(_ => {
                 setIsSubbed(true);
-                user.isSubbed = true;
                 profileStore.currentUser?.addSub(user);
               });
           }
