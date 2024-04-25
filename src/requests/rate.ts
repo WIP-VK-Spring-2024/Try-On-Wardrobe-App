@@ -1,5 +1,5 @@
-import {Rating, tryOnStore} from '../stores/TryOnStore';
-import {apiEndpoint} from '../../config';
+import { tryOnStore} from '../stores/TryOnStore';
+import { Rating } from '../stores/common';
 import { resultStore } from "../store";
 import { ajax } from './common';
 import { joinPath } from '../utils';

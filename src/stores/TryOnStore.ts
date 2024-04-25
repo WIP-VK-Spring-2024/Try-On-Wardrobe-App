@@ -87,6 +87,8 @@ export class TryOnStore {
 
 export const tryOnStore = new TryOnStore();
 
+const allTypes = new Set([GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER]);
+
 class TryOnValidationStore {
   origin: MultipleSelectionStore<GarmentCard>
 
@@ -96,7 +98,7 @@ class TryOnValidationStore {
     makeObservable(this, {
       origin: observable,
       selectedTypes: computed,
-      notSelectableTypes: computed,
+      selectableTypes: computed,
     });
   }
 
@@ -104,26 +106,28 @@ class TryOnValidationStore {
     return new Set(this.origin.selectedItems.map(item => item.type!.name));
   }
 
-  get notSelectableTypes(): Set<string> {
+  get selectableTypes(): Set<string> {
     if (this.selectedTypes.has(GARMENT_TYPE_DRESS)) {
-      return new Set([GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER]);
+        return new Set();
     }
 
-    const notAvailable = []
+    const result = new Set(allTypes);
 
     if (this.selectedTypes.has(GARMENT_TYPE_LOWER)) {
-      notAvailable.push(GARMENT_TYPE_LOWER, GARMENT_TYPE_DRESS);
+        result.delete(GARMENT_TYPE_LOWER);
+        result.delete(GARMENT_TYPE_DRESS);
     }
 
     if (this.selectedTypes.has(GARMENT_TYPE_UPPER)) {
-      notAvailable.push(GARMENT_TYPE_UPPER, GARMENT_TYPE_DRESS);
+        result.delete(GARMENT_TYPE_UPPER);
+        result.delete(GARMENT_TYPE_DRESS);
     }
 
-    return new Set(notAvailable);
+    return result;
   }
 
   isSelectable(type: string): boolean {
-    return type != '' && !this.notSelectableTypes.has(type)
+    return type != '' && this.selectableTypes.has(type)
   }
 }
 

@@ -29,6 +29,13 @@ export class SingleSelectionStore<T> {
     select(id: number) {
       this.selectedItemId = id;
     }
+
+    selectBy(predicate: (item: T) => boolean) {
+      const idx = this.items.findIndex(predicate);
+      if (idx != -1) {
+        this.select(idx);
+      }
+    }
   
     toggle(id: number) {
       if (this.selectedItemId === id) {
