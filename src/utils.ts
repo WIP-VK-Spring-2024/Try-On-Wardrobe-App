@@ -22,7 +22,7 @@ export interface LoginSuccessResponse {
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
     return { 
-      uri: 'file://' + image.uri 
+      uri: 'file://' + image.uri + `?time=${Date.now()}`
     }
   } else {
     return {
@@ -155,6 +155,10 @@ export const joinPath = (...strings: string[]) => {
   const last = removeFirstSlash(getLast(strings));
 
   return [first, ...strings.slice(1, -1).map(removeSlashes), last].join('/');
+}
+
+export function imageExists<T extends {image: ImageType | undefined}>(value: T): value is T & {image: ImageType} {
+  return value.image !== undefined;
 }
 
 export function notEmpty<T>(value: T | undefined): value is T {
