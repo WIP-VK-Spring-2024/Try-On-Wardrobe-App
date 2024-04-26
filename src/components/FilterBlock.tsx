@@ -33,7 +33,7 @@ export const GarmentFilterBase = observer((props: FilterTabProps & PropsWithChil
       {...props}
     >
       <RobotoText
-        fontSize={24}
+        fontSize={20}
         color={props.isSelected ? ACTIVE_COLOR : "#000000"}
       >
         {props.text}

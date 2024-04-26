@@ -66,7 +66,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
     </Pressable>
   ))
 
-  return <BaseList items={outfits} addItemCard={<AddOutfitCard navigation={props.navigation}/>}/>
+  return <BaseList items={outfits} addItemCard={<AddOutfitCard navigation={props.navigation} key="add"/>}/>
 });
 
 interface OutfitSelectionScreenProps {
