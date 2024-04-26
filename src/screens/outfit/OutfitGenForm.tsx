@@ -14,6 +14,7 @@ import { TagCheckboxBlock } from "../../components/TagCheckboxBlock";
 import { BackHeader } from "../../components/Header";
 import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
+import { processColorsInProps } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
@@ -91,7 +92,7 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
       text="Сгенерировать"
       onPress={() => {
         const urlParams = new URLSearchParams({
-            prompt: prompt,
+            prompt: [prompt, ...outfitGenFormTagsStore.selectedItems].join(', '),
             amount: "4",
             use_weather: useWeather.toString(),
         });
