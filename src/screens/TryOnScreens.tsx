@@ -99,6 +99,8 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
             user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
           };
 
+          console.log(tryOnBody);
+
           ajax.apiPost('/try-on', {
             credentials: true,
             body: JSON.stringify(tryOnBody),

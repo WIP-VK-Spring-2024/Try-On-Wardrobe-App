@@ -8,6 +8,12 @@ export const GARMENT_TYPE_DRESS = 'Платья'
 export const GARMENT_TYPE_UPPER = 'Верх'
 export const GARMENT_TYPE_LOWER = 'Низ'
 
+export const typeIsTryOnAble = (type: GarmentType) => {
+  return type.name === GARMENT_TYPE_LOWER
+  || type.name === GARMENT_TYPE_LOWER
+  || type.name === GARMENT_TYPE_DRESS
+}
+
 export interface Updateable {
   uuid: string,
   name: string
@@ -121,6 +127,7 @@ export class GarmentCard {
 
   setType(type: GarmentType) {
     this.type = type;
+    this.tryOnAble = typeIsTryOnAble(type);
   }
 
   setSubtype(subtype: Updateable | undefined) {
@@ -344,6 +351,11 @@ export class GarmentCardEdit extends GarmentCard {
     this.seasons = this.origin.seasons.slice();
     this.image = this.origin.image;
     this.type = this.origin.type;
+
+    if (this.origin.type) {
+      this.tryOnAble = typeIsTryOnAble(this.origin.type);
+    }
+
     this.subtype = this.origin.subtype;
     this.style = this.origin.style;
     this.color = this.origin.color;
@@ -357,6 +369,11 @@ export class GarmentCardEdit extends GarmentCard {
     this.origin.seasons = this.seasons.slice();
     this.origin.image = this.image;
     this.origin.type = this.type;
+
+    if (this.type) {
+      this.origin.tryOnAble = typeIsTryOnAble(this.type);
+    }
+
     this.origin.subtype = this.subtype;
     this.origin.style = this.style;
     this.origin.color = this.color;

@@ -22,7 +22,7 @@ export interface LoginSuccessResponse {
 export const getImageSource = (image: ImageType) => {
   if (image.type === 'local') {
     return { 
-      uri: 'file://' + image.uri + `?time=${Date.now()}`
+      uri: 'file://' + image.uri// + `?time=${Date.now()}`
     }
   } else {
     return {

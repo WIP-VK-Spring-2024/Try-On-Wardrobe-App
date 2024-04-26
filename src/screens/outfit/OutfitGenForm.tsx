@@ -101,7 +101,9 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             urlParams.append("purposes", purpose)
         }
 
-        ajax.apiGet('/outfits/gen?'+urlParams.toString())
+        ajax.apiGet('/outfits/gen?'+urlParams.toString(), {
+          credentials: true
+        })
 
         props.navigation.navigate('OutfitGenResult');
       }}

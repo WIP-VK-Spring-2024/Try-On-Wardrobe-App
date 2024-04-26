@@ -1,5 +1,5 @@
 import { makeObservable, observable, action, autorun } from 'mobx';
-import { GarmentCard, GarmentType, garmentStore, Updateable } from './stores/GarmentStore';
+import { GarmentCard, GarmentType, garmentStore, Updateable, typeIsTryOnAble } from './stores/GarmentStore';
 import { userPhotoStore } from './stores/UserPhotoStore';
 import { FilterStore } from './stores/FilterStore';
 import { MultipleSelectionStore, SingleSelectionStore } from './stores/SelectionStore';
@@ -61,6 +61,7 @@ const makeGarmentFilter = (): [
   const garmentSelectionStore = new MultipleSelectionStore(filteredGarmentStore.items);
 
   autorun(() => {
+    JSON.stringify(garmentStore.garments)
     filteredGarmentStore.setOrigin(garmentStore.garments);
   })
 
@@ -153,7 +154,13 @@ const [
   tryOnScreenTagsSelectionStore,
 ] = makeGarmentFilter();
 
-tryOnScreenFilteredGarmentStore.setFilter('tryonable', item => item.tryOnAble)
+// tryOnScreenFilteredGarmentStore.setFilter('tryonable', item => item.tryOnAble)
+
+// autorun(() => {
+//   const values = garmentStore.garments.filter(garment => typeIsTryOnAble(garment.type!));
+//   console.log('values', values);
+//   tryOnScreenFilteredGarmentStore.setOrigin(values)
+// })
 
 const [
   outfitScreenFilteredGarmentStore,

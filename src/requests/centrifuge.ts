@@ -28,7 +28,7 @@ const subsribeToChannel = (props: CentrifugeSubscriptionProps) => {
     });
 
     channel.on('error', ctx => {
-        console.log(`error in ${props.name}`, ctx);
+        console.error(`error in ${props.name}`, ctx);
     })
 
     channel.on('publication', props.onPublication);

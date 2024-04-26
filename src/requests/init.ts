@@ -67,6 +67,7 @@ export const initStores = () => {
         credentials: true
     }).then(async data => {
         data.json().then(async photos => {
+            console.log(photos)
             userPhotoStore.setPhotos(photos.map((photo: { uuid: string, image: string }) => ({
                 uuid: photo.uuid,
                 image: {

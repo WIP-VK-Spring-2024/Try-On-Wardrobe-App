@@ -4,12 +4,11 @@ import { WINDOW_WIDTH, WINDOW_HEIGHT, BASE_COLOR } from "../consts"
 import { getImageSource } from "../utils"
 import ImageModal from 'react-native-image-modal';
 import { TryOnResultCard } from '../stores/TryOnStore'
-import { View, Image } from "@gluestack-ui/themed"
+import { View, Image, Pressable } from "@gluestack-ui/themed"
 import { BaseScreen } from "./BaseScreen";
 import { BackHeader } from "../components/Header";
 import { UserPhoto, userPhotoStore } from "../stores/UserPhotoStore"
 import { GarmentCard, garmentStore } from "../stores/GarmentStore";
-import { Pressable } from "react-native";
 import { RobotoText } from "../components/common";
 
 const TryOnImage = observer(({tryOnResult} : {tryOnResult: TryOnResultCard}) => {
@@ -49,10 +48,14 @@ const TryOnComponentsBlock = observer(({userPhoto, garments, navigation} : TryOn
         />
       </View>
       <View flex={1}>
-        {garments.map(item => (
+        {garments.map((item, i) => (
           <Pressable
-            onPress={navigation.navigate('Garment', { garment: item })}>
-            <Image source={getImageSource(item.image)} />
+            padding={10}
+            borderRadius={15}
+            backgroundColor="#ffffff"
+            key={i}
+            onPress={()=>navigation.navigate('Garment', { garment: item })}>
+            <Image source={getImageSource(item.image)} alt="garment"/>
           </Pressable>
         ))}
       </View>

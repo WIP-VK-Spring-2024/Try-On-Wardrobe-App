@@ -82,7 +82,7 @@ export const updateOutfit = async (outfit: Outfit) => {
 }
 
 export const uploadOutfit = async (outfit: Outfit) => {
-    console.log('upload outfit')
+    console.log('upload outfit', outfit)
     if (outfit.image === undefined) {
         console.error('no outfit image');
         return false;

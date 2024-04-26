@@ -25,12 +25,14 @@ const PersonListCard = observer(
   ({ source, navigation, id, onDelete }: PersonListCardProps) => {
     return (
       <Pressable
+        key={id}
         bg={BASE_COLOR}
         onPress={() => {
           userPhotoSelectionStore.toggle(id);
           navigation.navigate('Clothes');
         }}
-        w="49%"
+        // w="49%"
+        w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         <ListImage source={source} />
         <Pressable position='absolute' top={8} right={8} onPress={onDelete}>
@@ -44,6 +46,7 @@ const PersonListCard = observer(
 export const PeopleList = observer(({navigation, onItemDelete}: {navigation: any, onItemDelete: (item: UserPhoto) => void}) => {
     const people = userPhotoSelectionStore.items.map((item, i) => (
       <PersonListCard
+        key={i}
         navigation={navigation}
         source={getImageSource(item.image)}
         id={i}
@@ -51,7 +54,7 @@ export const PeopleList = observer(({navigation, onItemDelete}: {navigation: any
       />
     ));
   
-    people.unshift(<AddItemCard text="Новое фото для примерки" onPress={async () => {
+    people.unshift(<AddItemCard key="add" text="Новое фото для примерки" onPress={async () => {
         const created = await createUserPhotoFromGallery();
         if (!created) {
           console.log('user photo not created')

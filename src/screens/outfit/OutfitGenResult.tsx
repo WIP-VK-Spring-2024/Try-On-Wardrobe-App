@@ -139,32 +139,52 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
       items: items
     });
 
-    canvasRef.current?.makeImageSnapshotAsync()
+    return canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const bytes = image.encodeToBase64();
         RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
 
         const fileName = `${Date.now()}.png`
+        const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
 
-        RNFS.writeFile(RNFS.DocumentDirectoryPath + `/outfit/${fileName}`, bytes, 'base64');
+        RNFS.writeFile(path, bytes, 'base64');
 
         outfit.setImage({
           type: 'local',
-          uri: `/outfit/${fileName}`
+          uri: path
         });
 
-        uploadOutfit(outfit).then(() => {
-          setUUID(outfit.uuid);
-          outfitStore.addOutfit(outfit);
-        })
+        return uploadOutfit(outfit)
+          .then(() => {
+            setUUID(outfit.uuid);
+            outfitStore.addOutfit(outfit);
+            return outfit;
+          })
+          .catch(reason => {
+            console.error(reason);
+            return false;
+          })
+
       })
-      .catch(reason => console.error(reason))
+      .catch(reason => {
+        console.error(reason)
+        return false;
+      })
   }
 
   return (
     <Pressable
       onPress={() => {
         const outfit = outfitStore.outfits.find(o => o.uuid === uuid);
+
+        if (outfit === undefined) {
+          setIsSelected(!isSelected);
+          onSave()?.then((res) => {
+            if (res) {
+              props.navigation.navigate('Outfit', {outfit: res})
+            }
+          })
+        }
 
         if (outfit !== undefined) {
           props.navigation.navigate('Outfit', {outfit: outfit})

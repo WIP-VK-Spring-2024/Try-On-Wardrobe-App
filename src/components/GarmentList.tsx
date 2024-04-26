@@ -39,7 +39,7 @@ const ClothesListCard = observer(
     onPress,
   } : ClothesListCardProps) => {
     return (
-      <Pressable bg={BASE_COLOR} onPress={onPress} w="49%" h={CARD_SIZE.height}>
+      <Pressable bg={BASE_COLOR} onPress={onPress} w={CARD_SIZE.width} h={CARD_SIZE.height}>
         <ListImage source={source} />
 
         {selected && (
@@ -77,10 +77,11 @@ interface MultipleSelectionGarmentListProps {
 }
 
 export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
-  const clothes = props.store.items.map((item) => {
+  const clothes = props.store.items.map((item, i) => {
     const selected = props.store.selectedItems.includes(item)
 
     return <ClothesListCard
+        key={i}
         source={getImageSource(item.image)}
         selected={selected}
         onPress={() => props.store.toggle(item)}
@@ -116,7 +117,7 @@ const DisableableClothesListCard = observer(
         bg={BASE_COLOR}
         onPress={() => disabled ? setInfoShown(!infoShown)
                                 : onPress()}
-        w="49%"
+        w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         {infoShown ? <View {...CARD_PROPS} alignItems='center' justifyContent='center'>{info}</View> 
                    : <ListImage source={source} opacity={disabled ? 0.4 : 1} />}
@@ -145,7 +146,7 @@ interface DisableableSelectionGarmentListProps {
 }
 
 export const DisableableSelectionGarmentList = observer((props: DisableableSelectionGarmentListProps) => {
-  const clothes = props.store.items.map((item) => {
+  const clothes = props.store.items.map((item, i) => {
     const selected = props.store.selectedItems.includes(item)
     const disabled = !selected && (props.disabledPredicate ? props.disabledPredicate(item) : false);
 
@@ -176,6 +177,7 @@ export const DisableableSelectionGarmentList = observer((props: DisableableSelec
     };
 
     return <DisableableClothesListCard
+        key={i}
         source={getImageSource(item.image)}
         selected={selected}
         disabled={disabled}
