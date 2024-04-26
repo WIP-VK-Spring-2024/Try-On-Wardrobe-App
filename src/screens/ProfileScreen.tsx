@@ -18,7 +18,6 @@ import { useFocusEffect } from '@react-navigation/native'
 import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
 import { SexSelector } from "../components/LoginForms"
-import { PrivacySelector } from "../components/PrivacySelector"
 import { updateUserSettings, searchUsers } from "../requests/user"
 import { ajax } from "../requests/common"
 import { Tabs } from "../components/Tabs"
@@ -26,6 +25,7 @@ import { SearchInput } from "../components/SearchInput"
 import { BackButton, SubsList, NoSubsMessage, SubsBlock } from "../components/Profile"
 import { PostList } from "../components/Posts";
 import { convertPostResponse } from "../utils"
+import { PrivacyCheckbox } from "../components/PrivacyCheckbox";
 
 const iconSize = 25
 
@@ -99,10 +99,12 @@ const SettingsModal = observer((props: {isOpen: boolean, hide: () => void}) => {
   return (
     <Modal isOpen={props.isOpen} hide={props.hide} footer={footer}>
       <View marginTop={10} gap={10}>
-        <RobotoText textAlign="center" fontSize={22}>Настройки</RobotoText>
+        <RobotoText textAlign="center" fontSize={22}>
+          Настройки
+        </RobotoText>
         <View alignItems="flex-start" gap={15}>
-          <PrivacySelector value={privacy} setValue={setPrivacy}/>
-          <SexSelector value={gender} setValue={setGender}/>
+          <PrivacyCheckbox value={privacy} setValue={setPrivacy} />
+          <SexSelector value={gender} setValue={setGender} />
         </View>
       </View>
     </Modal>

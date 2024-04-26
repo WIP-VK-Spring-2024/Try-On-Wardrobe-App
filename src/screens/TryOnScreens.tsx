@@ -99,7 +99,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
             user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
           };
 
-          ajax.apiPost(apiEndpoint + '/try-on', {
+          ajax.apiPost('/try-on', {
             credentials: true,
             body: JSON.stringify(tryOnBody),
             headers: {
@@ -128,6 +128,7 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
           />
           <DisableableSelectionGarmentList
             store={tryOnScreenGarmentSelectionStore}
+            typeStore={tryOnScreenTypeSelectionStore}
             disabledPredicate={item =>
               !tryOnValidationStore.isSelectable(item.type?.name || '')
             }

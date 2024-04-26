@@ -1,17 +1,18 @@
-import { apiEndpoint } from "../../config";
-import { cacheManager } from "../cacheManager/cacheManager";
 import { getOutfitImageName } from "../cacheManager/utils";
 import { Outfit, outfitStore } from "../stores/OutfitStore";
 import RNFS from 'react-native-fs';
-import { joinPath } from "../utils";
-import { appState } from "../stores/AppState";
 import { ajax } from "./common";
 
 const makeFormData = (outfit: Outfit) => {
     const image_p = outfit.image!.uri.split('/');
     const image_name = image_p[image_p.length - 1];
 
+    console.log(outfit);
+
     let formData = new FormData();
+
+    formData.append('name', outfit.name);
+    formData.append('privacy', outfit.privacy);
     
     const uri = 'file://' + outfit.image!.uri
 
@@ -27,7 +28,7 @@ const makeFormData = (outfit: Outfit) => {
         .map(item => ([item.garmentUUID, item.rect.getTransforms()])));
 
     formData.append('transforms', JSON.stringify(transforms));
-
+    
     return formData;
 }
 
@@ -56,7 +57,6 @@ export const updateOutfit = async (outfit: Outfit) => {
                 console.log(res);
 
                 outfit.setUpdatedAt(res.updated_at);
-
                 
                 const newName = getOutfitImageName(outfit);
                 const newPath = RNFS.DocumentDirectoryPath + `/images/outfits/${newName}`;
@@ -113,7 +113,7 @@ export const uploadOutfit = async (outfit: Outfit) => {
                 outfit.setImage({
                     type: 'local',
                     uri: newPath
-                })
+                });
 
                 return true;
             })

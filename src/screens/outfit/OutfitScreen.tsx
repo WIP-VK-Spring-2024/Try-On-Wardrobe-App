@@ -1,20 +1,24 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { BaseScreen } from '../BaseScreen';
+import { appState } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
-import { RobotoText, DeleteMenu } from "../../components/common";
+import { RobotoText, DeleteMenu, UpdateableText } from "../../components/common";
 import { getImageSource } from "../../utils";
 import { Outfit, OutfitItem } from "../../stores/OutfitStore";
 
 import { BackHeader } from "../../components/Header";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR, WINDOW_WIDTH } from "../../consts";
 import { StackActions } from "@react-navigation/native";
-import { deleteOutfit } from "../../requests/outfit";
+import { deleteOutfit, updateOutfit } from "../../requests/outfit";
 import DotsIcon from '../../../assets/icons/dots-vertical.svg';
 import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
 import AddBtnIcon from '../../../assets/icons/add-btn.svg';
+import { ButtonFooter } from "../../components/Footer";
+import { UpdateableTextInput } from "../../components/UpdateableTextInput";
+import { PrivacyCheckbox } from "../../components/PrivacyCheckbox";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -146,7 +150,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const header = (
     <BackHeader
       navigation={props.navigation}
-      text="Комплект"
+      text={outfit.name === "Без названия" ? "Комплект" : outfit.name}
       rightMenu={
         <HeaderMenu
           onDelete={async () => {
@@ -169,51 +173,70 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     />
   )
 
+  const footer = (
+    <ButtonFooter
+      text="Сохранить"
+      onPress={() =>
+        updateOutfit(outfit).then(_ => {
+          appState.setSuccessMessage('Изменения успешно сохранены');
+          setTimeout(() => appState.closeSuccessMessage(), 2000);
+        })
+      }
+    />
+  );
+  const [inEditing, setInEditing] = useState(false);
+
   return (
-    <BaseScreen 
-      navigation={props.navigation} 
-      header={header}
-      // footer={null}
-    >
+    <BaseScreen navigation={props.navigation} header={header} footer={footer}>
       <Pressable
-        onPress={() => props.navigation.navigate('Editor', {outfit: outfit})}
-      >
-        { outfit.image === undefined
-          ? <View
-            width="100%"
-            height={300}
-            backgroundColor="#fefefe"
-          >
-          </View>
-          : <Image
+        onPress={() => props.navigation.navigate('Editor', { outfit: outfit })}>
+        {outfit.image === undefined ? (
+          <View width="100%" height={300} backgroundColor="#fefefe"></View>
+        ) : (
+          <Image
             source={getImageSource(outfit.image)}
             w="100%"
             height={WINDOW_HEIGHT / 2}
             resizeMode="contain"
             alt="outfit"
           />
-        }
+        )}
       </Pressable>
-      <View
-        margin={20}
-        flexDirection="column"
-        gap={20}
-      >
-        {
-          garments.map((garment, i) => (
-            <HGarmentCard 
-              key={i}
-              outfit={outfit}
-              garment={garment}
-              navigation={props.navigation}
+      <View margin={20} flexDirection="column" gap={20}>
+        <UpdateableTextInput
+          text={outfit.name}
+          onUpdate={text => outfit.setName(text)}
+          inEditing={inEditing}
+          setInEditing={setInEditing}
+        />
+        <View flexDirection="row">
+          <View flex={3}></View>
+          <View flex={5}>
+            <PrivacyCheckbox
+              text="Публичный образ"
+              value={outfit.privacy}
+              setValue={privacy => outfit.setPrivacy(privacy)}
             />
-          ))
-        }
+          </View>
+          <View flex={3}></View>
+        </View>
+
+
+        {garments.map((garment, i) => (
+          <HGarmentCard
+            key={i}
+            outfit={outfit}
+            garment={garment}
+            navigation={props.navigation}
+          />
+        ))}
         <HAddItemCard
           text="Добавить одежду"
-          onPress={()=>props.navigation.navigate("Outfit/Garment", {outfit: outfit})} 
+          onPress={() =>
+            props.navigation.navigate('Outfit/Garment', { outfit: outfit })
+          }
         />
       </View>
     </BaseScreen>
-  )
+  );
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import LikeIcon from '../../assets/icons/like.svg';
 import DislikeIcon from '../../assets/icons/dislike.svg';
 import {observer} from 'mobx-react-lite';
-import {Rating} from '../stores/common';
+import { Rating } from '../stores/common';
 import {
     likeTryOnResult,
     dislikeTryOnResult,
