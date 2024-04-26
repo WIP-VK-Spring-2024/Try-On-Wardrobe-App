@@ -42,7 +42,6 @@ export const OutfitGarmentSelectionScreen = observer(
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
         {outfitScreenGarmentSelectionStore.items.length > 0 ? (
           <>
-            {' '}
             <TypeFilter
               typeStore={outfitScreenTypeSelectionStore}
               subtypeStore={outfitScreenSubtypeSelectionStore}

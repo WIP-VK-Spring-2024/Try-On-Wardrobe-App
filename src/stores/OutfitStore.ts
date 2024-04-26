@@ -3,6 +3,7 @@ import { ImageType } from '../models';
 import { GarmentCard, garmentStore } from './GarmentStore';
 import { Image } from 'react-native';
 import { getImageSource } from '../utils';
+import { Privacy } from './common';
 
 interface OutfitItemRectProps {
     x?: number
@@ -93,6 +94,8 @@ export class OutfitItem {
 
 interface OutfitProps {
     uuid?: string
+    name?: string
+    privacy?: Privacy
     updated_at?: string
     items?: OutfitItem[]
     image?: ImageType
@@ -100,6 +103,8 @@ interface OutfitProps {
 
 export class Outfit {
     uuid: string | undefined
+    name: string
+    privacy: Privacy
     updated_at: string | undefined
     image: ImageType | undefined
     items: OutfitItem[]
@@ -108,10 +113,14 @@ export class Outfit {
         this.uuid = props?.uuid
         this.updated_at = props?.updated_at;
         this.image = props?.image;
+        this.privacy = props?.privacy || 'public'
+        this.name = props?.name || 'Без названия';
         this.items = props?.items || [];
 
         makeObservable(this, {
             uuid: observable,
+            name: observable,
+            privacy: observable,
             updated_at: observable,
             image: observable,
             items: observable,
@@ -119,6 +128,8 @@ export class Outfit {
             setUUID: action,
             setUpdatedAt: action,
             setImage: action,
+            setName: action,
+            setPrivacy: action,
             setItems: action,
             addItem: action,
             addItems: action,
@@ -129,6 +140,14 @@ export class Outfit {
 
     setUUID(uuid: string) {
         this.uuid = uuid;
+    }
+
+    setName(name: string) {
+        this.name = name;
+    }
+
+    setPrivacy(privacy: Privacy) {
+        this.privacy = privacy;
     }
 
     setUpdatedAt(updated_at: string) {

@@ -1,4 +1,4 @@
-import React, { Children, PropsWithChildren } from 'react';
+import React, { Children, PropsWithChildren, useEffect, useState } from 'react';
 import { ChevronDownIcon, SelectBackdrop, SelectIcon, SelectInput, SelectItem, SelectPortal, Text } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 import { Select } from '@gluestack-ui/themed';
@@ -94,6 +94,15 @@ interface UpdateableTextProps {
 }
 
 export const UpdateableText = observer((props: PropsWithChildren & UpdateableTextProps & TextProps) => {
+  const [text, setText] = useState(props.text);
+
+  useEffect(() => {
+    // return () => {
+      console.log("updateable cleanup", text);
+      props.onUpdate(text);
+    // }
+  }, [props.inEditing]);
+
   return (
     <>
      {
@@ -102,7 +111,7 @@ export const UpdateableText = observer((props: PropsWithChildren & UpdateableTex
         <Input
           variant="rounded"
           size="md"
-          w="60%"
+          w="100%"
           isDisabled={false}
           isInvalid={false}
           isReadOnly={false}
@@ -110,14 +119,19 @@ export const UpdateableText = observer((props: PropsWithChildren & UpdateableTex
         >
           <InputField 
             type="text" 
-            value={props.text}
-            onChangeText={props.onUpdate}
+            value={text}
+            onChangeText={(text) => {
+              console.log("Setting on change", text);
+              setText(text);
+            }}
+            // onBlur={() => props.onUpdate(text)}
+            onEndEditing={() => props.onUpdate(text)}
           />
         </Input>
 
-        :  <RobotoText fontSize={24} textAlign='center' {...props}>
-          {props.text}
-        </RobotoText>
+        : <RobotoText fontSize={24} textAlign='center' {...props}>
+            {props.text}
+          </RobotoText>
      }
     </>
   )

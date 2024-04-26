@@ -3,7 +3,6 @@ import { CheckboxIcon, CheckboxIndicator, CheckIcon, Checkbox as GlueStackCheckb
 import { ACTIVE_COLOR, BASE_COLOR } from "../consts";
 import { CheckboxLabel } from "@gluestack-ui/themed";
 
-
 export const Checkbox = (props: {label: string, value: string, isChecked?: boolean, onChange?: (arg: boolean) => void}) => {
   const getBG = () => {
     if (props.isChecked === undefined)

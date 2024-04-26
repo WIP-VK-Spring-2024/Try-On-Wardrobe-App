@@ -92,6 +92,7 @@ export class GarmentCard {
   }
 
   setName(name: string) {
+    console.log("name updated in store", name);
     this.name = name;
   }
 

@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
+import { Box,  View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
 import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
-import { CustomSelect, IconWithCaption, RobotoText, UpdateableText, AlertModal } from '../components/common';
+import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
@@ -12,8 +12,8 @@ import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
+import { UpdateableTextInput } from '../components/UpdateableTextInput'
 
-import EditIcon from '../../assets/icons/edit.svg';
 import HashTagIcon from '../../assets/icons/hashtag.svg';
 import CrossIcon from '../../assets/icons/cross.svg';
 
@@ -99,7 +99,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
     setTagInputValue('');
 
-    const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
+    const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
 
     const garmentUpdate = (garment: GarmentCard) => ({
       uuid: garment.uuid,
@@ -109,11 +109,11 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
       style_id: garment.style?.uuid,
       tags: garment.tags,
       seasons: garment.seasons
-    })
+    });
 
-    const new_garment = garmentUpdate(garment)
+    const new_garment = garmentUpdate(garment);
 
-    clearObj(new_garment)
+    clearObj(new_garment);
 
     ajax.apiPut('/clothes/' + garment.uuid, {
      credentials: true,
@@ -123,40 +123,8 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         appState.setSuccessMessage('Изменения успешно сохранены');
         setTimeout(()=>appState.closeSuccessMessage(), 2000);
       })
-      .catch(res => console.error(res))
+      .catch(res => console.error(res));
   }
-
-  const GarmentNameInput = observer(
-    () => {
-      return (
-        <Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="center"
-          alignItems="center"
-          gap={20}>
-          <View flex={1}></View>
-          <View flex={10}>
-            <UpdateableText
-              numberOfLines={1}
-              text={garment.name}
-              inEditing={inEditing}
-              onUpdate={(text: string) => {
-                garment.setName(text);
-              }}
-            />
-          </View>
-          <Pressable
-            flex={1}
-            onPress={() => {
-              setInEditing((oldInEditing: boolean) => !oldInEditing);
-            }}>
-            <EditIcon stroke="#000000" />
-          </Pressable>
-        </Box>
-      );
-    },
-  );
 
   const CloseAlertDialog = observer(() => {
     return (
@@ -398,7 +366,14 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         marginBottom={100}
       >
         <GarmentImage garment={garment}/>
-        <GarmentNameInput/>
+
+        <UpdateableTextInput
+          text={garment.name}
+          onUpdate={text => garment.setName(text)}
+          inEditing={inEditing}
+          setInEditing={setInEditing}
+        />
+
         <GarmentSeasonIcons/>
         <GarmentTypeSelector />
         <GarmentStyleSelector />
