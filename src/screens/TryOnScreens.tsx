@@ -146,9 +146,9 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
 export const PersonSelectionScreen = observer(
   ({ navigation }: { navigation: any }) => {
     const [infoShown, setInfoShown] = useState(false);
-    // useFocusEffect(React.useCallback(() => {
-    //   setInfoShown(false);
-    // }, []))
+    useFocusEffect(React.useCallback(() => {
+      userPhotoSelectionStore.unselect();
+    }, []))
 
     const [deletionModalShown, setDeletionModalShown] = useState(false);
     const [deleteUUID, setDeleteUUID] = useState<string | undefined>(undefined);

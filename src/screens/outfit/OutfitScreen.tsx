@@ -213,14 +213,13 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           <View flex={3}></View>
           <View flex={5}>
             <PrivacyCheckbox
-              text="Публичный образ"
+              text="Опубликовать"
               value={outfit.privacy}
               setValue={privacy => outfit.setPrivacy(privacy)}
             />
           </View>
           <View flex={3}></View>
         </View>
-
 
         {garments.map((garment, i) => (
           <HGarmentCard

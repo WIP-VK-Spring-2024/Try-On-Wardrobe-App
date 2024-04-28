@@ -28,10 +28,9 @@ const PersonListCard = observer(
         key={id}
         bg={BASE_COLOR}
         onPress={() => {
-          userPhotoSelectionStore.toggle(id);
+          userPhotoSelectionStore.select(id);
           navigation.navigate('Clothes');
         }}
-        // w="49%"
         w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         <ListImage source={source} />
