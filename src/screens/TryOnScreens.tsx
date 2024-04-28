@@ -122,12 +122,11 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
 
   return (
     <BaseScreen navigation={navigation} footer={footer} header={header}>
+      <TypeFilter
+        typeStore={tryOnScreenTypeSelectionStore}
+        subtypeStore={tryOnScreenSubtypeSelectionStore}
+      />
       {tryOnScreenGarmentSelectionStore.items.length > 0 ? (
-        <>
-          <TypeFilter
-            typeStore={tryOnScreenTypeSelectionStore}
-            subtypeStore={tryOnScreenSubtypeSelectionStore}
-          />
           <DisableableSelectionGarmentList
             store={tryOnScreenGarmentSelectionStore}
             typeStore={tryOnScreenTypeSelectionStore}
@@ -135,9 +134,11 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
               !tryOnValidationStore.isSelectable(item.type?.name || '')
             }
           />
-        </>
       ) : (
-        <NoClothesMessage afterIconText="в главном меню!" />
+        <NoClothesMessage
+          category={tryOnScreenTypeSelectionStore.selectedItem?.name || ''}
+          afterIconText="в главном меню!"
+        />
       )}
     </BaseScreen>
   );

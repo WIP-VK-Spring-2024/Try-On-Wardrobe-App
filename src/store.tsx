@@ -63,13 +63,13 @@ const makeGarmentFilter = (): [
   autorun(() => {
     JSON.stringify(garmentStore.garments)
     filteredGarmentStore.setOrigin(garmentStore.garments);
-  })
+  });
 
   autorun(() => {
     garmentSelectionStore.setItems(filteredGarmentStore.items);
-  })
+  });
 
-  const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.usedTypes);
+  const garmentTypeSelectionStore = new SingleSelectionStore(garmentStore.types);
   const garmentSubtypeSelectionStore = new SingleSelectionStore<Updateable>([]);
 
   autorun(() => {
@@ -85,7 +85,7 @@ const makeGarmentFilter = (): [
       garmentSubtypeSelectionStore.unselect();
       filteredGarmentStore.removeFilter('type_filter');
     }
-  })
+  });
   
   autorun(() => {
     if (garmentTypeSelectionStore.somethingIsSelected && 
@@ -94,19 +94,19 @@ const makeGarmentFilter = (): [
     } else {
       filteredGarmentStore.removeFilter('subtype_filter');
     }
-  })
+  });
 
   const styleFilterSelectionStore = new MultipleSelectionStore(garmentStore.styles.map(style=>style.uuid));
 
   autorun(() => {
     styleFilterSelectionStore.setItems(garmentStore.styles.map(style=>style.uuid));
-  })
+  });
 
   const tagFilterSelectionStore = new MultipleSelectionStore(garmentStore.tags);
 
   autorun(() => {
     tagFilterSelectionStore.setItems(garmentStore.tags);
-  })
+  });
 
   autorun(() => {
     if (styleFilterSelectionStore.selectedItems.length > 0) {
@@ -115,7 +115,7 @@ const makeGarmentFilter = (): [
     } else {
       filteredGarmentStore.removeFilter('style_filter');
     }
-  })
+  });
 
   autorun(() => {
     if (tagFilterSelectionStore.selectedItems.length > 0) {
@@ -124,7 +124,7 @@ const makeGarmentFilter = (): [
     } else {
       filteredGarmentStore.removeFilter('tag_filter');
     }
-  })
+  });
 
   return [
     filteredGarmentStore,
@@ -154,13 +154,14 @@ const [
   tryOnScreenTagsSelectionStore,
 ] = makeGarmentFilter();
 
-// tryOnScreenFilteredGarmentStore.setFilter('tryonable', item => item.tryOnAble)
+autorun(() => {
+  const values = garmentStore.garments.filter(garment => typeIsTryOnAble(garment.type!));
+  tryOnScreenFilteredGarmentStore.setOrigin(values)
+});
 
-// autorun(() => {
-//   const values = garmentStore.garments.filter(garment => typeIsTryOnAble(garment.type!));
-//   console.log('values', values);
-//   tryOnScreenFilteredGarmentStore.setOrigin(values)
-// })
+autorun(() => {
+  tryOnScreenTypeSelectionStore.setItems(garmentStore.usedTypes.filter((item) => typeIsTryOnAble(item)));
+});
 
 const [
   outfitScreenFilteredGarmentStore,

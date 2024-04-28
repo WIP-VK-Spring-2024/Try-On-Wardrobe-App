@@ -292,9 +292,7 @@ export class GarmentStore {
   }
 
   get usedTypes(): GarmentType[] {
-    return getUnique(this.garments.map(garment => garment.type?.uuid))
-            .filter(notEmpty)
-            .map(garmentStore.getTypeByUUID)
+    return this.types
             .filter(notEmpty)
             .map(type => ({
               name: type.name,

@@ -39,16 +39,14 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   return (
     <>
       <BaseScreen navigation={navigation} screen="Home">
+        <TypeFilter
+          typeStore={garmentScreenTypeSelectionStore}
+          subtypeStore={garmentScreenSubtypeSelectionStore}
+        />
         {garmentScreenGarmentSelectionStore.items.length > 0 ? (
-          <>
-            <TypeFilter
-              typeStore={garmentScreenTypeSelectionStore}
-              subtypeStore={garmentScreenSubtypeSelectionStore}
-            />
             <StaticGarmentList navigation={navigation} />
-          </>
         ) : (
-          <NoClothesMessage />
+          <NoClothesMessage category={garmentScreenTypeSelectionStore.selectedItem?.name || ''}/>
         )}
       </BaseScreen>
       <FilterModal
