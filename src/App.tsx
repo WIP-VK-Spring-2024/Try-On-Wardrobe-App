@@ -14,7 +14,7 @@ import RNFS from 'react-native-fs';
 import { GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
-import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
+import { TryOnGarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { CurrentUserProfileScreen } from './screens/ProfileScreen';
 import { OtherUserProfileScreen } from './screens/OtherProfileScreen';
@@ -80,7 +80,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="Home" component={HomeScreen} />
 
-        <Stack.Screen name="Person" component={PersonSelectionScreen} />
+        <Stack.Screen name="TryOn/Person" component={PersonSelectionScreen} />
 
         <Stack.Screen name="Profile" component={CurrentUserProfileScreen} />
         <Stack.Screen name="OtherProfile" component={OtherUserProfileScreen} />
@@ -89,7 +89,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="TryOnCard" component={TryOnCardScreen} />
 
-        <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
+        <Stack.Screen name="TryOn/Clothes" component={TryOnGarmentSelectionScreen} />
 
         <Stack.Screen name="Result" component={ResultScreen} />
 

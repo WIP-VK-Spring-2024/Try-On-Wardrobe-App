@@ -16,21 +16,18 @@ import { UserPhoto } from '../stores/UserPhotoStore';
 
 interface PersonListCardProps {
   source: string | ImageSourcePropType;
-  navigation: any;
   id: number;
   onDelete: () => void;
+  onPress: () => void;
 }
 
 const PersonListCard = observer(
-  ({ source, navigation, id, onDelete }: PersonListCardProps) => {
+  ({ source, id, onDelete, onPress }: PersonListCardProps) => {
     return (
       <Pressable
         key={id}
         bg={BASE_COLOR}
-        onPress={() => {
-          userPhotoSelectionStore.select(id);
-          navigation.navigate('Clothes');
-        }}
+        onPress={() => onPress()}
         w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         <ListImage source={source} />
@@ -42,11 +39,20 @@ const PersonListCard = observer(
   },
 );
 
-export const PeopleList = observer(({navigation, onItemDelete}: {navigation: any, onItemDelete: (item: UserPhoto) => void}) => {
+interface PeopleListProps {
+  navigation: any
+  onItemDelete: (item: UserPhoto) => void
+  onPress: () => void
+}
+
+export const PeopleList = observer(({onItemDelete, onPress}: PeopleListProps) => {
     const people = userPhotoSelectionStore.items.map((item, i) => (
       <PersonListCard
         key={i}
-        navigation={navigation}
+        onPress={() => {
+          userPhotoSelectionStore.select(i);
+          onPress();
+        }}
         source={getImageSource(item.image)}
         id={i}
         onDelete={() => onItemDelete(item)}

@@ -9,9 +9,6 @@ import { TypeFilter } from "../components/FilterBlock";
 import { garmentScreenGarmentSelectionStore, garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
 import { FilterModal } from "../components/FilterModal";
-import { View } from "@gluestack-ui/themed";
-import { RobotoText } from "../components/common";
-import { ACTIVE_COLOR } from "../consts";
 import { NoClothesMessage } from "../components/NoClothesMessage"
 
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {

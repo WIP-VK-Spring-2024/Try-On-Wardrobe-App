@@ -10,11 +10,11 @@ import ImageModal from 'react-native-image-modal';
 import { BASE_COLOR } from '../consts';
 
 const style = StyleSheet.create({
-    overlay: {
-      position: 'absolute',
-      bottom: 5,
-    },
-  });
+  overlay: {
+    position: 'absolute',
+    bottom: 5,
+  },
+});
 
 const TryOnResultCard = observer(
     ({
@@ -57,7 +57,7 @@ export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
         />
     ));
 
-    cards.unshift(<AddItemCard key="add" text="Новая примерка" onPress={() => navigation.navigate('Person')}/>)
+    cards.unshift(<AddItemCard key="add" text="Новая примерка" onPress={() => navigation.navigate('TryOn/Clothes')}/>)
 
     return <BaseList items={cards} />;
 });

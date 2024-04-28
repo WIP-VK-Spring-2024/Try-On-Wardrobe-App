@@ -232,9 +232,9 @@ export class OutfitStore {
 
     addOutfit(outfit?: Outfit) {
         if (outfit === undefined) {
-            this.outfits.push(new Outfit());
+            this.outfits.unshift(new Outfit());
         } else {
-            this.outfits.push(outfit);
+            this.outfits.unshift(outfit);
         }
     }
 

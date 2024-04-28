@@ -43,7 +43,7 @@ const tooltipFontSize = 15
 const tryOnStepFontSize = 12
 const tryOnHeaderFontSize = 15
 
-export const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
+export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
   useEffect(() => {
       return () => tryOnScreenGarmentSelectionStore.clearSelectedItems();
       }, [navigation]);
@@ -83,42 +83,19 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
       text="Выберите вещи"
       rightMenu={rightMenu}
       fontSize={backHeaderFontSize}>
-      <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
+      <RobotoText fontSize={tryOnStepFontSize}>Шаг 1 из 2</RobotoText>
       <RobotoText fontSize={tryOnHeaderFontSize}>Выберите одежду для примерки</RobotoText>
     </BackHeader>
   );
 
   const footer =
     tryOnScreenGarmentSelectionStore.selectedItems.length > 0 ? (
-      <ButtonFooter
-        onPress={() => {
-          const tryOnBody: TryOnRequest = {
-            clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
-              item => item.uuid,
-            ) as string[],
-            user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
-          };
-
-          console.log(tryOnBody);
-
-          ajax.apiPost('/try-on', {
-            credentials: true,
-            body: JSON.stringify(tryOnBody),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          },
-        ).then(() => {
-          navigation.navigate('Result');
-          resultStore.clearResult();
-        }).catch(err => console.error(err))
-      }}
-    >
-    {tooltip}
-  </ButtonFooter>
-) : (
-  <View w="100%" justifyContent="center">{tooltip}</View>
-);
+    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person')}>
+      {tooltip}
+    </ButtonFooter>
+  ) : (
+    <View w="100%" justifyContent="center">{tooltip}</View>
+  );
 
   return (
     <BaseScreen navigation={navigation} footer={footer} header={header}>
@@ -188,7 +165,7 @@ export const PersonSelectionScreen = observer(
         navigation={navigation}
         rightMenu={rightMenu}
       >
-        <RobotoText fontSize={tryOnStepFontSize}>Шаг 1 из 2</RobotoText>
+        <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
         <RobotoText fontSize={tryOnHeaderFontSize}>Выберите своё фото</RobotoText>
       </BackHeader>
     );
@@ -196,7 +173,7 @@ export const PersonSelectionScreen = observer(
     return (
       <>
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
-          <PeopleList navigation={navigation} onItemDelete={(item) => {
+          <PeopleList navigation={navigation} onPress={() => tryOn(navigation)} onItemDelete={(item) => {
             setDeleteUUID(item.uuid);
             setDeletionModalShown(true);
           }} />
@@ -225,14 +202,37 @@ export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   const header = <Header navigation={navigation} rightMenu={null} />;
 
   return (
-    <>
-      <BaseScreen
-        navigation={navigation}
-        footer={footer}
-        header={header}
-        screen="TryOn">
-        <TryOnResultList navigation={navigation} />
-      </BaseScreen>
-    </>
+    <BaseScreen
+      navigation={navigation}
+      footer={footer}
+      header={header}
+      screen="TryOn">
+      <TryOnResultList navigation={navigation} />
+    </BaseScreen>
   );
 });
+
+const tryOn = (navigation: any) => {  
+  const tryOnBody: TryOnRequest = {
+    clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
+      item => item.uuid,
+    ) as string[],
+    user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
+  };
+
+  console.log(tryOnBody);
+
+  ajax
+    .apiPost('/try-on', {
+      credentials: true,
+      body: JSON.stringify(tryOnBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(() => {
+      navigation.navigate('Result');
+      resultStore.clearResult();
+    })
+    .catch(err => console.error(err));
+};

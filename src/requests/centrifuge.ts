@@ -5,6 +5,7 @@ import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
 import { runInAction } from "mobx";
 import { outfitGenResutlStore, outfitGenUUIDStore } from "../stores/OutfitGenStores";
+import { TryOnResultCard, tryOnStore } from '../stores/TryOnStore'
 
 interface CentrifugeSubscriptionProps {
     connection: Centrifuge
@@ -110,6 +111,8 @@ export const initCentrifuge = async () => {
         onPublication: ctx => {
             resultStore.setResultUrl(staticEndpoint + ctx.data.image);
             resultStore.setResultUUID(ctx.data.uuid);
+
+            tryOnStore.addResult(new TryOnResultCard(ctx.data));
         }
     });
 

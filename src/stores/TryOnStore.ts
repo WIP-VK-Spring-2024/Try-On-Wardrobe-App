@@ -9,7 +9,7 @@ export interface TryOnResultCardProps {
   uuid: string;
   created_at: string;
   image: ImageType;
-  rating: Rating;
+  rating?: Rating;
   user_image_id: string;
   clothes_id: string[];
 }
@@ -26,7 +26,7 @@ export class TryOnResultCard {
     this.uuid = props.uuid;
     this.created_at = props.created_at;
     this.image = props.image;
-    this.rating = props.rating;
+    this.rating = props.rating || 0;
     this.user_image_id = props.user_image_id;
     this.clothes_id = props.clothes_id;
 
@@ -64,11 +64,11 @@ export class TryOnStore {
     this.results = results;
   }
 
-  removeResult(result: TryOnResultCard) {
-    this.results.push(result);
+  addResult(result: TryOnResultCard) {
+    this.results.unshift(result);
   }
 
-  addResult(result_uuid: string) {
+  removeResult(result_uuid: string) {
     const index = this.results.findIndex(r => r.uuid === result_uuid);
 
     if (index !== -1) {

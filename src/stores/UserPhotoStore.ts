@@ -26,7 +26,7 @@ class UserPhotoStore {
   }
 
   addPhoto(photo: UserPhoto) {
-    this.photos.push(photo);
+    this.photos.unshift(photo);
   }
 
   getPhotoByUUID(uuid: string) {
