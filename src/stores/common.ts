@@ -19,5 +19,6 @@ export interface PostData {
   user_rating: number
   rating: number
   user_id: string
+  is_subbed: boolean
 }
   

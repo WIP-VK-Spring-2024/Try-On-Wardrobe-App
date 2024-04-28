@@ -1,18 +1,11 @@
-import { View } from "@gluestack-ui/themed";
+
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
-import { Header } from "../components/Header";
-import { ajax } from "../requests/common";
-import { Footer } from "../components/Footer";
+import React from "react";
 import { Pressable } from "@gluestack-ui/themed";
 import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { ImageType } from "../models";
-import { ImageSourceType, getImageSource, convertPostResponse } from "../utils";
-import { FlatList, ImageSourcePropType, ListRenderItem, ListRenderItemInfo } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { appState } from "../stores/AppState";
+import { ImageSourceType, getImageSource } from "../utils";
+import {ListRenderItemInfo } from "react-native";
 import FastImage from "react-native-fast-image";
-import { Image } from "@gluestack-ui/themed";
 import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
 
@@ -69,12 +62,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
           data={item}
           onPress={() => {
             navigation.navigate("Post", {
-              image: item.outfit_image,
-              uuid: item.uuid,
-              user_name: item.user_name,
-              user_rating: item.user_rating,
-              rating: item.rating,
-              user_id: item.user_id,
+              ...item
             })
           }}
         />

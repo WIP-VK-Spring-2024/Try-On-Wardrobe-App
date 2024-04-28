@@ -94,12 +94,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
         onPress={() => {
           console.log('item:', item)
           props.navigation.navigate("Post", {
-            image: item.outfit_image,
-            uuid: item.uuid,
-            user_name: item.user_name,
-            user_rating: item.user_rating,
-            rating: item.rating,
-            user_id: item.user_id,
+            ...item
           })
         }}
       />

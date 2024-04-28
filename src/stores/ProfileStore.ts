@@ -74,65 +74,24 @@ export class User {
 export interface Subscription {
     name: string
     uuid: string
-    isSubbed?: boolean
-}
-
-export interface ProfileProps extends Subscription {
-    outfits?: Outfit[]
-}
-
-export class Profile {
-    name: string
-    uuid: string
-    isSubbed?: boolean
-    outfits?: Outfit[]
-
-    constructor(props: ProfileProps) {
-        this.name = props.name;
-        this.uuid = props.uuid;
-        this.outfits = props.outfits || [];
-
-        makeObservable(this, {
-            name: observable,
-            outfits: observable,
-
-            setOutfits: action,
-            setName: action
-        });
-    }
-
-    setName(name: string) {
-        this.name = name;
-    }
-
-    setOutfits(outfits: Outfit[]) {
-        this.outfits = outfits;
-    }
+    is_subbed: boolean
 }
 
 class ProfileStore {
     currentUser?: User
     users: Subscription[]
-    otherProfile?: Profile
-    
-    lastUserName: string
     
     constructor() {
         this.currentUser = undefined;
-        this.otherProfile = undefined;
         this.users = [];
-        this.lastUserName = '';
 
         makeObservable(this, {
             currentUser: observable,
-            otherProfile: observable,
             users: observable,
-            lastUserName: observable,
 
             setUser: action,
             appendUsers: action,
             clearUsers: action,
-            setLastUserName: action,
         });
     }
 
@@ -147,15 +106,6 @@ class ProfileStore {
     clearUsers() {
         this.users = [];
     }
-
-    setLastUserName(name: string) {
-        this.lastUserName = name;
-    }
-
-    setOtherProfile(profile: Profile) {
-        this.otherProfile = profile;
-    }
 }
-
 
 export const profileStore = new ProfileStore();

@@ -7,11 +7,13 @@ import {
   View,
   Pressable,
   ChevronLeftIcon,
+  Button,
 } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
-import { PRIMARY_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
+import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
 import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
+import { userUnsub, userSub } from "../requests/user"
 
 export const BackButton = (props: {navigation: any, flex?: number}) => {
   const onBackPress = () => props.navigation.dispatch(StackActions.pop(1))
@@ -27,6 +29,46 @@ export const BackButton = (props: {navigation: any, flex?: number}) => {
     </Pressable>
   );
 };
+
+
+
+interface SubscribeButtonProps {
+  isSubbed: boolean
+  setIsSubbed: (isSubbed: boolean) => void
+  user: Subscription
+}
+
+export const SubscribeButton = observer(
+  ({ isSubbed, setIsSubbed, user }: SubscribeButtonProps) => {
+    return (
+      <Button
+        size="xs"
+        action={isSubbed ? 'secondary' : 'primary'}
+        bgColor={isSubbed ? PRIMARY_COLOR : ACTIVE_COLOR}
+        onPress={() => {
+          if (isSubbed) {
+            userUnsub(user.uuid).then(_ => {
+              setIsSubbed(false);
+              profileStore.currentUser?.removeSub(user.uuid);
+            });
+          } else {
+            userSub(user.uuid).then(_ => {
+              setIsSubbed(true);
+              profileStore.currentUser?.addSub({
+                uuid: user.uuid,
+                name: user.name,
+                is_subbed: true
+              });
+            });
+          }
+        }}>
+        <RobotoText fontSize={14} color="#ffffff">
+          {isSubbed ? 'Отписаться' : 'Подписаться'}
+        </RobotoText>
+      </Button>
+    );
+  },
+);
 
 interface SubProps {
   sub: Subscription
