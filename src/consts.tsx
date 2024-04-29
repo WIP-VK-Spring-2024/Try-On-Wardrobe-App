@@ -7,6 +7,7 @@ export const ACTIVE_COLOR = '#9C6644';
 export const BASE_COLOR = '#F0F0F0';
 export const HEADER_COLOR = '#FFFFFF';
 export const HEADER_ICON_COLOR = "#000000";
+export const EXTRA_COLOR = "#dc0073";
 
 export const TEXT_COLOR = '#000000';
 export const FOOTER_COLOR = HEADER_COLOR;

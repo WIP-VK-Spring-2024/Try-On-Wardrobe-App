@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box,  View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
+import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, EXTRA_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
@@ -21,6 +21,7 @@ import WinterIcon from '../../assets/icons/seasons/winter.svg';
 import SpringIcon from '../../assets/icons/seasons/spring.svg';
 import SummerIcon from '../../assets/icons/seasons/summer.svg';
 import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
+import HangerIcon from '../../assets/icons/hanger.svg'
 
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
@@ -28,6 +29,9 @@ import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
+import { tryOnScreenGarmentSelectionStore } from '../store';
+
+const labelFontSize = 12;
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -167,7 +171,8 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         return ACTIVE_COLOR;
       }
   
-      return PRIMARY_COLOR;
+      return ACTIVE_COLOR+'44';
+      // return PRIMARY_COLOR;
     }
   
     const seasonIconProps = (season: Season) => ({
@@ -209,59 +214,67 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         flexDirection='row'
         justifyContent='space-between'
       >
-        <CustomSelect
-          width="49%"
-          items={garmentStore.types}
-          selectedItem={garment.type?.name}
-          onChange={(value) => {
-            const type = garmentStore.getTypeByUUID(value);
+        <View w="49%">
+          <RobotoText fontSize={labelFontSize}>Категория</RobotoText>
+          <CustomSelect
+            items={garmentStore.types}
+            selectedItem={garment.type?.name}
+            onChange={(value) => {
+              const type = garmentStore.getTypeByUUID(value);
 
-            const oldType = garment.type;
+              const oldType = garment.type;
 
-            if (type !== undefined) {
-              garment.setType(type);
+              if (type !== undefined) {
+                garment.setType(type);
 
-              if (type !== oldType) {
-                garment.setSubtype(undefined);
+                if (type !== oldType) {
+                  garment.setSubtype(undefined);
+                }
               }
-            }
-          }}
-          placeholder='Тип'
-        />
-        <CustomSelect
-          width="49%"
-          items={garmentStore.getAllSubtypes(garment.type)}
-          selectedItem={garment.subtype?.name}
-          onChange={(value) => {
-            const subtype = garmentStore.getSubTypeByUUID(value);
+            }}
+            placeholder='Категория'
+          />
+        </View>
+        
+        <View w="49%">
+          <RobotoText fontSize={labelFontSize}>Подкатегория</RobotoText>
+          <CustomSelect
+            items={garmentStore.getAllSubtypes(garment.type)}
+            selectedItem={garment.subtype?.name}
+            onChange={(value) => {
+              const subtype = garmentStore.getSubTypeByUUID(value);
 
-            if (subtype !== undefined) {
-              garment.setSubtype(subtype);
-            }
-          }}
-          placeholder='Подтип'
-          disabled={garment.type === undefined}
-        />
+              if (subtype !== undefined) {
+                garment.setSubtype(subtype);
+              }
+            }}
+            placeholder='Подкатегория'
+            disabled={garment.type === undefined}
+          />
+        </View>
       </Box>
     )
   });
 
   const GarmentStyleSelector = observer(() => {
     return (
-      <CustomSelect
-        items={garmentStore.styles}
-        selectedItem={garment.style?.name}
-        onChange={value => {
-          const style = garmentStore.getStyleByUUID(value);
+      <View>
+        <RobotoText fontSize={labelFontSize}>Стиль</RobotoText>
+        <CustomSelect
+          items={garmentStore.styles}
+          selectedItem={garment.style?.name}
+          onChange={value => {
+            const style = garmentStore.getStyleByUUID(value);
 
-          if (style !== undefined) {
-            garment.setStyle(style);
-          }
-        }}
-        placeholder='Стиль'
-      />
-    )
-  })
+            if (style !== undefined) {
+              garment.setStyle(style);
+            }
+          }}
+          placeholder="Стиль"
+        />
+      </View>
+    );
+  });
 
   const Tag = observer((props: {name: string, isEditable: boolean}) => {
     return (
@@ -348,24 +361,46 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     )
   });
 
+  const footer = (
+    <View alignItems="center" gap={10}>
+      <Button
+        borderRadius={10}
+        bgColor={EXTRA_COLOR}
+        onPress={() => {
+          tryOnScreenGarmentSelectionStore.select(props.route.params.garment);
+          props.navigation.navigate('TryOn/Person');
+        }}>
+        <View flexDirection='row' alignItems='center' gap={5}>
+          <HangerIcon width={20} height={20}/>
+          <RobotoText fontSize={18} color="#ffffff">
+            Примерить
+          </RobotoText>
+        </View>
+      </Button>
+      <ButtonFooter text="Сохранить" onPress={saveChanges} />
+    </View>
+  );
+
   return (
-    <BaseScreen 
+    <BaseScreen
       navigation={props.navigation}
-      header={<GarmentHeader route={props.route} navigation={props.navigation} name={garment.name}/>}
-      footer={
-        <ButtonFooter text='Сохранить' onPress={saveChanges}/>
+      header={
+        <GarmentHeader
+          route={props.route}
+          navigation={props.navigation}
+          name={garment.name}
+        />
       }
-    >
+      footer={footer}>
       <View
-        display="flex" 
-        flexDirection='column' 
+        display="flex"
+        flexDirection="column"
         gap={20}
-        alignContent='center'
+        alignContent="center"
         marginLeft={20}
         marginRight={20}
-        marginBottom={100}
-      >
-        <GarmentImage garment={garment}/>
+        marginBottom={100}>
+        <GarmentImage garment={garment} />
 
         <UpdateableTextInput
           text={garment.name}
@@ -374,11 +409,11 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           setInEditing={setInEditing}
         />
 
-        <GarmentSeasonIcons/>
+        <GarmentSeasonIcons />
         <GarmentTypeSelector />
         <GarmentStyleSelector />
 
-        <GarmentTagBlock 
+        <GarmentTagBlock
           tagInputValue={tagInputValue}
           setTagInputValue={setTagInputValue}
         />

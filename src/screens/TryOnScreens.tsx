@@ -26,7 +26,6 @@ import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
 import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
 import { PRIMARY_COLOR } from "../consts";
-import { appState } from "../stores/AppState";
 import { deleteUserPhoto } from "../requests/user_photo"
 import { useFocusEffect } from "@react-navigation/native";
 import { NoClothesMessage } from "../components/NoClothesMessage";
@@ -44,12 +43,12 @@ const tryOnStepFontSize = 12
 const tryOnHeaderFontSize = 15
 
 export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
-  useEffect(() => {
-      return () => tryOnScreenGarmentSelectionStore.clearSelectedItems();
-      }, [navigation]);
+  useFocusEffect(React.useCallback(() => {
+    tryOnScreenGarmentSelectionStore.clearSelectedItems();
+  }, []))
   
   const [infoShown, setInfoShown] = useState(false);
-
+    
   const tooltip = (
     <Tooltip
       isOpen={infoShown}
@@ -90,7 +89,7 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
 
   const footer =
     tryOnScreenGarmentSelectionStore.selectedItems.length > 0 ? (
-    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person')}>
+    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person', {showStep: true})}>
       {tooltip}
     </ButtonFooter>
   ) : (
@@ -122,8 +121,9 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
 });
 
 export const PersonSelectionScreen = observer(
-  ({ navigation }: { navigation: any }) => {
+  ({ navigation, route }: { navigation: any, route: any }) => {
     const [infoShown, setInfoShown] = useState(false);
+
     useFocusEffect(React.useCallback(() => {
       userPhotoSelectionStore.unselect();
     }, []))
@@ -165,7 +165,7 @@ export const PersonSelectionScreen = observer(
         navigation={navigation}
         rightMenu={rightMenu}
       >
-        <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
+        {route.params?.showStep && <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>}
         <RobotoText fontSize={tryOnHeaderFontSize}>Выберите своё фото</RobotoText>
       </BackHeader>
     );
