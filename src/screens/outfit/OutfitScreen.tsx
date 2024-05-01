@@ -3,16 +3,17 @@ import { observer } from "mobx-react-lite";
 import { BaseScreen } from '../BaseScreen';
 import { appState } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
-import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
-import { RobotoText, DeleteMenu, UpdateableText } from "../../components/common";
+import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View, HStack } from "@gluestack-ui/themed";
+import { RobotoText, DeleteMenu } from "../../components/common";
 import { getImageSource } from "../../utils";
 import { Outfit, OutfitItem } from "../../stores/OutfitStore";
 
 import { BackHeader } from "../../components/Header";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR, WINDOW_WIDTH } from "../../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR } from "../../consts";
 import { StackActions } from "@react-navigation/native";
 import { deleteOutfit, updateOutfit } from "../../requests/outfit";
 import DotsIcon from '../../../assets/icons/dots-vertical.svg';
+import OutfitIcon from '../../../assets/icons/outfit.svg';
 import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
 import AddBtnIcon from '../../../assets/icons/add-btn.svg';
@@ -22,6 +23,8 @@ import { PrivacyCheckbox } from "../../components/PrivacyCheckbox";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
+
+const iconSize = 25
 
 const TryOnAbleBadge = () => {
   return (
@@ -114,8 +117,9 @@ const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => 
 
 interface HeaderMenuProps {
   onDelete: () => void
-  onTryOn: () => void
 }
+
+type Status = 'outfit' | 'try-on'
 
 const HeaderMenu = (props: HeaderMenuProps) => {
   return (
@@ -124,18 +128,14 @@ const HeaderMenu = (props: HeaderMenuProps) => {
       trigger={({ ...triggerProps }) => {
         return (
           <Pressable {...triggerProps}>
-              <DotsIcon width={25} height={25}/>
+              <DotsIcon width={iconSize} height={iconSize}/>
           </Pressable>
         )
       }}
     >
-      <MenuItem key="TryOn" textValue="TryOn" gap={10} onPress={props.onTryOn}>
-        <HangerIcon width={25} height={25} fill="#000000"/>
-        <RobotoText>примерить</RobotoText>
-      </MenuItem>
       <MenuItem key="Delete" textValue="Delete" gap={10} onPress={props.onDelete}>
-        <TrashIcon width={25} height={25}/>
-        <RobotoText>удалить</RobotoText>
+        <TrashIcon width={iconSize} height={iconSize}/>
+        <RobotoText>Удалить</RobotoText>
       </MenuItem>
     </Menu>
   )
@@ -164,10 +164,6 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
               props.navigation.navigate('OutfitSelection');
             }
           }}
-          onTryOn={()=>{
-            // props.navigation.navigate('Result');
-            console.error('Not implemented error');
-          }}
         />
       }
     />
@@ -184,24 +180,58 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       }
     />
   );
+
+  const CarouselFooter = () => (
+    <View alignItems="center" marginTop={5}>
+      <View flexDirection="row" alignItems="center" gap={10}>
+        <Pressable onPress={() => setStatus('outfit')}>
+          <OutfitIcon width={45} height={45} fill={status === 'outfit' ? ACTIVE_COLOR : DISABLED_COLOR} />
+        </Pressable>
+        <Pressable onPress={() => setStatus('try-on')}>
+          <HangerIcon width={35} height={35} stroke={status === 'try-on' ? ACTIVE_COLOR : DISABLED_COLOR} />
+        </Pressable>
+      </View>
+    </View>
+  );
+
   const [inEditing, setInEditing] = useState(false);
+
+  const [status, setStatus] = useState<Status>('outfit');
 
   return (
     <BaseScreen navigation={props.navigation} header={header} footer={footer}>
-      <Pressable
-        onPress={() => props.navigation.navigate('Editor', { outfit: outfit })}>
-        {outfit.image === undefined ? (
-          <View width="100%" height={300} backgroundColor="#fefefe"></View>
-        ) : (
-          <Image
-            source={getImageSource(outfit.image)}
-            w="100%"
-            height={WINDOW_HEIGHT / 2}
-            resizeMode="contain"
-            alt="outfit"
-          />
-        )}
-      </Pressable>
+      {status === 'outfit' ? (
+        <Pressable
+          onPress={() =>
+            props.navigation.navigate('Editor', { outfit: outfit })
+          }>
+          {outfit.image === undefined ? (
+            <View width="100%" height={300} backgroundColor="#fefefe"></View>
+          ) : (
+            <Image
+              source={getImageSource(outfit.image)}
+              w="100%"
+              height={WINDOW_HEIGHT / 2}
+              resizeMode="contain"
+              alt="outfit"
+            />
+          )}
+        </Pressable>
+      ) : (
+        <View height={WINDOW_HEIGHT / 2} alignItems="center" justifyContent="center">
+          {outfit.try_on_result_id === undefined ? (
+            <HStack>
+              <Spinner size="large" color={PRIMARY_COLOR} />
+              <RobotoText>Загрузка...</RobotoText>
+            </HStack>
+          ) : (
+            <></>
+          )}
+        </View>
+      )}
+
+      <CarouselFooter />
+
       <View margin={20} flexDirection="column" gap={20}>
         <UpdateableTextInput
           text={outfit.name}
