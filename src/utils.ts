@@ -2,7 +2,7 @@ import { ImageType } from "./models";
 import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
-import { TryOnResultCard} from "./stores/TryOnStore";
+import { TryOnResult} from "./stores/TryOnStore";
 import { Gender, Privacy, PostData } from "./stores/common";
 import { User } from "./stores/ProfileStore";
 
@@ -98,7 +98,7 @@ interface TryOnResultResponse {
 }
 
 export const convertTryOnResponse = (result: TryOnResultResponse) => {
-  return new TryOnResultCard({
+  return new TryOnResult({
     uuid: result.uuid,
     created_at: result.created_at,
     image: {

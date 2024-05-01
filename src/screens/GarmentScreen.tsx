@@ -8,7 +8,8 @@ import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../compon
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { getImageSource, joinPath } from '../utils';
+import { Fab, FabIcon, FabLabel } from '@gluestack-ui/themed';
+import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
@@ -214,52 +215,46 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         flexDirection='row'
         justifyContent='space-between'
       >
-        <View w="49%">
-          <RobotoText fontSize={labelFontSize}>Категория</RobotoText>
-          <CustomSelect
-            items={garmentStore.types}
-            selectedItem={garment.type?.name}
-            onChange={(value) => {
-              const type = garmentStore.getTypeByUUID(value);
+        <CustomSelect
+          w="49%"
+          items={garmentStore.types}
+          selectedItem={garment.type?.name}
+          onChange={(value) => {
+            const type = garmentStore.getTypeByUUID(value);
 
-              const oldType = garment.type;
+            const oldType = garment.type;
 
-              if (type !== undefined) {
-                garment.setType(type);
+            if (type !== undefined) {
+              garment.setType(type);
 
-                if (type !== oldType) {
-                  garment.setSubtype(undefined);
-                }
+              if (type !== oldType) {
+                garment.setSubtype(undefined);
               }
-            }}
-            placeholder='Категория'
-          />
-        </View>
-        
-        <View w="49%">
-          <RobotoText fontSize={labelFontSize}>Подкатегория</RobotoText>
-          <CustomSelect
-            items={garmentStore.getAllSubtypes(garment.type)}
-            selectedItem={garment.subtype?.name}
-            onChange={(value) => {
-              const subtype = garmentStore.getSubTypeByUUID(value);
+            }
+          }}
+          placeholder='Категория'
+        />
 
-              if (subtype !== undefined) {
-                garment.setSubtype(subtype);
-              }
-            }}
-            placeholder='Подкатегория'
-            disabled={garment.type === undefined}
-          />
-        </View>
+        <CustomSelect
+          w="49%"
+          items={garmentStore.getAllSubtypes(garment.type)}
+          selectedItem={garment.subtype?.name}
+          onChange={(value) => {
+            const subtype = garmentStore.getSubTypeByUUID(value);
+
+            if (subtype !== undefined) {
+              garment.setSubtype(subtype);
+            }
+          }}
+          placeholder='Подкатегория'
+          disabled={garment.type === undefined}
+        />
       </Box>
     )
   });
 
   const GarmentStyleSelector = observer(() => {
     return (
-      <View>
-        <RobotoText fontSize={labelFontSize}>Стиль</RobotoText>
         <CustomSelect
           items={garmentStore.styles}
           selectedItem={garment.style?.name}
@@ -272,7 +267,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           }}
           placeholder="Стиль"
         />
-      </View>
     );
   });
 
@@ -362,26 +356,28 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   });
 
   const footer = (
-    <View alignItems="center" gap={10}>
-      <Button
-        borderRadius={10}
-        bgColor={EXTRA_COLOR}
-        onPress={() => {
-          tryOnScreenGarmentSelectionStore.select(props.route.params.garment);
-          props.navigation.navigate('TryOn/Person');
-        }}>
-        <View flexDirection='row' alignItems='center' gap={5}>
-          <HangerIcon width={20} height={20}/>
-          <RobotoText fontSize={18} color="#ffffff">
-            Примерить
-          </RobotoText>
-        </View>
-      </Button>
-      <ButtonFooter text="Сохранить" onPress={saveChanges} />
-    </View>
+    <ButtonFooter text="Сохранить" onPress={saveChanges} />
   );
 
+  const TryOnButton = observer(() => (
+    <Fab
+      size="sm"
+      placement="bottom right"
+      marginBottom={56}
+      right={10}
+      bgColor={EXTRA_COLOR}
+      gap={5}
+      onPress={() => {
+        tryOnScreenGarmentSelectionStore.select(props.route.params.garment);
+        props.navigation.navigate('TryOn/Person');
+      }}>
+      <HangerIcon width={20} height={20} />
+      <RobotoText color="#ffffff" fontSize={16}>Примерить</RobotoText>
+    </Fab>
+  ));
+
   return (
+    <>
     <BaseScreen
       navigation={props.navigation}
       header={
@@ -418,8 +414,10 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           setTagInputValue={setTagInputValue}
         />
 
-        <CloseAlertDialog />
+        <CloseAlertDialog />        
       </View>
     </BaseScreen>
+    <TryOnButton />
+    </>
   );
 });

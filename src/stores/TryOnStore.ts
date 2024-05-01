@@ -5,7 +5,7 @@ import { GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER, GarmentCard
 import { tryOnScreenGarmentSelectionStore } from '../store';
 import { Rating } from './common'
 
-export interface TryOnResultCardProps {
+export interface TryOnResultProps {
   uuid: string;
   created_at: string;
   image: ImageType;
@@ -14,7 +14,7 @@ export interface TryOnResultCardProps {
   clothes_id: string[];
 }
 
-export class TryOnResultCard {
+export class TryOnResult {
   uuid: string;
   created_at: string;
   image: ImageType;
@@ -22,7 +22,7 @@ export class TryOnResultCard {
   user_image_id: string;
   clothes_id: string[];
 
-  constructor(props: TryOnResultCardProps) {
+  constructor(props: TryOnResultProps) {
     this.uuid = props.uuid;
     this.created_at = props.created_at;
     this.image = props.image;
@@ -48,7 +48,7 @@ export class TryOnResultCard {
 }
 
 export class TryOnStore {
-  results: TryOnResultCard[] = [];
+  results: TryOnResult[] = [];
 
   constructor() {
     makeObservable(this, {
@@ -60,11 +60,11 @@ export class TryOnStore {
     });
   }
 
-  setResults(results: TryOnResultCard[]) {
+  setResults(results: TryOnResult[]) {
     this.results = results;
   }
 
-  addResult(result: TryOnResultCard) {
+  addResult(result: TryOnResult) {
     this.results.unshift(result);
   }
 

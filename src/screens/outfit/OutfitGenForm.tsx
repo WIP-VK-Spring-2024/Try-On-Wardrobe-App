@@ -138,10 +138,6 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             isChecked={useWeather}
             onChange={weather => setUseWeather(weather)}
         />
-        <Divider h="$0.5" marginTop={10} marginBottom={10}/>
-
-        <RobotoText>Теги</RobotoText>
-        <TagCheckboxBlock tagStore={outfitGenFormTagsStore}/>
       </View>
     </BaseScreen>
   )
