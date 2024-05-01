@@ -64,24 +64,13 @@ export const PostScreen = observer((props: PostScreenProps) => {
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
+    postData.updateRatingStatus(status);
+    
     setRatingStatus(status);
 
     const rating = getRatingFromStatus(status);
 
-    setRating(postData.rating + rating);
-
-    const rateBody = {
-      rating: rating
-    }
-
-    ajax.apiPost(`/posts/${postData.uuid}/rate`, {
-      credentials: true,
-      body: JSON.stringify(rateBody)
-    })
-      .then(resp => {
-        console.log(resp);
-      })
-      .catch(reason => console.error(reason));
+    setRating(postData.rating - postData.user_rating + rating);
   }
   
   const [comments, setComments] = useState<PostCommentProps[]>([])
@@ -108,7 +97,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
 
   useEffect(() => {
     console.log(postData.uuid)
-    ajax.apiGet(`/posts/${postData.uuid}/comments?limit=10&since=${(new Date()).toISOString()}`, {
+    ajax.apiGet(`/posts/${postData.uuid}/comments?limit=100&since=${(new Date()).toISOString()}`, {
       credentials: true
     }).then(resp => {
       console.log(resp);

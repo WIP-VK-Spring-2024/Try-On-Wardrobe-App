@@ -15,7 +15,7 @@ import FastImage from "react-native-fast-image";
 import { Image } from "@gluestack-ui/themed";
 import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
-import { PostList } from "../components/Posts";
+import { PostCard, PostList } from "../components/Posts";
 
 
 interface PostResponse {
@@ -26,42 +26,6 @@ interface PostResponse {
   outfit_image: string
   user_name: string
 }
-
-interface PostCardProps {
-  data: PostData
-  onPress: ()=>void
-}
-
-interface PostImageProps {
-  source: ImageSourceType
-}
-
-const PostImage = observer((props: PostImageProps) => {
-  return (
-    <FastImage
-      style={{
-        width: "100%",
-        height: "100%"
-      }}
-      source={{
-        uri: props.source.uri
-      }}
-    />
-  )
-})
-
-const PostCard = observer((props: PostCardProps) => {
-  return (
-    <Pressable
-      bg={BASE_COLOR}
-      onPress={props.onPress}
-      width={(WINDOW_WIDTH - 40) / 3}
-      height={WINDOW_HEIGHT / 3}
-    >
-      <PostImage source={getImageSource(props.data.outfit_image)} />
-    </Pressable>
-  );
-})
 
 interface FeedScreenProps {
   navigation: any
@@ -85,26 +49,27 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
       })
   }
 
-  const renderItem = ((data: ListRenderItemInfo<PostData>) => {
-    const {item} = data;
+  // const renderItem = ((data: ListRenderItemInfo<PostData>) => {
+  //   const {item} = data;
 
-    return (
-      <PostCard
-        data={item}
-        onPress={() => {
-          console.log('item:', item)
-          props.navigation.navigate("Post", {
-            image: item.outfit_image,
-            uuid: item.uuid,
-            user_name: item.user_name,
-            user_rating: item.user_rating,
-            rating: item.rating,
-            user_id: item.user_id,
-          })
-        }}
-      />
-    )
-  })
+  //   return (
+  //     <PostCard
+  //       navigation={props.navigation}
+  //       data={item}
+  //       onPress={() => {
+  //         console.log('item:', item)
+  //         props.navigation.navigate("Post", {
+  //           image: item.outfit_image,
+  //           uuid: item.uuid,
+  //           user_name: item.user_name,
+  //           user_rating: item.user_rating,
+  //           rating: item.rating,
+  //           user_id: item.user_id,
+  //         })
+  //       }}
+  //     />
+  //   )
+  // })
   
   return (
     <View height="100%">
@@ -113,7 +78,6 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
       <PostList 
         fetchData={fetchData}
         navigation={props.navigation}
-        renderItem={renderItem}
       />
       
       <Footer navigation={props.navigation}/>

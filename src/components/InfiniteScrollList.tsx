@@ -9,13 +9,14 @@ import { useFocusEffect } from "@react-navigation/native";
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
 
 interface InfiniteScrollListProps<T> extends Omit<FlatListProps<T>, 'data'> {
+  data: T[]
+  setData: (data: T[])=>void
   fetchData: FetchDataType<T>
 }
 
 export const InfiniteScrollList = observer(
 <T extends {created_at: string}>(props: InfiniteScrollListProps<T>) => {
-
-    const [data, setData] = useState<T[]>([]);
+    // const [data, setData] = useState<T[]>([]);
     
     const limit = 9;
     const [since, setSince] = useState((new Date()).toISOString());
@@ -35,7 +36,7 @@ export const InfiniteScrollList = observer(
             setLastPageReceived(true);
           }
 
-          setData([...data, ...recieved]);
+          props.setData([...props.data, ...recieved]);
         })
         .catch(reason => {
           console.error(reason);
@@ -65,7 +66,7 @@ export const InfiniteScrollList = observer(
       setRefreshing(true);
 
       setSince((new Date()).toISOString());
-      setData([]);
+      props.setData([]);
       setFirstPageRecieved(false);
       setLastPageReceived(false);
 
@@ -89,7 +90,7 @@ export const InfiniteScrollList = observer(
       <FlatList
         {...props}
       
-        data={data}
+        data={props.data}
 
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.8}
