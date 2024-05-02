@@ -40,18 +40,19 @@ export const OutfitGarmentSelectionScreen = observer(
 
     return (
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
+        <TypeFilter
+          typeStore={outfitScreenTypeSelectionStore}
+          subtypeStore={outfitScreenSubtypeSelectionStore}
+        />
         {outfitScreenGarmentSelectionStore.items.length > 0 ? (
-          <>
-            <TypeFilter
-              typeStore={outfitScreenTypeSelectionStore}
-              subtypeStore={outfitScreenSubtypeSelectionStore}
-            />
-            <MultipleSelectionGarmentList
-              store={outfitScreenGarmentSelectionStore}
-            />
-          </>
+          <MultipleSelectionGarmentList
+            store={outfitScreenGarmentSelectionStore}
+          />
         ) : (
-          <NoClothesMessage afterIconText="в главном меню!"/>
+          <NoClothesMessage
+            category={outfitScreenSubtypeSelectionStore.selectedItem?.name || ''}
+            afterIconText="в главном меню!"
+          />
         )}
       </BaseScreen>
     );

@@ -117,25 +117,23 @@ const SignUpTab = observer((props: TabProps) => {
       gender: sex
     };
 
-    ajax.apiPost('/users', {
-      
-      body: JSON.stringify(params)
-    }).then(resp => {
-      console.log(params);
-      resp.json().then(json => {
-        console.log(json);
-        resp.json().then((json: {token: string, user_id: string}) => {
-          console.log(json);
-          appState.login(
-            json.token,
-            json.user_id
-          );
-          props.navigation.navigate('Home');
-        })
+    ajax
+      .apiPost('/users', {
+        body: JSON.stringify(params),
       })
-    }).catch(reason => {
-      console.error(reason);
-    })
+      .then(resp => resp.json())
+      .then(json => {
+        console.log(json);
+
+        appState.login(json.token, json.user_id);
+        profileStore.setUser(convertLoginResponse(json));
+        cacheManager.writeToken();
+
+        props.navigation.navigate('Home');
+      })
+      .catch(reason => {
+        console.error(reason);
+      });
   }
 
   return (

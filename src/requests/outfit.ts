@@ -2,6 +2,7 @@ import { getOutfitImageName } from "../cacheManager/utils";
 import { Outfit, outfitStore } from "../stores/OutfitStore";
 import RNFS from 'react-native-fs';
 import { ajax } from "./common";
+import { userPhotoStore } from "../stores/UserPhotoStore";
 
 const makeFormData = (outfit: Outfit) => {
     const image_p = outfit.image!.uri.split('/');
@@ -101,8 +102,17 @@ export const uploadOutfit = async (outfit: Outfit) => {
                 console.log('outfit upload:', res);
                 outfit.setUUID(res.uuid);
                 outfit.setUpdatedAt(res.updated_at);
-
                 
+                if (userPhotoStore.photos.length > 0) {
+                  ajax.apiPost('/try-on/outfit', {
+                    body: JSON.stringify({
+                      user_image_id: userPhotoStore.photos[0].uuid,
+                      outfit_id: res.uuid,
+                    }),
+                    credentials: true,
+                  });
+                }
+
                 const newName = getOutfitImageName(outfit);
                 const newPath = RNFS.DocumentDirectoryPath + `/images/outfits/${newName}`;
                 

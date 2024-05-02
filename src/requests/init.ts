@@ -90,6 +90,7 @@ export const initStores = () => {
     interface OutfitResponse {
         created_at: string
         updated_at: string
+        try_on_result_id: string
         image: string
         public: boolean
         uuid: string
@@ -128,6 +129,7 @@ export const initStores = () => {
                     type: 'remote',
                     uri: outfit.image
                 },
+                try_on_result_id: outfit.try_on_result_id,
                 items: items,
                 updated_at: outfit.updated_at
             })

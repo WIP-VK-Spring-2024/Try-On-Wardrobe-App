@@ -9,9 +9,6 @@ import { TypeFilter } from "../components/FilterBlock";
 import { garmentScreenGarmentSelectionStore, garmentScreenStyleSelectionStore, garmentScreenSubtypeSelectionStore, garmentScreenTagsSelectionStore, garmentScreenTypeSelectionStore } from "../store";
 import { StaticGarmentList } from "../components/GarmentList";
 import { FilterModal } from "../components/FilterModal";
-import { View } from "@gluestack-ui/themed";
-import { RobotoText } from "../components/common";
-import { ACTIVE_COLOR } from "../consts";
 import { NoClothesMessage } from "../components/NoClothesMessage"
 
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {
@@ -39,16 +36,14 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   return (
     <>
       <BaseScreen navigation={navigation} screen="Home">
+        <TypeFilter
+          typeStore={garmentScreenTypeSelectionStore}
+          subtypeStore={garmentScreenSubtypeSelectionStore}
+        />
         {garmentScreenGarmentSelectionStore.items.length > 0 ? (
-          <>
-            <TypeFilter
-              typeStore={garmentScreenTypeSelectionStore}
-              subtypeStore={garmentScreenSubtypeSelectionStore}
-            />
             <StaticGarmentList navigation={navigation} />
-          </>
         ) : (
-          <NoClothesMessage />
+          <NoClothesMessage category={garmentScreenTypeSelectionStore.selectedItem?.name || ''}/>
         )}
       </BaseScreen>
       <FilterModal

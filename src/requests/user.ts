@@ -31,7 +31,6 @@ export const searchUsers = (query: string, since: string, limit?: number) => {
         .then(json => {
             const users: Subscription[] = json;
             profileStore.appendUsers(users);
-            profileStore.setLastUserName(users.length > 0 ? users[users.length - 1].name : '')
         })
         .catch(error => processNetworkError(error))
 }
@@ -41,7 +40,7 @@ export const getSubs = () => {
         .then(resp => resp.json())
         .then(json => {
             const subs: Subscription[] = json;
-            subs.forEach(sub => sub.isSubbed = true);
+            subs.forEach(sub => sub.is_subbed = true);
             profileStore.currentUser?.setSubs(subs);
         })
         .catch(error => processNetworkError(error))

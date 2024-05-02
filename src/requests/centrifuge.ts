@@ -5,6 +5,8 @@ import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
 import { runInAction } from "mobx";
 import { outfitGenResutlStore, outfitGenUUIDStore } from "../stores/OutfitGenStores";
+import { TryOnResult, tryOnStore } from '../stores/TryOnStore'
+import { outfitStore } from "../stores/OutfitStore";
 
 interface CentrifugeSubscriptionProps {
     connection: Centrifuge
@@ -108,8 +110,18 @@ export const initCentrifuge = async () => {
         connection: centrifuge,
         name: `try-on:user#${appState.userID}`,
         onPublication: ctx => {
-            resultStore.setResultUrl(staticEndpoint + ctx.data.image);
-            resultStore.setResultUUID(ctx.data.uuid);
+            if (ctx.data.outfit_id === undefined) {
+                resultStore.setResultUrl(staticEndpoint + ctx.data.image);
+                resultStore.setResultUUID(ctx.data.uuid);
+            } else {
+                outfitStore.outfits
+                    .find(item => item.uuid === ctx.data.outfit_id)
+                    ?.setTryOnResult(ctx.data.uuid);
+            }
+
+            if (!tryOnStore.results.find(item => item.uuid === ctx.data.uuid)) {
+                tryOnStore.addResult(new TryOnResult(ctx.data));
+            }
         }
     });
 

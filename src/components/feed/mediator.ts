@@ -20,7 +20,7 @@ class Mediator<T, PropsType> {
         this.listeners = this.listeners.filter((x)=> x.id !== id)
     }
 
-    propogate (id: number, newProps: any) {
+    propogate (id: T, newProps: any) {
         this.listeners.forEach((x)=> x.id === id && x.cb(newProps))
     }
 }

@@ -123,13 +123,6 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
   const [tab, setTab] = useState('subs');
 
   useEffect(() => {
-    if (tab === 'all') {
-      profileStore.setLastUserName('');
-    }
-  }, [query]);
-
-  useEffect(() => {
-    profileStore.setLastUserName('');
     profileStore.clearUsers();
     searchUsers('', '');
     setTab('subs');
