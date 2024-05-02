@@ -7,6 +7,7 @@ import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, Men
 import { RobotoText, DeleteMenu } from "../../components/common";
 import { getImageSource } from "../../utils";
 import { Outfit, OutfitItem } from "../../stores/OutfitStore";
+import { tryOnStore } from '../../stores/TryOnStore'
 
 import { BackHeader } from "../../components/Header";
 import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR } from "../../consts";
@@ -225,7 +226,13 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
               <RobotoText>Загрузка...</RobotoText>
             </HStack>
           ) : (
-            <></>
+            <Image
+              source={getImageSource(tryOnStore.results.find(item => item.uuid === outfit.try_on_result_id)?.image || {type: 'local', uri: ''})}
+              w="100%"
+              height={WINDOW_HEIGHT / 2}
+              resizeMode="contain"
+              alt="try-on"
+            />
           )}
         </View>
       )}

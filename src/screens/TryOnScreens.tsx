@@ -232,7 +232,6 @@ const tryOn = (navigation: any) => {
     })
     .then(() => {
       navigation.navigate('Result');
-      resultStore.clearResult();
     })
     .catch(err => console.error(err));
 };
