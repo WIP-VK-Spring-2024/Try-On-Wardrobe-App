@@ -25,4 +25,4 @@ class Mediator<T, PropsType> {
     }
 }
 
-export const feedPropsMediator = new Mediator<string, {status: RatingStatus}>()
+export const feedPropsMediator = new Mediator<string, {status: RatingStatus}>();

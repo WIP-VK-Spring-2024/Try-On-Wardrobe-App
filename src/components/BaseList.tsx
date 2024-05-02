@@ -132,20 +132,22 @@ export const AddItemCard = observer(
         width={CARD_SIZE.width}
         height={CARD_SIZE.height}
         display="flex"
-        flexDirection="row"
         alignItems="center"
         justifyContent="center"
         gap={10}>
         {children ||
-          <>
+          <View
+            flexDirection='column'
+            alignItems='center'
+          >
             <AddBtnIcon
-              width={45}
-              height={45}
+              width={35}
+              height={35}
               fill={ADD_BTN_COLOR}
               stroke={FOOTER_COLOR}
             />
-            <RobotoText fontSize={16}>{text || 'Добавить'}</RobotoText>
-          </>
+            <RobotoText textAlign='center' fontSize={16}>{text || 'Добавить'}</RobotoText>
+          </View>
         }
       </Pressable>
     );

@@ -1,21 +1,13 @@
 import { View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Header } from "../components/Header";
 import { ajax } from "../requests/common";
 import { Footer } from "../components/Footer";
-import { Pressable } from "@gluestack-ui/themed";
-import { BASE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { ImageType } from "../models";
-import { ImageSourceType, getImageSource, convertPostResponse } from "../utils";
-import { FlatList, ImageSourcePropType, ListRenderItem, ListRenderItemInfo } from "react-native";
+import { convertPostResponse } from "../utils";
 import { useFocusEffect } from "@react-navigation/native";
 import { appState } from "../stores/AppState";
-import FastImage from "react-native-fast-image";
-import { Image } from "@gluestack-ui/themed";
-import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
-import { PostData } from "../stores/common"
-import { PostCard, PostList } from "../components/Posts";
+import { PostList } from "../components/Posts";
 
 
 interface PostResponse {
