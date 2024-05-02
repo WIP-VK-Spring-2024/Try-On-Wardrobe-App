@@ -20,6 +20,7 @@ import { AvatarFallbackText } from "@gluestack-ui/themed";
 import { RobotoText } from "./common";
 import { processColorsInProps } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "./feed/RatingBlock";
+import { feedPropsMediator } from "./feed/mediator";
 
 interface PostCardProps {
   navigation: any
@@ -103,8 +104,6 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
     renderItem = ((listData: ListRenderItemInfo<PostData>) => {
       const {item} = listData;
 
-      // console.log(item)
-
       const updateRatingStatus = (status: RatingStatus) => {
         console.log(status)
         const postId = data.findIndex(post => post.uuid === item.uuid);
@@ -138,6 +137,13 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
         setData([...data.slice(0, postId), post, ...data.slice(postId + 1)]);
       }
+
+      feedPropsMediator.subscribe({
+        id: item.uuid,
+        cb: (props: {status: RatingStatus}) => {
+          updateRatingStatus(props.status);
+        }
+      });
     
       return (
         <PostCard
@@ -153,7 +159,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
               rating: item.rating,
               user_id: item.user_id,
 
-              updateRatingStatus: updateRatingStatus,
+              // updateRatingStatus: updateRatingStatus,
             })
           }}
           updateRatingStatus={updateRatingStatus}

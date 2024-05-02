@@ -16,6 +16,7 @@ import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
 
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
+import { feedPropsMediator } from "../components/feed/mediator";
 
 
 interface PostCommentBlockProps {
@@ -64,7 +65,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
-    postData.updateRatingStatus(status);
+    feedPropsMediator.propogate(postData.uuid, {status: status});
     
     setRatingStatus(status);
 
