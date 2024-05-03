@@ -216,6 +216,48 @@ export class Outfit {
     }
 }
 
+export class OutfitEdit extends Outfit {
+    origin: Outfit;
+
+    constructor(origin: Outfit) {
+      super(origin)
+  
+      this.origin = origin;
+      this.clearChanges();
+  
+      makeObservable(this, {
+        origin: observable,
+  
+        setOrigin: action,
+        clearChanges: action,
+        saveChanges: action,
+  
+        hasChanges: computed
+      });
+    }
+  
+    setOrigin(origin: Outfit) {
+      this.origin = origin;
+    }
+  
+    get hasChanges() {
+      return !(
+        this.name === this.origin.name &&
+        this.privacy === this.origin.privacy
+      );
+    }
+  
+    clearChanges() {
+        this.name = this.origin.name;
+        this.privacy = this.origin.privacy;
+    }
+  
+    saveChanges() {
+        this.origin.name = this.name;
+        this.origin.privacy = this.privacy;
+    }
+}
+
 interface OutfitStoreProps {
     outfits?: Outfit[];
 }

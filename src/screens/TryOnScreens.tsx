@@ -124,6 +124,9 @@ export const PersonSelectionScreen = observer(
   ({ navigation, route }: { navigation: any, route: any }) => {
     const [infoShown, setInfoShown] = useState(false);
 
+    const nextScreen = route.params.next || 'Result';
+    const nextScreenParams = route.params.params;
+
     useFocusEffect(React.useCallback(() => {
       userPhotoSelectionStore.unselect();
     }, []))
@@ -173,10 +176,18 @@ export const PersonSelectionScreen = observer(
     return (
       <>
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
-          <PeopleList navigation={navigation} onPress={() => tryOn(navigation)} onItemDelete={(item) => {
-            setDeleteUUID(item.uuid);
-            setDeletionModalShown(true);
-          }} />
+          <PeopleList
+            navigation={navigation}
+            onPress={() =>
+              tryOn(() => {
+                navigation.navigate(nextScreen, nextScreenParams);
+              })
+            }
+            onItemDelete={item => {
+              setDeleteUUID(item.uuid);
+              setDeletionModalShown(true);
+            }}
+          />
         </BaseScreen>
         <FilterModal
           styleSelectionStore={tryOnScreenStyleSelectionStore}
@@ -212,7 +223,7 @@ export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   );
 });
 
-const tryOn = (navigation: any) => {  
+const tryOn = (navigate: () => void) => {  
   const tryOnBody: TryOnRequest = {
     clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
       item => item.uuid,
@@ -230,8 +241,6 @@ const tryOn = (navigation: any) => {
         'Content-Type': 'application/json',
       },
     })
-    .then(() => {
-      navigation.navigate('Result');
-    })
+    .then(navigate)
     .catch(err => console.error(err));
 };

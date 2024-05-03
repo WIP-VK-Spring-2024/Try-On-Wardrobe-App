@@ -2,18 +2,18 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box,  View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, EXTRA_COLOR } from '../consts';
+import { ACTIVE_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, EXTRA_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { Fab, FabIcon, FabLabel } from '@gluestack-ui/themed';
-import { getImageSource } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
+import { TryOnButton } from "../components/TryOnButton"
 import { UpdateableTextInput } from '../components/UpdateableTextInput'
+import { getImageSource } from '../utils'
 
 import HashTagIcon from '../../assets/icons/hashtag.svg';
 import CrossIcon from '../../assets/icons/cross.svg';
@@ -22,7 +22,6 @@ import WinterIcon from '../../assets/icons/seasons/winter.svg';
 import SpringIcon from '../../assets/icons/seasons/spring.svg';
 import SummerIcon from '../../assets/icons/seasons/summer.svg';
 import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
-import HangerIcon from '../../assets/icons/hanger.svg'
 
 import TrashIcon from '../../assets/icons/trash.svg';
 import { deleteGarment } from '../requests/garment';
@@ -30,9 +29,6 @@ import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
-import { tryOnScreenGarmentSelectionStore } from '../store';
-
-const labelFontSize = 12;
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -93,7 +89,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     return props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
-
         e.preventDefault();
       }
     })
@@ -126,7 +121,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     })
       .then(()=>{
         appState.setSuccessMessage('Изменения успешно сохранены');
-        setTimeout(()=>appState.closeSuccessMessage(), 2000);
+        setTimeout(() => appState.closeSuccessMessage(), 2000);
       })
       .catch(res => console.error(res));
   }
@@ -141,7 +136,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         isOpen={showAlertDialog}
         hide={() => setShowAlertDialog(false)}
         onAccept={() => {
-          garment.saveChanges();
+          saveChanges();
           props.navigation.dispatch(StackActions.pop(1));
         }}
         onReject={() => {
@@ -355,69 +350,57 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     )
   });
 
-  const footer = (
-    <ButtonFooter text="Сохранить" onPress={saveChanges} />
-  );
-
-  const TryOnButton = observer(() => (
-    <Fab
-      size="sm"
-      placement="bottom right"
-      marginBottom={56}
-      right={10}
-      bgColor={EXTRA_COLOR}
-      gap={5}
-      onPress={() => {
-        tryOnScreenGarmentSelectionStore.select(props.route.params.garment);
-        props.navigation.navigate('TryOn/Person');
-      }}>
-      <HangerIcon width={20} height={20} />
-      <RobotoText color="#ffffff" fontSize={16}>Примерить</RobotoText>
-    </Fab>
-  ));
+  const footer = garment.hasChanges ? (
+    <ButtonFooter text="Сохранить изменения" onPress={saveChanges} />
+  ) : null;
 
   return (
     <>
-    <BaseScreen
-      navigation={props.navigation}
-      header={
-        <GarmentHeader
-          route={props.route}
-          navigation={props.navigation}
-          name={garment.name}
-        />
-      }
-      footer={footer}>
-      <View
-        display="flex"
-        flexDirection="column"
-        gap={20}
-        alignContent="center"
-        marginLeft={20}
-        marginRight={20}
-        marginBottom={100}>
-        <GarmentImage garment={garment} />
+      <BaseScreen
+        navigation={props.navigation}
+        header={
+          <GarmentHeader
+            route={props.route}
+            navigation={props.navigation}
+            name={garment.name}
+          />
+        }
+        footer={footer}>
+        <View
+          display="flex"
+          flexDirection="column"
+          gap={20}
+          alignContent="center"
+          marginLeft={20}
+          marginRight={20}
+          marginBottom={100}>
+          <GarmentImage garment={garment} />
 
-        <UpdateableTextInput
-          text={garment.name}
-          onUpdate={text => garment.setName(text)}
-          inEditing={inEditing}
-          setInEditing={setInEditing}
-        />
+          <UpdateableTextInput
+            text={garment.name}
+            onUpdate={text => garment.setName(text)}
+            inEditing={inEditing}
+            setInEditing={setInEditing}
+          />
 
-        <GarmentSeasonIcons />
-        <GarmentTypeSelector />
-        <GarmentStyleSelector />
+          <GarmentSeasonIcons />
+          <GarmentTypeSelector />
+          <GarmentStyleSelector />
 
-        <GarmentTagBlock
-          tagInputValue={tagInputValue}
-          setTagInputValue={setTagInputValue}
-        />
+          <GarmentTagBlock
+            tagInputValue={tagInputValue}
+            setTagInputValue={setTagInputValue}
+          />
 
-        <CloseAlertDialog />        
-      </View>
-    </BaseScreen>
-    <TryOnButton />
+          <CloseAlertDialog />
+        </View>
+      </BaseScreen>
+
+      <TryOnButton
+        garments={[props.route.params.garment]}
+        navigation={props.navigation}
+        marginBottom={garment.hasChanges ? 56 : 0}
+      />
     </>
   );
 });
