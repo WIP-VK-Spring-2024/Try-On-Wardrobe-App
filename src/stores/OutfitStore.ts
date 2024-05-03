@@ -11,7 +11,8 @@ interface OutfitItemRectProps {
     width?: number
     height?: number
     angle?: number
-    scale?: number 
+    scale?: number
+    zIndex?: number
 }
 
 export class OutfitItemRect {
@@ -21,6 +22,7 @@ export class OutfitItemRect {
     height: number
     angle: number
     scale: number
+    zIndex: number
 
     halfWidth: number;
     halfHeight: number;
@@ -32,6 +34,7 @@ export class OutfitItemRect {
         this.height = props.height || 0;
         this.angle = props.angle || 0;
         this.scale = props.scale || 1;
+        this.zIndex = props.zIndex || 0;
 
         this.halfWidth = this.width / 2;
         this.halfHeight = this.height / 2;
@@ -44,7 +47,8 @@ export class OutfitItemRect {
             angle: this.angle,
             width: this.width,
             height: this.height,
-            scale: this.scale,     
+            scale: this.scale,  
+            zIndex: this.zIndex,
         }
     }
 

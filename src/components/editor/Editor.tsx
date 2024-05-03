@@ -7,6 +7,7 @@ import {
   vec,
   Points,
   SkiaDomView,
+  SkImage,
 } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
@@ -20,14 +21,17 @@ import { GestureDetectorView } from "./GestureDetectorView";
 import { EditorMenu } from "./EditorMenu";
 import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen";
 import { Outfit } from "../../stores/OutfitStore";
+import { EditorItemList } from "./EditorItemsList";
 
 interface OutfitEditorProps {
   positions: SharedValue<GarmentRect[]>
+  images: SharedValue<(SkImage | undefined)[]>
+
   canvasRef: React.RefObject<SkiaDomView>
   outfit: Outfit
 }
 
-export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEditorProps) => {
+export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: OutfitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);
@@ -389,6 +393,22 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
       activeId.value = undefined;
     })
 
+  const sortedPositions = useDerivedValue(() => {
+    const copy = positions.value.map((pos, i) => ({...pos, index: i}));
+
+    copy.sort((a, b) => a.zIndex - b.zIndex);
+
+    console.log('resort', copy.map(i => i.index))
+
+    return copy;
+  })
+
+  const updateZIndex = (id: number, zIndex: number) => {
+    const newPositions = [...positions.value];
+    newPositions[id].zIndex = zIndex;
+    positions.value = newPositions;
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}
@@ -401,7 +421,7 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
       >
         <Canvas style={styles.container} ref={canvasRef}>
           <Fill color="white" />
-          {
+          {/* {
             positions.value.map((_, i) => (
               <EditorItem 
                 key={i} 
@@ -411,7 +431,11 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
                 // skImage={positions.value[i].skImage}
               />
             ))
-          }
+          } */}
+          <EditorItemList
+            positions={sortedPositions}
+            images={images}
+          />
 
           <Group
             transform={activeTranforms}
@@ -457,7 +481,12 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
         </GestureDetector>
       </View>
 
-      <EditorMenu selectedId={activeId} outfit={outfit}/>
+      <EditorMenu 
+        selectedId={activeId}
+        outfit={outfit}
+        positions={positions}
+        updateZIndex={updateZIndex}
+      />
     </View>
   );
 });
