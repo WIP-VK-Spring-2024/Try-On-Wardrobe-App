@@ -75,7 +75,6 @@ export const initCentrifuge = async () => {
             const tags = ctx.data.classification.tags;
             const seasons = ctx.data.classification.seasons;
             
-            
             runInAction(() => {
                 garment.image = {
                     type: 'remote',
