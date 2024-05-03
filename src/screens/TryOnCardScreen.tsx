@@ -78,7 +78,7 @@ export const TryOnCardScreen = observer((props: {route: any, navigation: any}) =
     />
   );
 
-  const deleteTryOnResult = (uuid: string) => ajax.apiDelete(`/try-on/${uuid}`)
+  const deleteTryOnResult = (uuid: string) => ajax.apiDelete(`/try-on/${uuid}`, {credentials: true})
           .then(_ => {
             tryOnStore.removeResult(uuid);
             props.navigation.dispatch(StackActions.pop(1));
