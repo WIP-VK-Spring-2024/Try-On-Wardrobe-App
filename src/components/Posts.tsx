@@ -2,18 +2,18 @@
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { Pressable, View } from "@gluestack-ui/themed";
-import { ImageSourceType, getImageSource, convertPostResponse } from "../utils";
+import { ImageSourceType, getImageSource, getOptionalImageSource } from "../utils";
 import { BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
 import {ListRenderItemInfo } from "react-native";
 import FastImage from "react-native-fast-image";
 import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
-import { Avatar } from "@gluestack-ui/themed";
-import { AvatarFallbackText } from "@gluestack-ui/themed";
 import { RobotoText } from "./common";
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "./feed/RatingBlock";
 import { feedPropsMediator } from "./feed/mediator";
 import { ajax } from "../requests/common";
+import { Avatar } from "./Avatar";
+import { profileStore } from "../stores/ProfileStore";
 
 interface PostCardProps {
   navigation: any
@@ -48,30 +48,34 @@ export const PostCard = observer((props: PostCardProps) => {
       width={(WINDOW_WIDTH - 40) / 3}
       height={WINDOW_HEIGHT / 3}
       flexDirection="column"
-      backgroundColor="white"
-    >
+      backgroundColor="white">
       <Pressable
         flexDirection="row"
         justifyContent="center"
         alignItems="center"
         gap={10}
         onPress={() => {
-          props.navigation.navigate('OtherProfile', {user: {
-            name: props.data.user_name,
-            uuid: props.data.user_id
-          }})
-        }}
-      >
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="xs">
-          <AvatarFallbackText>{props.data.user_name}</AvatarFallbackText>
-        </Avatar>
+          props.data.user_id != profileStore.currentUser?.uuid &&
+            props.navigation.navigate('OtherProfile', {
+              user: {
+                name: props.data.user_name,
+                uuid: props.data.user_id,
+                is_subbed: props.data.is_subbed,
+                avatar: props.data.user_image,
+              },
+            });
+        }}>
 
-        <RobotoText fontWeight='bold'>{props.data.user_name}</RobotoText>
+        <Avatar
+          size="xs"
+          name={props.data.user_name}
+          source={getOptionalImageSource(props.data.user_image)}
+        />
+
+        <RobotoText fontWeight="bold">{props.data.user_name}</RobotoText>
       </Pressable>
-      
-      <View
-        flex={1}
-      >
+
+      <View flex={1}>
         <PostImage source={getImageSource(props.data.outfit_image)} />
       </View>
 

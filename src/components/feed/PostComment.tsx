@@ -1,36 +1,25 @@
-import { Avatar, Divider, View } from "@gluestack-ui/themed";
+import { View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import { ACTIVE_COLOR, PRIMARY_COLOR } from "../../consts";
-import { AvatarFallbackText } from "@gluestack-ui/themed";
 import { RobotoText } from "../common";
 import { Pressable } from "@gluestack-ui/themed";
+import { getImageSource, getOptionalImageSource } from "../../utils"
 
-
-import ProfileIcon from '../../../assets/icons/profile.svg';
 import ReplyIcon from '../../../assets/icons/reply.svg';
 import { RatingBlock, RatingBlockProps, RatingStatus, getRatingFromStatus } from "./RatingBlock";
 import { ajax } from "../../requests/common";
+import { Avatar } from "../Avatar";
+import { ImageType } from "../../models";
 
 
 interface PostCommentAvatarColumnProps {
   authorName: string
+  authorAvatar?: ImageType
 }
-
-const PostCommentAvatarColumn = observer((props: PostCommentAvatarColumnProps) => {
-  return (
-    <View
-      marginTop={10}
-    >
-      <Avatar bg={PRIMARY_COLOR} borderRadius="$full">
-        <AvatarFallbackText>{props.authorName}</AvatarFallbackText>
-      </Avatar>
-    </View>
-  )
-})
 
 interface PostCommentContentColumnProps {
   authorName: string
+  authorAvatar?: ImageType
   authorUUID: string
   text: string
   navigation: any
@@ -52,13 +41,13 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
         onPress={() => {
           props.navigation.navigate('OtherProfile', {user: {
             name: props.authorName,
-            uuid: props.authorUUID
+            uuid: props.authorUUID,
+            avatar: props.authorAvatar,
           }})
         }}
       >
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
-          <AvatarFallbackText>{props.authorName}</AvatarFallbackText>
-        </Avatar>
+        <Avatar size="sm" name={props.authorName} source={getOptionalImageSource(props.authorAvatar)}/>
+
         <RobotoText
           w="100%"
           fontSize={18}
@@ -178,15 +167,15 @@ export const PostComment = observer((props: PostCommentFullProps) => {
         flexDirection="row"
         gap={5}
       >
-        {/* <PostCommentAvatarColumn authorName={props.authorName}/> */}
         <PostCommentContentColumn 
+          authorAvatar={props.authorAvatar}
           authorName={props.authorName}
           authorUUID={props.authorUUID}
           text={props.text}
           navigation={props.navigation}
         />
       </View>
-      {/* <Divider h="$0.5" marginTop={5} marginBottom={5}/> */}
+      
       <PostCommentFooter
         rating={rating}
         status={ratingStatus}

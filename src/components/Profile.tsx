@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { profileStore, Subscription, User } from "../stores/ProfileStore";
+import React from "react";
+import { profileStore, Subscription } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
+import { getOptionalImageSource } from "../utils";
 import {
-  Avatar,
-  AvatarFallbackText,
   View,
   Pressable,
   ChevronLeftIcon,
@@ -14,6 +13,7 @@ import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
 import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
 import { userUnsub, userSub } from "../requests/user"
+import { Avatar } from "./Avatar";
 
 export const BackButton = (props: {navigation: any, flex?: number}) => {
   const onBackPress = () => props.navigation.dispatch(StackActions.pop(1))
@@ -29,8 +29,6 @@ export const BackButton = (props: {navigation: any, flex?: number}) => {
     </Pressable>
   );
 };
-
-
 
 interface SubscribeButtonProps {
   isSubbed: boolean
@@ -57,6 +55,7 @@ export const SubscribeButton = observer(
               profileStore.currentUser?.addSub({
                 uuid: user.uuid,
                 name: user.name,
+                avatar: user.avatar,
                 is_subbed: true
               });
             });
@@ -82,9 +81,7 @@ export const Sub = observer(({sub, navigation, rowSize}: SubProps) => {
       alignItems="center"
       w={`${100 / rowSize}%`}
       onPress={() => navigation.navigate('OtherProfile', {user: sub})}>
-      <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="md">
-        <AvatarFallbackText>{sub.name}</AvatarFallbackText>
-      </Avatar>
+      <Avatar size="md" name={sub.name} source={getOptionalImageSource(sub.avatar)}/>
       <RobotoText numberOfLines={1}>{sub.name}</RobotoText>
     </Pressable>
   );

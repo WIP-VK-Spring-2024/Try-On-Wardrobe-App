@@ -1,6 +1,7 @@
 import { makeObservable, observable, action } from "mobx"
 import { Gender, Privacy } from "./common"
 import { Outfit } from "./OutfitStore"
+import { ImageType } from "../models"
 
 export interface UserProps {
     name: string
@@ -8,6 +9,7 @@ export interface UserProps {
     uuid: string
     gender: Gender
     privacy: Privacy
+    avatar?: ImageType
     subs?: Subscription[]
 }
 
@@ -15,6 +17,7 @@ export class User {
     name: string
     email: string
     uuid: string
+    avatar?: ImageType
     gender: Gender
     privacy: Privacy
     subs: Subscription[]
@@ -23,6 +26,7 @@ export class User {
         this.name = props.name;
         this.email = props.email;
         this.uuid = props.uuid;
+        this.avatar = props.avatar;
         this.gender = props.gender;
         this.privacy = props.privacy;
         this.subs = props.subs || [];
@@ -31,12 +35,14 @@ export class User {
             name: observable,
             email: observable,
             gender: observable,
+            avatar: observable,
             privacy: observable,
             subs: observable,
 
             setPrivacy: action,
             setName: action,
             setGender: action,
+            setAvatar: action,
             setSubs: action,
             addSub: action,
             removeSub: action,
@@ -49,6 +55,10 @@ export class User {
 
     setGender(gender: Gender) {
         this.gender = gender;
+    }
+
+    setAvatar(avatar: ImageType) {
+        this.avatar = avatar;
     }
 
     setName(name: string) {
@@ -73,6 +83,7 @@ export class User {
 
 export interface Subscription {
     name: string
+    avatar?: ImageType
     uuid: string
     is_subbed: boolean
 }
