@@ -2,6 +2,9 @@ import { profileStore, Subscription } from "../stores/ProfileStore"
 import { processNetworkError } from "../stores/AppState"
 import { ajax } from "./common"
 import { Gender, Privacy } from "../stores/common"
+import { ImageOrVideo } from "react-native-image-crop-picker"
+import { feedAvatarMediator } from "../components/feed/mediator"
+import { ImageType } from "../models"
 
 export const updateUserSettings = (gender: Gender, privacy: Privacy) => {
     const formData = new FormData();
@@ -15,6 +18,34 @@ export const updateUserSettings = (gender: Gender, privacy: Privacy) => {
     .then(_ => {
         profileStore.currentUser?.setGender(gender);
         profileStore.currentUser?.setPrivacy(privacy);
+    })
+    .catch(error => processNetworkError(error))
+}
+
+export const updateUserImage = (image: ImageOrVideo) => {
+    if (profileStore.currentUser === undefined) {
+        return;
+    }
+
+    const formData = new FormData();
+    const image_p = image.path.split('/');
+    const image_name = image_p[image_p.length - 1];
+
+    formData.append('img', {
+        type: "image/png",
+        name: image_name,
+        uri: image.path
+    });
+
+    ajax.apiPut(`/users/${profileStore.currentUser!.uuid}`, {
+        credentials: true,
+        body: formData,
+    })
+    .then(resp => resp.json())
+    .then(json => {
+        const newAvatar: ImageType = {uri: json.avatar, type: 'remote'};
+        profileStore.currentUser!.setAvatar(newAvatar);
+        feedAvatarMediator.propagate(profileStore.currentUser!.uuid, {avatar: newAvatar});
     })
     .catch(error => processNetworkError(error))
 }

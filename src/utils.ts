@@ -15,6 +15,7 @@ export interface LoginSuccessResponse {
     user_id: string
     user_name: string
     email: string
+    avatar?: string
     privacy: Privacy
     gender: Gender
   } 
@@ -29,6 +30,10 @@ export const getImageSource = (image: ImageType) => {
       uri: staticEndpoint + image.uri
     }
   }
+}
+
+export const getOptionalImageSource = (image?: ImageType) => {
+  return image === undefined ? image : getImageSource(image);
 }
 
 export const deepEqualArr = (arr1: any[], arr2: any[]) => {
@@ -54,12 +59,20 @@ export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
         privacy: resp.privacy,
         email: resp.email,
         gender: resp.gender,
+        avatar: {
+            type: 'remote',
+            uri: resp.avatar || '',
+        },
     })
 }
 
 export const convertPostResponse = (item: any): PostData => {
     return {
       ...item,
+      user_image: item.user_image ? {
+        type: 'remote',
+        uri: item.user_image,
+      } : undefined,
       outfit_image: {
         type: 'remote',
         uri: item.outfit_image,

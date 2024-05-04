@@ -2,16 +2,16 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
-import { ACTIVE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { Avatar, Input, InputField, View } from "@gluestack-ui/themed";
-import { AvatarFallbackText } from "@gluestack-ui/themed";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
 
-import { getImageSource } from "../utils";
-import { Image } from "@gluestack-ui/themed";
+import { Avatar } from "../components/Avatar"
+
+import { getImageSource, getOptionalImageSource } from "../utils";
 import { BackHeader } from "../components/Header";
-import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
+import { PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
 import { PostData } from "../stores/common"
@@ -41,6 +41,7 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
           <PostCommentTree
             key={i}
             uuid={comment.uuid}
+            authorAvatar={comment.authorAvatar}
             authorName={comment.authorName}
             authorUUID={comment.authorUUID}
             text={comment.text}
@@ -73,7 +74,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
-    feedPropsMediator.propogate(postData.uuid, {status: status});
+    feedPropsMediator.propagate(postData.uuid, {status: status});
     
     setRatingStatus(status);
 
@@ -175,15 +176,14 @@ export const PostScreen = observer((props: PostScreenProps) => {
                     name: postData.user_name,
                     uuid: postData.user_id,
                     is_subbed: isSubbed,
+                    avatar: postData.user_image,
                   },
                 });
               } else {
                 props.navigation.navigate('Profile');
               }
             }}>
-            <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
-              <AvatarFallbackText>{postData.user_name}</AvatarFallbackText>
-            </Avatar>
+            <Avatar size="sm" name={postData.user_name} source={getOptionalImageSource(postData.user_image)}/>
 
             <RobotoText fontWeight="bold">{postData.user_name}</RobotoText>
           </Pressable>
@@ -194,6 +194,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
               setIsSubbed={setIsSubbed}
               user={{
                 name: postData.user_name,
+                avatar: postData.user_image,
                 uuid: postData.user_id,
                 is_subbed: postData.is_subbed,
               }}

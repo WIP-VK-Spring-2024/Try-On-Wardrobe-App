@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { profileStore, Subscription, User } from "../stores/ProfileStore";
+import React, { useState } from "react";
+import { Subscription, User } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
-import {
-  Avatar,
-  AvatarFallbackText,
-  View,
-  Button,
-} from '@gluestack-ui/themed';
+import { View } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
-import { PRIMARY_COLOR } from "../consts";
 import { BackButton, SubscribeButton } from "../components/Profile"
 import { FetchDataType } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
 import { ajax } from "../requests/common"
-import { convertPostResponse } from "../utils";
+import { convertPostResponse, getOptionalImageSource } from "../utils";
 import { PostList } from "../components/Posts";
+import { Avatar } from "../components/Avatar";
 
 interface OtherUserHeaderProps {
   navigation: any
@@ -29,9 +24,7 @@ const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
       <BackButton navigation={navigation} flex={2} />
 
       <View flexDirection="row" alignItems="center" gap={20} flex={9}>
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
-          <AvatarFallbackText>{user.name}</AvatarFallbackText>
-        </Avatar>
+        <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
         <RobotoText fontSize={18} numberOfLines={1}>
           {user.name}
         </RobotoText>
