@@ -22,6 +22,7 @@ import { EditorMenu } from "./EditorMenu";
 import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen";
 import { Outfit } from "../../stores/OutfitStore";
 import { EditorItemList } from "./EditorItemsList";
+import { GestureDetectorViewList } from "./GestureDetectorViewList";
 
 interface OutfitEditorProps {
   positions: SharedValue<GarmentRect[]>
@@ -398,8 +399,6 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
     copy.sort((a, b) => a.zIndex - b.zIndex);
 
-    console.log('resort', copy.map(i => i.index))
-
     return copy;
   })
 
@@ -421,17 +420,6 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
       >
         <Canvas style={styles.container} ref={canvasRef}>
           <Fill color="white" />
-          {/* {
-            positions.value.map((_, i) => (
-              <EditorItem 
-                key={i} 
-                id={i} 
-                positions={positions}
-                image={positions.value[i].image}
-                // skImage={positions.value[i].skImage}
-              />
-            ))
-          } */}
           <EditorItemList
             positions={sortedPositions}
             images={images}
@@ -464,13 +452,18 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
           }}/>
         </GestureDetector>
 
-        {
+        {/* {
           positions.value.map((_, i) => {
             return (
               <GestureDetectorView key={i} gesture={getPanGesture(i)} positions={positions} id={i}/>
             )
           })
-        }
+        } */}
+
+        <GestureDetectorViewList
+          positions={sortedPositions}
+          getPanGesture={getPanGesture}
+        />
 
         <GestureDetector gesture={rotateGesture}>
           <Animated.View style={rotateHandleStyle}/>
