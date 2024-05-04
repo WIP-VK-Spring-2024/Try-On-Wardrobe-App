@@ -74,7 +74,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
-    feedPropsMediator.propogate(postData.uuid, {status: status});
+    feedPropsMediator.propagate(postData.uuid, {status: status});
     
     setRatingStatus(status);
 

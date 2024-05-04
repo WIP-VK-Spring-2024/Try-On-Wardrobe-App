@@ -1,6 +1,6 @@
 
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, View } from "@gluestack-ui/themed";
 import { ImageSourceType, getImageSource, getOptionalImageSource } from "../utils";
 import { BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
@@ -10,10 +10,11 @@ import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollL
 import { PostData } from "../stores/common"
 import { RobotoText } from "./common";
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "./feed/RatingBlock";
-import { feedPropsMediator } from "./feed/mediator";
+import { feedAvatarMediator, feedPropsMediator } from "./feed/mediator";
 import { ajax } from "../requests/common";
 import { Avatar } from "./Avatar";
 import { profileStore } from "../stores/ProfileStore";
+import { ImageType } from "../models";
 
 interface PostCardProps {
   navigation: any
@@ -96,13 +97,21 @@ interface PostListProps {
 
 export const PostList = observer(({fetchData, navigation, renderItem}: PostListProps) => {
   const [data, setData] = useState<PostData[]>([]);
+
+  useEffect(() => {
+    return () => {
+      feedAvatarMediator.clear();
+      feedPropsMediator.clear();
+    }
+  }, []);
   
   if (renderItem === undefined) {
     renderItem = ((listData: ListRenderItemInfo<PostData>) => {
       const {item} = listData;
 
       const updateRatingStatus = (status: RatingStatus) => {
-        console.log(status)
+        console.log(status);
+
         const postId = data.findIndex(post => post.uuid === item.uuid);
         if (postId === -1) {
           return;
@@ -119,9 +128,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
         const rateBody = {
           rating: post.rating
-        }
-
-        console.log('rate', rateBody)
+        };
 
         ajax.apiPost(`/posts/${item.uuid}/rate`, {
           credentials: true,
@@ -140,6 +147,24 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
         cb: (props: {status: RatingStatus}) => {
           updateRatingStatus(props.status);
         }
+      });
+
+      const updateAvatar = (avatar: ImageType) => {
+        const postsCopy = data.map(post => {
+          if (post.user_id === item.user_id) {
+            post.user_image = avatar;
+          }
+          return post;
+        });
+
+        setData(postsCopy);
+      };
+
+      feedAvatarMediator.subscribe({
+        id: item.user_id,
+        cb: (props: {avatar: ImageType}) => {
+          updateAvatar(props.avatar);
+        },
       });
     
       return (
