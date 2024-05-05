@@ -91,14 +91,16 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
     <ButtonFooter
       text="Сгенерировать"
       onPress={() => {
+        console.log("Sending prompt:", prompt);
+
         const urlParams = new URLSearchParams({
-            prompt: [prompt, ...outfitGenFormTagsStore.selectedItems].join(', '),
-            amount: "4",
-            use_weather: useWeather.toString(),
+          prompt: [prompt, ...outfitGenFormTagsStore.selectedItems].join(', '),
+          amount: "4",
+          use_weather: useWeather.toString(),
         });
 
         for (const purpose of outfitPurposeStore.selectedItems.map(p => p.name)) {
-            urlParams.append("purposes", purpose)
+          urlParams.append("purposes", purpose)
         }
 
         ajax.apiGet('/outfits/gen?'+urlParams.toString(), {
@@ -138,10 +140,6 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             isChecked={useWeather}
             onChange={weather => setUseWeather(weather)}
         />
-        <Divider h="$0.5" marginTop={10} marginBottom={10}/>
-
-        <RobotoText>Теги</RobotoText>
-        <TagCheckboxBlock tagStore={outfitGenFormTagsStore}/>
       </View>
     </BaseScreen>
   )

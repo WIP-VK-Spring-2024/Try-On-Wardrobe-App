@@ -1,26 +1,20 @@
-import { View } from "@gluestack-ui/themed";
+
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { Header } from "../components/Header";
-import { ajax } from "../requests/common";
-import { Footer } from "../components/Footer";
-import { Pressable } from "@gluestack-ui/themed";
+import { Pressable, View } from "@gluestack-ui/themed";
+import { ImageSourceType, getImageSource, getOptionalImageSource } from "../utils";
 import { BASE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { ImageType } from "../models";
-import { ImageSourceType, getImageSource, convertPostResponse } from "../utils";
-import { FlatList, ImageSourcePropType, ListRenderItem, ListRenderItemInfo } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { appState } from "../stores/AppState";
+import {ListRenderItemInfo } from "react-native";
 import FastImage from "react-native-fast-image";
-import { Image } from "@gluestack-ui/themed";
 import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
-import { Avatar } from "@gluestack-ui/themed";
-import { AvatarFallbackText } from "@gluestack-ui/themed";
 import { RobotoText } from "./common";
-import { processColorsInProps } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "./feed/RatingBlock";
-import { feedPropsMediator } from "./feed/mediator";
+import { feedAvatarMediator, feedPropsMediator } from "./feed/mediator";
+import { ajax } from "../requests/common";
+import { Avatar } from "./Avatar";
+import { profileStore } from "../stores/ProfileStore";
+import { ImageType } from "../models";
 
 interface PostCardProps {
   navigation: any
@@ -55,30 +49,34 @@ export const PostCard = observer((props: PostCardProps) => {
       width={(WINDOW_WIDTH - 40) / 3}
       height={WINDOW_HEIGHT / 3}
       flexDirection="column"
-      backgroundColor="white"
-    >
+      backgroundColor="white">
       <Pressable
         flexDirection="row"
         justifyContent="center"
         alignItems="center"
         gap={10}
         onPress={() => {
-          props.navigation.navigate('OtherProfile', {user: {
-            name: props.data.user_name,
-            uuid: props.data.user_id
-          }})
-        }}
-      >
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="xs">
-          <AvatarFallbackText>{props.data.user_name}</AvatarFallbackText>
-        </Avatar>
+          props.data.user_id != profileStore.currentUser?.uuid &&
+            props.navigation.navigate('OtherProfile', {
+              user: {
+                name: props.data.user_name,
+                uuid: props.data.user_id,
+                is_subbed: props.data.is_subbed,
+                avatar: props.data.user_image,
+              },
+            });
+        }}>
 
-        <RobotoText fontWeight='bold'>{props.data.user_name}</RobotoText>
+        <Avatar
+          size="xs"
+          name={props.data.user_name}
+          source={getOptionalImageSource(props.data.user_image)}
+        />
+
+        <RobotoText fontWeight='bold' numberOfLines={1}>{props.data.user_name}</RobotoText>
       </Pressable>
-      
-      <View
-        flex={1}
-      >
+
+      <View flex={1}>
         <PostImage source={getImageSource(props.data.outfit_image)} />
       </View>
 
@@ -99,13 +97,21 @@ interface PostListProps {
 
 export const PostList = observer(({fetchData, navigation, renderItem}: PostListProps) => {
   const [data, setData] = useState<PostData[]>([]);
+
+  useEffect(() => {
+    return () => {
+      feedAvatarMediator.clear();
+      feedPropsMediator.clear();
+    }
+  }, []);
   
   if (renderItem === undefined) {
     renderItem = ((listData: ListRenderItemInfo<PostData>) => {
       const {item} = listData;
 
       const updateRatingStatus = (status: RatingStatus) => {
-        console.log(status)
+        console.log(status);
+
         const postId = data.findIndex(post => post.uuid === item.uuid);
         if (postId === -1) {
           return;
@@ -122,9 +128,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
         const rateBody = {
           rating: post.rating
-        }
-
-        console.log('rate', rateBody)
+        };
 
         ajax.apiPost(`/posts/${item.uuid}/rate`, {
           credentials: true,
@@ -144,6 +148,24 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
           updateRatingStatus(props.status);
         }
       });
+
+      const updateAvatar = (avatar: ImageType) => {
+        const postsCopy = data.map(post => {
+          if (post.user_id === item.user_id) {
+            post.user_image = avatar;
+          }
+          return post;
+        });
+
+        setData(postsCopy);
+      };
+
+      feedAvatarMediator.subscribe({
+        id: item.user_id,
+        cb: (props: {avatar: ImageType}) => {
+          updateAvatar(props.avatar);
+        },
+      });
     
       return (
         <PostCard
@@ -152,14 +174,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
           data={item}
           onPress={() => {
             navigation.navigate("Post", {
-              image: item.outfit_image,
-              uuid: item.uuid,
-              user_name: item.user_name,
-              user_rating: item.user_rating,
-              rating: item.rating,
-              user_id: item.user_id,
-
-              // updateRatingStatus: updateRatingStatus,
+              ...item
             })
           }}
           updateRatingStatus={updateRatingStatus}

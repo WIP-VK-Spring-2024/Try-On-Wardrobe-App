@@ -6,6 +6,7 @@ import { outfitPurposeStore } from "../stores/OutfitGenStores";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
+import { Privacy } from "../stores/common";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
 import { ajax } from "./common"
 import { getSubs } from "./user";
@@ -32,8 +33,6 @@ export const initStores = () => {
     }).then(async data => {
         return data.json().then(async clothes => {
             await Promise.all([typesRequest, stylesRequest]);
-    
-            // console.log(clothes)
 
             return clothes.map(convertGarmentResponse) as GarmentCard[];
         }).catch(err => {
@@ -55,12 +54,13 @@ export const initStores = () => {
                         return [];
                     });
 
-    Promise.all([localGarments, remoteGarments])
+    const garmentsUpdated = Promise.all([localGarments, remoteGarments])
         .then(([local, remote]) => {
             if (typeof remote !== 'boolean') {
-                cacheManager.updateGarments(local, remote);
-                // garmentStore.setGarments(remote);
+                return cacheManager.updateGarments(local, remote);
             }
+
+            return remote;
     })
 
     ajax.apiGet('/photos', {
@@ -90,10 +90,12 @@ export const initStores = () => {
     interface OutfitResponse {
         created_at: string
         updated_at: string
+        try_on_result_id: string
         image: string
         public: boolean
         uuid: string
         user_id: string
+        privacy: Privacy
         transforms: {
             [uuid: string]: {
                 x: number
@@ -128,8 +130,10 @@ export const initStores = () => {
                     type: 'remote',
                     uri: outfit.image
                 },
+                try_on_result_id: outfit.try_on_result_id,
                 items: items,
-                updated_at: outfit.updated_at
+                updated_at: outfit.updated_at,
+                privacy: outfit.privacy,
             })
         })
 
@@ -147,9 +151,9 @@ export const initStores = () => {
             return [];
         });
 
-    Promise.all([localOutfits, remoteOutfits])
+    const outfitsUpdated = Promise.all([localOutfits, remoteOutfits])
         .then(([local, remote]) => {
-            cacheManager.updateOutfits(local, remote);
+            return cacheManager.updateOutfits(local, remote);
         })
     
     ajax.apiGet('/outfits/purposes', {
@@ -165,4 +169,6 @@ export const initStores = () => {
             outfitPurposeStore.setItems(json);
         }).catch(reason => console.error(reason))
     })
+
+    return Promise.all([garmentsUpdated, outfitsUpdated]);
 }

@@ -26,7 +26,6 @@ import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
 import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
 import { PRIMARY_COLOR } from "../consts";
-import { appState } from "../stores/AppState";
 import { deleteUserPhoto } from "../requests/user_photo"
 import { useFocusEffect } from "@react-navigation/native";
 import { NoClothesMessage } from "../components/NoClothesMessage";
@@ -43,10 +42,10 @@ const tooltipFontSize = 15
 const tryOnStepFontSize = 12
 const tryOnHeaderFontSize = 15
 
-export const GarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
-  useEffect(() => {
-      return () => tryOnScreenGarmentSelectionStore.clearSelectedItems();
-      }, [navigation]);
+export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: any}) => {
+  useFocusEffect(React.useCallback(() => {
+    tryOnScreenGarmentSelectionStore.clearSelectedItems();
+  }, []))
   
   const [infoShown, setInfoShown] = useState(false);
 
@@ -83,51 +82,27 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
       text="Выберите вещи"
       rightMenu={rightMenu}
       fontSize={backHeaderFontSize}>
-      <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
+      <RobotoText fontSize={tryOnStepFontSize}>Шаг 1 из 2</RobotoText>
       <RobotoText fontSize={tryOnHeaderFontSize}>Выберите одежду для примерки</RobotoText>
     </BackHeader>
   );
 
   const footer =
     tryOnScreenGarmentSelectionStore.selectedItems.length > 0 ? (
-      <ButtonFooter
-        onPress={() => {
-          const tryOnBody: TryOnRequest = {
-            clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
-              item => item.uuid,
-            ) as string[],
-            user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
-          };
-
-          console.log(tryOnBody);
-
-          ajax.apiPost('/try-on', {
-            credentials: true,
-            body: JSON.stringify(tryOnBody),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          },
-        ).then(() => {
-          navigation.navigate('Result');
-          resultStore.clearResult();
-        }).catch(err => console.error(err))
-      }}
-    >
-    {tooltip}
-  </ButtonFooter>
-) : (
-  <View w="100%" justifyContent="center">{tooltip}</View>
-);
+    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person', {showStep: true})}>
+      {tooltip}
+    </ButtonFooter>
+  ) : (
+    <View w="100%" justifyContent="center">{tooltip}</View>
+  );
 
   return (
     <BaseScreen navigation={navigation} footer={footer} header={header}>
+      <TypeFilter
+        typeStore={tryOnScreenTypeSelectionStore}
+        subtypeStore={tryOnScreenSubtypeSelectionStore}
+      />
       {tryOnScreenGarmentSelectionStore.items.length > 0 ? (
-        <>
-          <TypeFilter
-            typeStore={tryOnScreenTypeSelectionStore}
-            subtypeStore={tryOnScreenSubtypeSelectionStore}
-          />
           <DisableableSelectionGarmentList
             store={tryOnScreenGarmentSelectionStore}
             typeStore={tryOnScreenTypeSelectionStore}
@@ -135,20 +110,26 @@ export const GarmentSelectionScreen = observer(({navigation}: {navigation: any})
               !tryOnValidationStore.isSelectable(item.type?.name || '')
             }
           />
-        </>
       ) : (
-        <NoClothesMessage afterIconText="в главном меню!" />
+        <NoClothesMessage
+          category={tryOnScreenTypeSelectionStore.selectedItem?.name || ''}
+          afterIconText="в главном меню!"
+        />
       )}
     </BaseScreen>
   );
 });
 
 export const PersonSelectionScreen = observer(
-  ({ navigation }: { navigation: any }) => {
+  ({ navigation, route }: { navigation: any, route: any }) => {
     const [infoShown, setInfoShown] = useState(false);
-    // useFocusEffect(React.useCallback(() => {
-    //   setInfoShown(false);
-    // }, []))
+
+    const nextScreen = route.params.next || 'Result';
+    const nextScreenParams = route.params.params;
+
+    useFocusEffect(React.useCallback(() => {
+      userPhotoSelectionStore.unselect();
+    }, []))
 
     const [deletionModalShown, setDeletionModalShown] = useState(false);
     const [deleteUUID, setDeleteUUID] = useState<string | undefined>(undefined);
@@ -187,7 +168,7 @@ export const PersonSelectionScreen = observer(
         navigation={navigation}
         rightMenu={rightMenu}
       >
-        <RobotoText fontSize={tryOnStepFontSize}>Шаг 1 из 2</RobotoText>
+        {route.params?.showStep && <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>}
         <RobotoText fontSize={tryOnHeaderFontSize}>Выберите своё фото</RobotoText>
       </BackHeader>
     );
@@ -195,10 +176,18 @@ export const PersonSelectionScreen = observer(
     return (
       <>
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
-          <PeopleList navigation={navigation} onItemDelete={(item) => {
-            setDeleteUUID(item.uuid);
-            setDeletionModalShown(true);
-          }} />
+          <PeopleList
+            navigation={navigation}
+            onPress={() =>
+              tryOn(() => {
+                navigation.navigate(nextScreen, nextScreenParams);
+              })
+            }
+            onItemDelete={item => {
+              setDeleteUUID(item.uuid);
+              setDeletionModalShown(true);
+            }}
+          />
         </BaseScreen>
         <FilterModal
           styleSelectionStore={tryOnScreenStyleSelectionStore}
@@ -224,14 +213,34 @@ export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   const header = <Header navigation={navigation} rightMenu={null} />;
 
   return (
-    <>
-      <BaseScreen
-        navigation={navigation}
-        footer={footer}
-        header={header}
-        screen="TryOn">
-        <TryOnResultList navigation={navigation} />
-      </BaseScreen>
-    </>
+    <BaseScreen
+      navigation={navigation}
+      footer={footer}
+      header={header}
+      screen="TryOn">
+      <TryOnResultList navigation={navigation} />
+    </BaseScreen>
   );
 });
+
+const tryOn = (navigate: () => void) => {  
+  const tryOnBody: TryOnRequest = {
+    clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
+      item => item.uuid,
+    ) as string[],
+    user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
+  };
+
+  console.log(tryOnBody);
+
+  ajax
+    .apiPost('/try-on', {
+      credentials: true,
+      body: JSON.stringify(tryOnBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(navigate)
+    .catch(err => console.error(err));
+};

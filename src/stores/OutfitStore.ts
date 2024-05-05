@@ -103,6 +103,7 @@ interface OutfitProps {
     updated_at?: string
     items?: OutfitItem[]
     image?: ImageType
+    try_on_result_id?: string
 }
 
 export class Outfit {
@@ -112,6 +113,7 @@ export class Outfit {
     updated_at: string | undefined
     image: ImageType | undefined
     items: OutfitItem[]
+    try_on_result_id?: string
 
     constructor(props?: OutfitProps) {
         this.uuid = props?.uuid
@@ -120,6 +122,7 @@ export class Outfit {
         this.privacy = props?.privacy || 'public'
         this.name = props?.name || 'Без названия';
         this.items = props?.items || [];
+        this.try_on_result_id = props?.try_on_result_id
 
         makeObservable(this, {
             uuid: observable,
@@ -128,6 +131,7 @@ export class Outfit {
             updated_at: observable,
             image: observable,
             items: observable,
+            try_on_result_id: observable,
 
             setUUID: action,
             setUpdatedAt: action,
@@ -135,6 +139,7 @@ export class Outfit {
             setName: action,
             setPrivacy: action,
             setItems: action,
+            setTryOnResult: action,
             addItem: action,
             addItems: action,
             addGarments: action,
@@ -164,6 +169,10 @@ export class Outfit {
 
     setItems(items: OutfitItem[]) {
         this.items = items;
+    }
+
+    setTryOnResult(try_on_result_id: string) {
+        this.try_on_result_id = try_on_result_id;
     }
 
     addItem(item: OutfitItem) {
@@ -211,6 +220,48 @@ export class Outfit {
     }
 }
 
+export class OutfitEdit extends Outfit {
+    origin: Outfit;
+
+    constructor(origin: Outfit) {
+      super(origin)
+  
+      this.origin = origin;
+      this.clearChanges();
+  
+      makeObservable(this, {
+        origin: observable,
+  
+        setOrigin: action,
+        clearChanges: action,
+        saveChanges: action,
+  
+        hasChanges: computed
+      });
+    }
+  
+    setOrigin(origin: Outfit) {
+      this.origin = origin;
+    }
+  
+    get hasChanges() {
+      return !(
+        this.name === this.origin.name &&
+        this.privacy === this.origin.privacy
+      );
+    }
+  
+    clearChanges() {
+        this.name = this.origin.name;
+        this.privacy = this.origin.privacy;
+    }
+  
+    saveChanges() {
+        this.origin.name = this.name;
+        this.origin.privacy = this.privacy;
+    }
+}
+
 interface OutfitStoreProps {
     outfits?: Outfit[];
 }
@@ -227,6 +278,7 @@ export class OutfitStore {
             setOutfits: action,
             addOutfit: action,
             removeOutfit: action,
+            clear: action,
         })
     }
 
@@ -236,9 +288,9 @@ export class OutfitStore {
 
     addOutfit(outfit?: Outfit) {
         if (outfit === undefined) {
-            this.outfits.push(new Outfit());
+            this.outfits.unshift(new Outfit());
         } else {
-            this.outfits.push(outfit);
+            this.outfits.unshift(outfit);
         }
     }
 
@@ -248,6 +300,10 @@ export class OutfitStore {
 
     getOutfitByUUID(outfitUUID: string) {
         return this.outfits.find(outfit => outfit.uuid === outfitUUID);
+    }
+
+    clear() {
+        this.outfits = [];
     }
 };
 

@@ -94,48 +94,37 @@ interface UpdateableTextProps {
 }
 
 export const UpdateableText = observer((props: PropsWithChildren & UpdateableTextProps & TextProps) => {
-  const [text, setText] = useState(props.text);
+    const [text, setText] = useState(props.text);
 
-  useEffect(() => {
-    // return () => {
-      console.log("updateable cleanup", text);
+    useEffect(() => {
       props.onUpdate(text);
-    // }
-  }, [props.inEditing]);
+    }, [props.inEditing]);
 
-  return (
-    <>
-     {
-        props.inEditing
-        ? 
-        <Input
-          variant="rounded"
-          size="md"
-          w="100%"
-          isDisabled={false}
-          isInvalid={false}
-          isReadOnly={false}
-          {...props}
-        >
-          <InputField 
-            type="text" 
-            value={text}
-            onChangeText={(text) => {
-              console.log("Setting on change", text);
-              setText(text);
-            }}
-            // onBlur={() => props.onUpdate(text)}
-            onEndEditing={() => props.onUpdate(text)}
-          />
-        </Input>
-
-        : <RobotoText fontSize={24} textAlign='center' {...props}>
-            {props.text}
-          </RobotoText>
-     }
-    </>
-  )
-});
+    return props.inEditing ? (
+      <Input
+        variant="rounded"
+        size="md"
+        w="100%"
+        isDisabled={false}
+        isInvalid={false}
+        isReadOnly={false}
+        {...props}>
+        <InputField
+          type="text"
+          value={text}
+          onChangeText={text => {
+            setText(text);
+          }}
+          onEndEditing={() => props.onUpdate(text)}
+        />
+      </Input>
+    ) : (
+      <RobotoText fontSize={24} textAlign="center" {...props}>
+        {props.text}
+      </RobotoText>
+    );
+  }
+);
 
 export const IconWithCaption = observer((props: {icon: React.ReactNode, caption: string}) => {
   return (

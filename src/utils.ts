@@ -2,7 +2,7 @@ import { ImageType } from "./models";
 import { Rating } from "./stores/common"
 import { staticEndpoint } from "../config";
 import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
-import { TryOnResultCard} from "./stores/TryOnStore";
+import { TryOnResult} from "./stores/TryOnStore";
 import { Gender, Privacy, PostData } from "./stores/common";
 import { User } from "./stores/ProfileStore";
 
@@ -15,6 +15,7 @@ export interface LoginSuccessResponse {
     user_id: string
     user_name: string
     email: string
+    avatar?: string
     privacy: Privacy
     gender: Gender
   } 
@@ -29,6 +30,10 @@ export const getImageSource = (image: ImageType) => {
       uri: staticEndpoint + image.uri
     }
   }
+}
+
+export const getOptionalImageSource = (image?: ImageType) => {
+  return image === undefined ? image : getImageSource(image);
 }
 
 export const deepEqualArr = (arr1: any[], arr2: any[]) => {
@@ -54,12 +59,20 @@ export const convertLoginResponse = (resp: LoginSuccessResponse): User => {
         privacy: resp.privacy,
         email: resp.email,
         gender: resp.gender,
+        avatar: {
+            type: 'remote',
+            uri: resp.avatar || '',
+        },
     })
 }
 
 export const convertPostResponse = (item: any): PostData => {
     return {
       ...item,
+      user_image: item.user_image ? {
+        type: 'remote',
+        uri: item.user_image,
+      } : undefined,
       outfit_image: {
         type: 'remote',
         uri: item.outfit_image,
@@ -98,7 +111,7 @@ interface TryOnResultResponse {
 }
 
 export const convertTryOnResponse = (result: TryOnResultResponse) => {
-  return new TryOnResultCard({
+  return new TryOnResult({
     uuid: result.uuid,
     created_at: result.created_at,
     image: {

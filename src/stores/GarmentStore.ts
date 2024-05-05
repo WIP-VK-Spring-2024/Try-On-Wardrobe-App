@@ -8,10 +8,12 @@ export const GARMENT_TYPE_DRESS = 'Платья'
 export const GARMENT_TYPE_UPPER = 'Верх'
 export const GARMENT_TYPE_LOWER = 'Низ'
 
-export const typeIsTryOnAble = (type: GarmentType) => {
-  return type.name === GARMENT_TYPE_LOWER
-  || type.name === GARMENT_TYPE_LOWER
-  || type.name === GARMENT_TYPE_DRESS
+export const typeIsTryOnAble = (type: GarmentType | undefined) => {
+  return type !== undefined && (
+    type.name === GARMENT_TYPE_UPPER
+    || type.name === GARMENT_TYPE_LOWER
+    || type.name === GARMENT_TYPE_DRESS
+  )
 }
 
 export interface Updateable {
@@ -192,6 +194,7 @@ export class GarmentStore {
 
       addGarment: action,
       removeGarment: action,
+      clearGarments: action,
 
       tags: computed,
       subtypes: computed,
@@ -214,7 +217,7 @@ export class GarmentStore {
   }
 
   addGarment(garment: GarmentCard) {
-    this.garments.push(garment);
+    this.garments.unshift(garment);
   }
 
   removeGarment(garment_uuid: string) {
@@ -243,6 +246,10 @@ export class GarmentStore {
 
   getStyleByUUID = (uuid: string) => {
     return this.styles.find(st => st.uuid === uuid);
+  }
+
+  clearGarments() {
+    this.garments = [];
   }
 
   get tags() {
@@ -292,9 +299,7 @@ export class GarmentStore {
   }
 
   get usedTypes(): GarmentType[] {
-    return getUnique(this.garments.map(garment => garment.type?.uuid))
-            .filter(notEmpty)
-            .map(garmentStore.getTypeByUUID)
+    return this.types
             .filter(notEmpty)
             .map(type => ({
               name: type.name,

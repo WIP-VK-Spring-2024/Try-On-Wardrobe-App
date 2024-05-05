@@ -12,12 +12,9 @@ import { itemFromRect, loadSkImage, rectFromItem } from "../../components/editor
 import { SkImage, useCanvasRef } from "@shopify/react-native-skia";
 
 import { Outfit, outfitStore } from "../../stores/OutfitStore";
-import { StackActions } from "@react-navigation/native";
 import { updateOutfit, uploadOutfit } from "../../requests/outfit";
 import { appState } from "../../stores/AppState";
 import { ConnectionErrorAlert, SuccessAlert } from "../../components/MessageAlert";
-import { cacheManager } from "../../cacheManager/cacheManager";
-import { getOutfitImageName } from "../../cacheManager/utils";
 
 import RNFS from 'react-native-fs';
 import SaveIcon from '../../../assets/icons/save.svg';
@@ -70,7 +67,7 @@ interface OutfitEditorScreenProps {
 }
 
 export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
-  const { outfit }: {outfit: Outfit} = props.route.params;
+  const { outfit, oldItems }: {outfit: Outfit, oldItems: string[]} = props.route.params;
 
   const positions = useSharedValue<GarmentRect[]>(outfit.items.map(rectFromItem));
 
@@ -155,7 +152,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
             })
             .catch(reason => console.error(reason))
         } else {
-          updateOutfit(outfit)
+          updateOutfit(outfit, oldItems)
             .then(processSave)
             .catch(reason => console.error(reason))
         }

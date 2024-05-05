@@ -2,21 +2,24 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
-import { ACTIVE_COLOR, PRIMARY_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
-import { Avatar, Input, InputField, View } from "@gluestack-ui/themed";
-import { AvatarFallbackText } from "@gluestack-ui/themed";
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
 
-import { getImageSource } from "../utils";
-import { Image } from "@gluestack-ui/themed";
+import { Avatar } from "../components/Avatar"
+
+import { getImageSource, getOptionalImageSource } from "../utils";
 import { BackHeader } from "../components/Header";
-import { PostComment, PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
+import { PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
+import { PostData } from "../stores/common"
 
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
 import { feedPropsMediator } from "../components/feed/mediator";
+import { profileStore } from "../stores/ProfileStore";
+import { SubscribeButton } from "../components/Profile";
 
 
 interface PostCommentBlockProps {
@@ -38,6 +41,7 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
           <PostCommentTree
             key={i}
             uuid={comment.uuid}
+            authorAvatar={comment.authorAvatar}
             authorName={comment.authorName}
             authorUUID={comment.authorUUID}
             text={comment.text}
@@ -59,13 +63,18 @@ interface PostScreenProps {
 }
 
 export const PostScreen = observer((props: PostScreenProps) => {
-  const postData = props.route.params;
+  const postData: PostData = props.route.params;
+  const [isSubbed, setIsSubbed] = useState(
+    profileStore.currentUser?.subs.find(
+      item => item.uuid === postData.user_id,
+    ) != undefined,
+  );
   
   const [ratingStatus, setRatingStatus] = useState<RatingStatus>(getStatusFromRating(postData.user_rating));
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
-    feedPropsMediator.propogate(postData.uuid, {status: status});
+    feedPropsMediator.propagate(postData.uuid, {status: status});
     
     setRatingStatus(status);
 
@@ -127,32 +136,24 @@ export const PostScreen = observer((props: PostScreenProps) => {
 
   return (
     <BaseScreen
-      header={<BackHeader navigation={props.navigation} text="Пост"/>}
+      header={<BackHeader navigation={props.navigation} text="Пост" />}
       navigation={props.navigation}
-      footer={<AddCommentForm addComment={addComment} navigation={props.navigation}/>}
-    >
-      <View
-        w="100%"
-        marginBottom={100}
-        gap={20}
-      >
-        <View
-          flexDirection='column' 
-          alignContent='center'
-          margin={10}
-          >
+      footer={
+        <AddCommentForm addComment={addComment} navigation={props.navigation} />
+      }>
+      <View w="100%" marginBottom={100} gap={20}>
+        <View flexDirection="column" alignContent="center" margin={10}>
           <ImageModal
             style={{
               width: WINDOW_WIDTH - 30,
               height: WINDOW_HEIGHT / 2,
-              alignSelf: 'center'
+              alignSelf: 'center',
             }}
-            source={getImageSource(postData.image)}
+            source={getImageSource(postData.outfit_image)}
             resizeMode="contain"
-            />
-
+          />
         </View>
-      
+
         <View
           w="100%"
           backgroundColor="#ffffff"
@@ -162,31 +163,43 @@ export const PostScreen = observer((props: PostScreenProps) => {
           paddingLeft={30}
           justifyContent="space-between"
           alignItems="center"
-          gap={10}
-        >
+          gap={10}>
           <Pressable
             flexDirection="row"
             justifyContent="center"
             alignItems="center"
             gap={10}
-
             onPress={() => {
-              props.navigation.navigate('OtherProfile', {user: {
+              if (postData.user_id != profileStore.currentUser?.uuid) {
+                props.navigation.navigate('OtherProfile', {
+                  user: {
+                    name: postData.user_name,
+                    uuid: postData.user_id,
+                    is_subbed: isSubbed,
+                    avatar: postData.user_image,
+                  },
+                });
+              } else {
+                props.navigation.navigate('Profile');
+              }
+            }}>
+            <Avatar size="sm" name={postData.user_name} source={getOptionalImageSource(postData.user_image)}/>
+
+            <RobotoText fontWeight="bold">{postData.user_name}</RobotoText>
+          </Pressable>
+
+          {postData.user_id != profileStore.currentUser?.uuid && (
+            <SubscribeButton
+              isSubbed={isSubbed}
+              setIsSubbed={setIsSubbed}
+              user={{
                 name: postData.user_name,
-                uuid: postData.user_id
-              }})
-            }}
-          >
-            <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="sm">
-              <AvatarFallbackText>{postData.user_name}</AvatarFallbackText>
-            </Avatar>
-
-            <RobotoText fontWeight='bold'>{postData.user_name}</RobotoText>
-          </Pressable>
-
-          <Pressable>
-            <RobotoText>Подписаться</RobotoText>
-          </Pressable>
+                avatar: postData.user_image,
+                uuid: postData.user_id,
+                is_subbed: postData.is_subbed,
+              }}
+            />
+          )}
 
           <RatingBlock
             rating={rating}
@@ -195,13 +208,8 @@ export const PostScreen = observer((props: PostScreenProps) => {
           />
         </View>
 
-
-        <PostCommentBlock
-          navigation={props.navigation}
-          comments={comments}
-        />
-
+        <PostCommentBlock navigation={props.navigation} comments={comments} />
       </View>
     </BaseScreen>
-  )
+  );
 })

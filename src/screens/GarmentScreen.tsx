@@ -2,17 +2,18 @@ import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Box,  View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
+import { ACTIVE_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, EXTRA_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
 import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
+import { TryOnButton } from "../components/TryOnButton"
 import { UpdateableTextInput } from '../components/UpdateableTextInput'
+import { getImageSource } from '../utils'
 
 import HashTagIcon from '../../assets/icons/hashtag.svg';
 import CrossIcon from '../../assets/icons/cross.svg';
@@ -88,7 +89,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     return props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
-
         e.preventDefault();
       }
     })
@@ -121,7 +121,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     })
       .then(()=>{
         appState.setSuccessMessage('Изменения успешно сохранены');
-        setTimeout(()=>appState.closeSuccessMessage(), 2000);
+        setTimeout(() => appState.closeSuccessMessage(), 2000);
       })
       .catch(res => console.error(res));
   }
@@ -136,7 +136,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         isOpen={showAlertDialog}
         hide={() => setShowAlertDialog(false)}
         onAccept={() => {
-          garment.saveChanges();
+          saveChanges();
           props.navigation.dispatch(StackActions.pop(1));
         }}
         onReject={() => {
@@ -167,7 +167,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         return ACTIVE_COLOR;
       }
   
-      return PRIMARY_COLOR;
+      return ACTIVE_COLOR+'44';
     }
   
     const seasonIconProps = (season: Season) => ({
@@ -210,7 +210,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         justifyContent='space-between'
       >
         <CustomSelect
-          width="49%"
+          w="49%"
           items={garmentStore.types}
           selectedItem={garment.type?.name}
           onChange={(value) => {
@@ -226,10 +226,11 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
               }
             }
           }}
-          placeholder='Тип'
+          placeholder='Категория'
         />
+
         <CustomSelect
-          width="49%"
+          w="49%"
           items={garmentStore.getAllSubtypes(garment.type)}
           selectedItem={garment.subtype?.name}
           onChange={(value) => {
@@ -239,7 +240,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
               garment.setSubtype(subtype);
             }
           }}
-          placeholder='Подтип'
+          placeholder='Подкатегория'
           disabled={garment.type === undefined}
         />
       </Box>
@@ -248,20 +249,20 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
   const GarmentStyleSelector = observer(() => {
     return (
-      <CustomSelect
-        items={garmentStore.styles}
-        selectedItem={garment.style?.name}
-        onChange={value => {
-          const style = garmentStore.getStyleByUUID(value);
+        <CustomSelect
+          items={garmentStore.styles}
+          selectedItem={garment.style?.name}
+          onChange={value => {
+            const style = garmentStore.getStyleByUUID(value);
 
-          if (style !== undefined) {
-            garment.setStyle(style);
-          }
-        }}
-        placeholder='Стиль'
-      />
-    )
-  })
+            if (style !== undefined) {
+              garment.setStyle(style);
+            }
+          }}
+          placeholder="Стиль"
+        />
+    );
+  });
 
   const Tag = observer((props: {name: string, isEditable: boolean}) => {
     return (
@@ -348,43 +349,59 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     )
   });
 
+  const footer = garment.hasChanges ? (
+    <ButtonFooter text="Сохранить изменения" onPress={saveChanges} />
+  ) : null;
+
   return (
-    <BaseScreen 
-      navigation={props.navigation}
-      header={<GarmentHeader route={props.route} navigation={props.navigation} name={garment.name}/>}
-      footer={
-        <ButtonFooter text='Сохранить' onPress={saveChanges}/>
-      }
-    >
-      <View
-        display="flex" 
-        flexDirection='column' 
-        gap={20}
-        alignContent='center'
-        marginLeft={20}
-        marginRight={20}
-        marginBottom={100}
-      >
-        <GarmentImage garment={garment}/>
+    <>
+      <BaseScreen
+        navigation={props.navigation}
+        header={
+          <GarmentHeader
+            route={props.route}
+            navigation={props.navigation}
+            name={garment.name}
+          />
+        }
+        footer={footer}>
+        <View
+          display="flex"
+          flexDirection="column"
+          gap={20}
+          alignContent="center"
+          marginLeft={20}
+          marginRight={20}
+          marginBottom={100}>
+          <GarmentImage garment={garment} />
 
-        <UpdateableTextInput
-          text={garment.name}
-          onUpdate={text => garment.setName(text)}
-          inEditing={inEditing}
-          setInEditing={setInEditing}
+          <UpdateableTextInput
+            text={garment.name}
+            onUpdate={text => garment.setName(text)}
+            inEditing={inEditing}
+            setInEditing={setInEditing}
+          />
+
+          <GarmentSeasonIcons />
+          <GarmentTypeSelector />
+          <GarmentStyleSelector />
+
+          <GarmentTagBlock
+            tagInputValue={tagInputValue}
+            setTagInputValue={setTagInputValue}
+          />
+
+          <CloseAlertDialog />
+        </View>
+      </BaseScreen>
+
+      {props.route.params.garment.tryOnAble && (
+        <TryOnButton
+          garments={[props.route.params.garment]}
+          navigation={props.navigation}
+          marginBottom={garment.hasChanges ? 56 : 0}
         />
-
-        <GarmentSeasonIcons/>
-        <GarmentTypeSelector />
-        <GarmentStyleSelector />
-
-        <GarmentTagBlock 
-          tagInputValue={tagInputValue}
-          setTagInputValue={setTagInputValue}
-        />
-
-        <CloseAlertDialog />
-      </View>
-    </BaseScreen>
+      )}
+    </>
   );
 });

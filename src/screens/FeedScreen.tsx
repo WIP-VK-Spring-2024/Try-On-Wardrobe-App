@@ -43,7 +43,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
   
   return (
     <View height="100%">
-      <Header navigation={props.navigation}/>
+      <Header navigation={props.navigation} rightMenu={null}/>
 
       <PostList 
         fetchData={fetchData}

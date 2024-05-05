@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { profileStore, Subscription, User } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
 import {
-  Avatar,
-  AvatarFallbackText,
   View,
   Pressable,
   Button,
@@ -18,16 +16,30 @@ import { useFocusEffect } from '@react-navigation/native'
 import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
 import { SexSelector } from "../components/LoginForms"
-import { updateUserSettings, searchUsers } from "../requests/user"
+import { updateUserSettings, searchUsers, updateUserImage } from "../requests/user"
 import { ajax } from "../requests/common"
 import { Tabs } from "../components/Tabs"
 import { SearchInput } from "../components/SearchInput"
 import { BackButton, SubsList, NoSubsMessage, SubsBlock } from "../components/Profile"
 import { PostList } from "../components/Posts";
-import { convertPostResponse } from "../utils"
+import { convertPostResponse, getOptionalImageSource } from "../utils"
 import { PrivacyCheckbox } from "../components/PrivacyCheckbox";
+import { garmentStore } from "../stores/GarmentStore";
+import { outfitStore } from "../stores/OutfitStore";
+import { tryOnStore } from "../stores/TryOnStore";
+import { userPhotoStore } from "../stores/UserPhotoStore";
+import { Avatar } from "../components/Avatar";
+import ImagePicker from 'react-native-image-crop-picker';
 
 const iconSize = 25
+
+const uploadAvatar = async () => {
+  return ImagePicker.openPicker({
+    cropping: true,
+  })
+    .then(updateUserImage)
+    .catch(reason => console.log(reason))
+}
 
 interface UserHeaderProps {
   onSettings: () => void
@@ -42,9 +54,9 @@ const UserHeader = observer(({navigation, onLogout, onSettings, user}: UserHeade
       <BackButton navigation={navigation} flex={2} />
 
       <View flexDirection="row" alignItems="center" flex={9} gap={20}>
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
-          <AvatarFallbackText numberOfLines={1}>{user.name}</AvatarFallbackText>
-        </Avatar>
+        <Pressable onPress={() => uploadAvatar()}>
+          <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
+        </Pressable>
 
         <View>
           <RobotoText fontSize={18} numberOfLines={1}>{user.name}</RobotoText>
@@ -123,13 +135,6 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
   const [tab, setTab] = useState('subs');
 
   useEffect(() => {
-    if (tab === 'all') {
-      profileStore.setLastUserName('');
-    }
-  }, [query]);
-
-  useEffect(() => {
-    profileStore.setLastUserName('');
     profileStore.clearUsers();
     searchUsers('', '');
     setTab('subs');
@@ -268,8 +273,18 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         text="Вы точно хотите выйти из аккаунта?"
         onAccept={() => {
           navigation.navigate('Login');
+
           cacheManager.deleteToken();
           appState.logout();
+
+          garmentStore.clearGarments();
+          outfitStore.clear();
+          tryOnStore.clear();
+          userPhotoStore.clear();
+
+          cacheManager.writeGarmentCards();
+          cacheManager.writeOutfits();
+          // profileStore.clear();
         }}
       />
 

@@ -2,7 +2,6 @@ import { action, autorun, makeObservable, observable } from "mobx";
 import { garmentStore, Updateable } from "./GarmentStore";
 import { MultipleSelectionStore } from "./SelectionStore";
 import { OutfitStore } from "./OutfitStore";
-import { act } from "react-test-renderer";
 
 export type OutfitPurpose = {
     uuid: string,

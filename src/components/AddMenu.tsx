@@ -120,7 +120,7 @@ export const MenuItem = observer(({text, onPress, Icon, stroke, fontSize, iconSi
 
 export const AddMenu = observer((props: {navigation: any}) => {
   const openCreatedGarment = () => {
-    props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
+    props.navigation.navigate('Garment', {garment: garmentStore.garments[0]});   
   }
 
   const [step, setStep] = useState<Step>('main');

@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { profileStore, Subscription, User } from "../stores/ProfileStore";
+import React from "react";
+import { profileStore, Subscription } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
+import { getOptionalImageSource } from "../utils";
 import {
-  Avatar,
-  AvatarFallbackText,
   View,
   Pressable,
   ChevronLeftIcon,
+  Button,
 } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
-import { PRIMARY_COLOR, ACTIVE_COLOR, DELETE_BTN_COLOR } from "../consts";
+import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
 import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
+import { userUnsub, userSub } from "../requests/user"
+import { Avatar } from "./Avatar";
 
 export const BackButton = (props: {navigation: any, flex?: number}) => {
   const onBackPress = () => props.navigation.dispatch(StackActions.pop(1))
@@ -28,6 +30,45 @@ export const BackButton = (props: {navigation: any, flex?: number}) => {
   );
 };
 
+interface SubscribeButtonProps {
+  isSubbed: boolean
+  setIsSubbed: (isSubbed: boolean) => void
+  user: Subscription
+}
+
+export const SubscribeButton = observer(
+  ({ isSubbed, setIsSubbed, user }: SubscribeButtonProps) => {
+    return (
+      <Button
+        size="xs"
+        action={isSubbed ? 'secondary' : 'primary'}
+        bgColor={isSubbed ? PRIMARY_COLOR : ACTIVE_COLOR}
+        onPress={() => {
+          if (isSubbed) {
+            userUnsub(user.uuid).then(_ => {
+              setIsSubbed(false);
+              profileStore.currentUser?.removeSub(user.uuid);
+            });
+          } else {
+            userSub(user.uuid).then(_ => {
+              setIsSubbed(true);
+              profileStore.currentUser?.addSub({
+                uuid: user.uuid,
+                name: user.name,
+                avatar: user.avatar,
+                is_subbed: true
+              });
+            });
+          }
+        }}>
+        <RobotoText fontSize={14} color="#ffffff">
+          {isSubbed ? 'Отписаться' : 'Подписаться'}
+        </RobotoText>
+      </Button>
+    );
+  },
+);
+
 interface SubProps {
   sub: Subscription
   navigation: any
@@ -40,9 +81,7 @@ export const Sub = observer(({sub, navigation, rowSize}: SubProps) => {
       alignItems="center"
       w={`${100 / rowSize}%`}
       onPress={() => navigation.navigate('OtherProfile', {user: sub})}>
-      <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="md">
-        <AvatarFallbackText>{sub.name}</AvatarFallbackText>
-      </Avatar>
+      <Avatar size="md" name={sub.name} source={getOptionalImageSource(sub.avatar)}/>
       <RobotoText numberOfLines={1}>{sub.name}</RobotoText>
     </Pressable>
   );
