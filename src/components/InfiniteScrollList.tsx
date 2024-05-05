@@ -5,6 +5,7 @@ import { ajax } from "../requests/common";
 import { getLast } from "../utils";
 import { RefreshControl } from "@gluestack-ui/themed";
 import { useFocusEffect } from "@react-navigation/native";
+import { RobotoText } from "./common";
 
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
 
@@ -12,6 +13,7 @@ interface InfiniteScrollListProps<T> extends Omit<FlatListProps<T>, 'data'> {
   data: T[]
   setData: (data: T[])=>void
   fetchData: FetchDataType<T>
+  noItemsText?: string
 }
 
 export const InfiniteScrollList = observer(
@@ -86,22 +88,20 @@ export const InfiniteScrollList = observer(
     }
   };
 
-    return (
+    return isFirstPageReceived && props.data.length > 0 ? (
       <FlatList
         {...props}
-      
         data={props.data}
-
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.8}
         ListFooterComponent={ListEndLoader}
-
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-    )
+    ) : (
+      <RobotoText fontSize={22} textAlign="center">
+        {props.noItemsText || 'Ничего не найдено'}
+      </RobotoText>
+    );
 })
