@@ -33,7 +33,7 @@ interface OutfitEditorProps {
 }
 
 export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: OutfitEditorProps) => {
-  const [basePosition, setBasePosition] = useState({x: 0, y: 0});
+  const [basePosition, setBasePosition] = useState({x: 0, y: 0, w: 0, h: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);
@@ -44,17 +44,22 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
   const aref = useRef<View | null>(null);
 
-  const getPanGesture = (id: number) => {
+  const getPanGesture = (index: number) => {
+    const id = useDerivedValue(() => {
+      const ind = sortedPositions.value[index].index;
+      return ind;
+    });
+
     return Gesture.Native()
     .onTouchesDown((event) => {
       const touch = event.allTouches[0];
 
-      movingId.value = id;
-      activeId.value = id;
+      movingId.value = id.value;
+      activeId.value = id.value;
 
       const c = {
-        x: positions.value[id].halfWidth,
-        y: positions.value[id].halfHeight
+        x: positions.value[id.value].halfWidth,
+        y: positions.value[id.value].halfHeight
       }
 
       const cursor = {
@@ -67,7 +72,7 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
         y: cursor.y - c.y
       };
 
-      const {scale, angle} = positions.value[id];
+      const {scale, angle} = positions.value[id.value];
 
       cursorPosition.value = {
         x: c.x + (centerCursor.x * Math.cos(angle) - centerCursor.y * Math.sin(angle)) * scale,
@@ -81,8 +86,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
       const oldPositions = [...positions.value];
 
-      oldPositions[id].x = coords.x;
-      oldPositions[id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       positions.value = oldPositions;
 
@@ -97,8 +102,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
       const oldPositions = [...positions.value];
 
-      oldPositions[id].x = coords.x;
-      oldPositions[id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       positions.value = oldPositions;
     })
@@ -414,7 +419,7 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
         ref={aref}
         onLayout={() => {
           aref.current?.measure((x, y, w, h, px, py) => {
-            setBasePosition({x: px, y: py});
+            setBasePosition({x: px, y: py, w, h});
           })
         }}
       >
@@ -424,11 +429,19 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
             positions={sortedPositions}
             images={images}
           />
+        </Canvas>
 
+        <Canvas style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: basePosition.w,
+          height: basePosition.h
+        }}>
           <Group
-            transform={activeTranforms}
-            origin={activeOrigin}
-          >
+              transform={activeTranforms}
+              origin={activeOrigin}
+            >
             <Points
               points={boundingBoxPoints}
               mode="polygon"
@@ -439,7 +452,6 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
             <RotateHandle rotateHandleCoords={rotateHandleCoords} activeId={activeId}/>
             <ScaleHandle coords={scaleHandleCoords}/>
           </Group>
-
         </Canvas>
 
         <GestureDetector gesture={cancelSelectionGesture}>
@@ -489,4 +501,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%"
   },
+  
+  floatingCanvas: {
+    heigh: "100%",
+    width: "100%",
+    position: "absolute",
+    top: 0,
+  }
 });

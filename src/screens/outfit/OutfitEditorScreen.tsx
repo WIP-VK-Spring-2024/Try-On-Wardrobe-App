@@ -72,7 +72,6 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
   const positions = useSharedValue<GarmentRect[]>(outfit.items.map(rectFromItem));
 
   const images = useSharedValue<(SkImage | undefined)[]>([]);
-  // const [images, setImages] = useState<(SkImage | undefined)[]>([]);
 
   useEffect(() => {
     const imagePromises = outfit.items
@@ -96,7 +95,6 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       })
 
     Promise.all(imagePromises).then(skImages => {
-      // setImages(skImages);
       images.value = skImages;
     })
   }, [])
@@ -115,11 +113,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
     canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const makeName = () => {
-          // if (outfit.uuid  === undefined) {
-            return`${Date.now()}.png`;
-          // }
-          
-          // return getOutfitImageName(outfit);
+          return`${Date.now()}.png`;
         }
         
         const fileName = makeName();
