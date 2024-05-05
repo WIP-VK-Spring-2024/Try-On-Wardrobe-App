@@ -193,7 +193,7 @@ export class CacheManager {
         })
     }
 
-    async updateGarments(localGarments: GarmentCard[], remoteGarments: GarmentCard[]) {
+    async updateGarments(localGarments: GarmentCard[], remoteGarments: GarmentCard[]) {    
         const filteredLocalGarments = localGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
         const filteredRemoteGarments = remoteGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
 
@@ -237,7 +237,6 @@ export class CacheManager {
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {        
         // console.log('local', localOutfits)
         // console.log('remote', remoteOutfits)
-
         
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
         

@@ -8,10 +8,12 @@ export const GARMENT_TYPE_DRESS = 'Платья'
 export const GARMENT_TYPE_UPPER = 'Верх'
 export const GARMENT_TYPE_LOWER = 'Низ'
 
-export const typeIsTryOnAble = (type: GarmentType) => {
-  return type.name === GARMENT_TYPE_UPPER
-      || type.name === GARMENT_TYPE_LOWER
-      || type.name === GARMENT_TYPE_DRESS
+export const typeIsTryOnAble = (type: GarmentType | undefined) => {
+  return type !== undefined && (
+    type.name === GARMENT_TYPE_UPPER
+    || type.name === GARMENT_TYPE_LOWER
+    || type.name === GARMENT_TYPE_DRESS
+  )
 }
 
 export interface Updateable {
