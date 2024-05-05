@@ -125,7 +125,7 @@ export const ButtonFooter = observer(({text, onPress, children}: ButtonFooterPro
   return (
     <Button paddingHorizontal={0} onPress={onPress} bgColor={SECONDARY_COLOR} h={65} w="100%" justifyContent="center">
       <Center>
-        <RobotoText color="white" fontSize="$3xl">
+        <RobotoText color="white" fontSize="$2xl">
           {text || 'Выбрать'}
         </RobotoText>
       </Center>

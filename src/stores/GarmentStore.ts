@@ -192,6 +192,7 @@ export class GarmentStore {
 
       addGarment: action,
       removeGarment: action,
+      clearGarments: action,
 
       tags: computed,
       subtypes: computed,
@@ -243,6 +244,10 @@ export class GarmentStore {
 
   getStyleByUUID = (uuid: string) => {
     return this.styles.find(st => st.uuid === uuid);
+  }
+
+  clearGarments() {
+    this.garments = [];
   }
 
   get tags() {

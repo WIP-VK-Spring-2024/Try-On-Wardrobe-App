@@ -73,7 +73,7 @@ export const PostCard = observer((props: PostCardProps) => {
           source={getOptionalImageSource(props.data.user_image)}
         />
 
-        <RobotoText fontWeight="bold">{props.data.user_name}</RobotoText>
+        <RobotoText fontWeight='bold' numberOfLines={1}>{props.data.user_name}</RobotoText>
       </Pressable>
 
       <View flex={1}>

@@ -67,7 +67,7 @@ interface OutfitEditorScreenProps {
 }
 
 export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
-  const { outfit }: {outfit: Outfit} = props.route.params;
+  const { outfit, oldItems }: {outfit: Outfit, oldItems: string[]} = props.route.params;
 
   const positions = useSharedValue<GarmentRect[]>(outfit.items.map(rectFromItem));
 
@@ -122,7 +122,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
             })
             .catch(reason => console.error(reason))
         } else {
-          updateOutfit(outfit)
+          updateOutfit(outfit, oldItems)
             .then(processSave)
             .catch(reason => console.error(reason))
         }
