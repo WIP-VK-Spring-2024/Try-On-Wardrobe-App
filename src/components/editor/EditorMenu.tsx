@@ -1,7 +1,6 @@
 import { Image, Pressable, View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { RobotoText } from "../common";
 import { getImageSource } from "../../utils";
 import Animated, { SharedValue, useAnimatedStyle } from "react-native-reanimated";
 import { Outfit } from "../../stores/OutfitStore";

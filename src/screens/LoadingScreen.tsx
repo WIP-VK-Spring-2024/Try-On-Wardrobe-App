@@ -1,8 +1,8 @@
 import { View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React, { ReactNode, useEffect } from "react";
-import Animated, { Easing, SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
-import { Circle, Svg, SvgProps } from "react-native-svg";
+import Animated, { Easing, useAnimatedProps, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { Svg } from "react-native-svg";
 import { ACTIVE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
 import { G } from "react-native-svg";
 
@@ -16,7 +16,6 @@ import { initStores } from "../requests/init";
 const MOTION = WINDOW_HEIGHT / 8;
 
 const AnimatedGroup = Animated.createAnimatedComponent(G);
-
 
 interface BouncingCircleProps {
   id: number
@@ -60,12 +59,55 @@ interface LoadingScreenProps {
   navigation: any
 }
 
+const navigateToLoginOrOnboarding = (navigation: any) => {
+  cacheManager.readViewedOnboarding()
+    .then((viewed) => {
+      if (viewed) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Onboarding' }],
+        });
+      }
+    });
+};
+
 export const LoadingScreen = observer((props: LoadingScreenProps) => {
   const icons = [
     <HangerIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
     <OutfitIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
     <GarmentIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
   ]
+
+  useEffect(() => {
+    cacheManager.readToken()
+      .then(async (token) => {
+        if (token === false) {
+          navigateToLoginOrOnboarding(props.navigation);
+          return;
+        }
+
+        const status = await cacheManager.updateToken(token);
+        if (status === false) {
+          navigateToLoginOrOnboarding(props.navigation);
+        } else {
+          initCentrifuge();
+          initStores();
+
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
+        }
+      })
+      .catch(reason => {
+        console.error(reason);
+      })
+  }, [])
 
   return (
     <View>

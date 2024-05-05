@@ -136,6 +136,29 @@ export class CacheManager {
         })
     }
 
+    async readViewedOnboarding() {
+        const path = this.joinDataDirPath('/onboarding.json');
+
+        try {
+            const _ = await RNFS.readFile(path);
+            appState.setViewedOnboarding(true);
+            return true;
+        } catch (e) {
+            appState.setViewedOnboarding(false);
+            return false;
+        }
+    }
+
+    async writeViewedOnboarding() {
+        if (!appState.viewedOnboarding) {
+            return false;
+        }
+
+        const path = this.joinDataDirPath('/onboarding.json');
+        RNFS.writeFile(path, JSON.stringify({viewed: appState.viewedOnboarding}));
+        return true;
+    }
+
     async downloadImage(remoteURI: string, path: string) {
         try {
             const downloadRes = await RNFS.downloadFile({

@@ -18,12 +18,15 @@ class AppStateStore {
     userID: string | undefined
 
     screen: Screen
+
+    viewedOnboarding: boolean
   
     constructor() {
       this.error = undefined
       this.successMessage = undefined
       this.createMenuVisible = false
       this.filterModalVisible = false;
+      this.viewedOnboarding = false;
       this.screen = 'Home'
       
       makeObservable(this, {
@@ -54,6 +57,10 @@ class AppStateStore {
     logout() {
       this.JWTToken = undefined;
       this.userID = undefined;
+    }
+
+    setViewedOnboarding(viewed: boolean) {
+        this.viewedOnboarding = viewed;
     }
     
     setError(error: string | undefined) {

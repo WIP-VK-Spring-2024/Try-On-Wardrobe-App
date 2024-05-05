@@ -27,6 +27,7 @@ import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
+import { OnboardingScreen } from './screens/OnboardingScreen';
 import { TryOnCardScreen } from './screens/TryOnCardScreen';
 import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
 import { cacheManager } from './cacheManager/cacheManager';
@@ -85,6 +86,8 @@ const App = observer((): JSX.Element => {
     return (
       <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Loading'>
         <Stack.Screen name="Loading" component={LoadingScreen} />
+
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         
         <Stack.Screen name="Login" component={LoginScreen} />
 
