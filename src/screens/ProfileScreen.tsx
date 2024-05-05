@@ -207,10 +207,32 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
 const displayedSubsNum = 4;
 const subsRowSize = 4;
 
+const fetchPosts = (url: string) => {
+  return (limit: number, since: string) => {
+    const urlParams = new URLSearchParams({
+      limit: limit.toString(),
+      since: since,
+    });
+    return ajax
+      .apiGet(url + "?" + urlParams.toString(), {
+        credentials: true,
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        return json.map(convertPostResponse);
+    });
+}};
+
+const fetchLikedPosts = fetchPosts("/posts/liked");
+
 export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any}) => {
   const [logoutModalShown, setLogoutModalShown] = useState(false);
   const [settingsModalShown, setSettingsModalShown] = useState(false);
   const [searchModalShown, setSearchModalShown] = useState(false);
+
+  const fetchOwnPosts = fetchPosts(`/users/${profileStore.currentUser?.uuid}/posts`);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -224,22 +246,7 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
 
   const subs = profileStore.currentUser?.subs || [];
 
-  const fetchLikedPosts = (limit: number, since: string) => {
-    const urlParams = new URLSearchParams({
-      limit: limit.toString(),
-      since: since,
-    });
-    return ajax
-      .apiGet("/posts/liked?" + urlParams.toString(), {
-        credentials: true,
-      })
-      .then(resp => {
-        return resp.json();
-      })
-      .then(json => {
-        return json.map(convertPostResponse);
-      });
-  };
+  const [tab, setTab] = useState('own');
 
   return (
     <View h="100%" gap={25}>
@@ -258,10 +265,15 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         displayedNum={displayedSubsNum}
       />
 
-      <View >
-        <RobotoText textAlign='center'>Вам понравилось</RobotoText>
-        <PostList fetchData={fetchLikedPosts} navigation={navigation} />
-      </View>
+      <Tabs value={tab} setValue={setTab} tabs={[{
+        value: 'own',
+        header: 'Ваши посты',
+        content: <PostList fetchData={fetchOwnPosts} navigation={navigation} />
+      },{
+        value: 'liked',
+        header: 'Вам понравилось',
+        content: <View><PostList fetchData={fetchLikedPosts} navigation={navigation} /></View>
+      }]}/>
 
       <AlertModal
         isOpen={logoutModalShown}

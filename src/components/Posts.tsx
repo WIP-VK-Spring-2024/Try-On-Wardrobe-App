@@ -204,6 +204,5 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
     columnWrapperStyle={{
       gap: 10,
     }}
-
   />
 });
