@@ -4,6 +4,7 @@ import { MultipleSelectionStore } from './SelectionStore';
 import { GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER, GarmentCard } from './GarmentStore';
 import { tryOnScreenGarmentSelectionStore } from '../store';
 import { Rating } from './common'
+import { asCreateObservableOptions } from 'mobx/dist/internal';
 
 export interface TryOnResultProps {
   uuid: string;
@@ -57,6 +58,7 @@ export class TryOnStore {
       setResults: action,
       removeResult: action,
       addResult: action,
+      clear: action,
     });
   }
 
@@ -82,6 +84,10 @@ export class TryOnStore {
     if (index !== -1) {
       this.results[index].setRating(rating);
     }
+  }
+
+  clear() {
+    this.results = [];
   }
 }
 

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import {PermissionsAndroid, SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import React from 'react';
+import { SafeAreaView, StatusBar } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {
@@ -10,7 +10,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {observer} from 'mobx-react-lite';
 
-import RNFS from 'react-native-fs';
 import { GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
@@ -33,35 +32,7 @@ import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSele
 
 export const Stack = createNativeStackNavigator();
 
-const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
-
-RNFS.mkdir(pictures_path);
-
 const App = observer((): JSX.Element => {
-  useEffect(() => {
-    requestPermission()
-  }, [])
-
-  const requestPermission = async () => {
-    try {
-      console.log('asking for permission')
-      const granted = await PermissionsAndroid.requestMultiple(
-        [
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-        ]
-      )
-      if (granted['android.permission.CAMERA'] && granted['android.permission.WRITE_EXTERNAL_STORAGE'] && granted['android.permission.READ_MEDIA_IMAGES']) {
-        console.log("You can use the camera");
-      } else {
-        console.log("Camera permission denied");
-      }
-    } catch (error) {
-      console.log('permission error', error)
-    }
-  }
-
   const backgroundStyle = {
     backgroundColor: Colors.lighter,
     flex: 1,

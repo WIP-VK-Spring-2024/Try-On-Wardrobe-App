@@ -30,8 +30,6 @@ export const BackButton = (props: {navigation: any, flex?: number}) => {
   );
 };
 
-
-
 interface SubscribeButtonProps {
   isSubbed: boolean
   setIsSubbed: (isSubbed: boolean) => void

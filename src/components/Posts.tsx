@@ -66,7 +66,7 @@ export const PostCard = observer((props: PostCardProps) => {
           <AvatarFallbackText>{props.data.user_name}</AvatarFallbackText>
         </Avatar>
 
-        <RobotoText fontWeight='bold'>{props.data.user_name}</RobotoText>
+        <RobotoText fontWeight='bold' numberOfLines={1}>{props.data.user_name}</RobotoText>
       </Pressable>
       
       <View

@@ -274,6 +274,7 @@ export class OutfitStore {
             setOutfits: action,
             addOutfit: action,
             removeOutfit: action,
+            clear: action,
         })
     }
 
@@ -295,6 +296,10 @@ export class OutfitStore {
 
     getOutfitByUUID(outfitUUID: string) {
         return this.outfits.find(outfit => outfit.uuid === outfitUUID);
+    }
+
+    clear() {
+        this.outfits = [];
     }
 };
 

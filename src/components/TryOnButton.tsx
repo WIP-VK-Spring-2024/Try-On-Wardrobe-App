@@ -22,7 +22,11 @@ export const TryOnButton = observer(
     marginBottom,
     nextScreen,
     nextScreenParams,
-  }: TryOnButtonProps) => (
+  }: TryOnButtonProps) => {
+  
+  garments = garments.filter(garment => garment.tryOnAble);
+
+  return (
     <Fab
       size="sm"
       placement="bottom right"
@@ -30,10 +34,12 @@ export const TryOnButton = observer(
       right={10}
       bgColor={EXTRA_COLOR}
       gap={5}
+      isDisabled={garments.length < 1}
       onPress={() => {
-        garments.forEach(garment =>
-          tryOnScreenGarmentSelectionStore.select(garment),
-        );
+        tryOnScreenGarmentSelectionStore.clearSelectedItems();
+
+        garments.forEach(garment => tryOnScreenGarmentSelectionStore.select(garment));
+
         navigation.navigate('TryOn/Person', {
           next: nextScreen,
           params: nextScreenParams,
@@ -44,5 +50,5 @@ export const TryOnButton = observer(
         Примерить
       </RobotoText>
     </Fab>
-  ),
-);
+  );
+});

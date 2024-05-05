@@ -26,6 +26,10 @@ import { BackButton, SubsList, NoSubsMessage, SubsBlock } from "../components/Pr
 import { PostList } from "../components/Posts";
 import { convertPostResponse } from "../utils"
 import { PrivacyCheckbox } from "../components/PrivacyCheckbox";
+import { garmentStore } from "../stores/GarmentStore";
+import { outfitStore } from "../stores/OutfitStore";
+import { tryOnStore } from "../stores/TryOnStore";
+import { userPhotoStore } from "../stores/UserPhotoStore";
 
 const iconSize = 25
 
@@ -261,8 +265,18 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         text="Вы точно хотите выйти из аккаунта?"
         onAccept={() => {
           navigation.navigate('Login');
+
           cacheManager.deleteToken();
           appState.logout();
+
+          garmentStore.clearGarments();
+          outfitStore.clear();
+          tryOnStore.clear();
+          userPhotoStore.clear();
+
+          cacheManager.writeGarmentCards();
+          cacheManager.writeOutfits();
+          // profileStore.clear();
         }}
       />
 

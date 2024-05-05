@@ -168,7 +168,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
       }
   
       return ACTIVE_COLOR+'44';
-      // return PRIMARY_COLOR;
     }
   
     const seasonIconProps = (season: Season) => ({
@@ -396,11 +395,13 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         </View>
       </BaseScreen>
 
-      <TryOnButton
-        garments={[props.route.params.garment]}
-        navigation={props.navigation}
-        marginBottom={garment.hasChanges ? 56 : 0}
-      />
+      {props.route.params.garment.tryOnAble && (
+        <TryOnButton
+          garments={[props.route.params.garment]}
+          navigation={props.navigation}
+          marginBottom={garment.hasChanges ? 56 : 0}
+        />
+      )}
     </>
   );
 });

@@ -48,7 +48,7 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
   }, []))
   
   const [infoShown, setInfoShown] = useState(false);
-    
+
   const tooltip = (
     <Tooltip
       isOpen={infoShown}
