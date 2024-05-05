@@ -10,8 +10,8 @@ export const NoClothesMessage = (props: {afterIconText?: string, category: strin
       <View flexDirection="row">
         <View flex={1}></View>
         <View flex={8}>
-          <RobotoText>У вас пока нет вещей {props.category === 'Все' || 'этой категории'}.</RobotoText>
-          <View flexDirection="row" alignItems="center" gap={5} margin={0} padding={0} justifyContent="flex-start">
+          <RobotoText>У вас пока нет вещей{props.category === '' || ' этой категории'}.</RobotoText>
+          <View flexDirection="row" alignItems="center" gap={5}>
             <RobotoText> Добавьте их, используя кнопку</RobotoText>
             <AddIcon
               fill={ACTIVE_COLOR}

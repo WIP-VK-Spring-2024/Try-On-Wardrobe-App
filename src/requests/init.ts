@@ -6,6 +6,7 @@ import { outfitPurposeStore } from "../stores/OutfitGenStores";
 import { Outfit, OutfitItem, OutfitItemRect, outfitStore } from "../stores/OutfitStore";
 import { tryOnStore } from "../stores/TryOnStore";
 import { userPhotoStore } from "../stores/UserPhotoStore";
+import { Privacy } from "../stores/common";
 import { convertGarmentResponse, convertTryOnResponse } from "../utils";
 import { ajax } from "./common"
 import { getSubs } from "./user";
@@ -93,6 +94,7 @@ export const initStores = () => {
         public: boolean
         uuid: string
         user_id: string
+        privacy: Privacy
         transforms: {
             [uuid: string]: {
                 x: number
@@ -129,7 +131,8 @@ export const initStores = () => {
                 },
                 try_on_result_id: outfit.try_on_result_id,
                 items: items,
-                updated_at: outfit.updated_at
+                updated_at: outfit.updated_at,
+                privacy: outfit.privacy,
             })
         })
 

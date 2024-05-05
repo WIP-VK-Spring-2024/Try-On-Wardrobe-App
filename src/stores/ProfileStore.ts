@@ -103,6 +103,7 @@ class ProfileStore {
             setUser: action,
             appendUsers: action,
             clearUsers: action,
+            clear: action,
         });
     }
 
@@ -116,6 +117,11 @@ class ProfileStore {
 
     clearUsers() {
         this.users = [];
+    }
+    
+    clear() {
+        this.users = [];
+        this.currentUser = undefined;
     }
 }
 

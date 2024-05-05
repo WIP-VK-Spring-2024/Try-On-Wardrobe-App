@@ -18,6 +18,7 @@ export const OutfitGarmentSelectionScreen = observer(
   (props: OutfitGarmentSelectionScreenProps) => {
 
     const outfit = props.route.params.outfit;
+    const oldItems = props.route.params.oldItems;
 
     const header = (
       <BackHeader
@@ -33,7 +34,7 @@ export const OutfitGarmentSelectionScreen = observer(
           await outfit.addGarments(outfitScreenGarmentSelectionStore.selectedItems);
           outfitScreenGarmentSelectionStore.clearSelectedItems();
           props.navigation.dispatch(StackActions.pop(1));
-          props.navigation.navigate("Editor", {outfit: outfit});
+          props.navigation.navigate("Editor", {outfit: outfit, oldItems: oldItems});
         }}
       />
       : null;

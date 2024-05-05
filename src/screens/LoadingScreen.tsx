@@ -12,7 +12,6 @@ import OutfitIcon from '../../assets/icons/outfit.svg';
 import { cacheManager } from "../cacheManager/cacheManager";
 import { initCentrifuge } from "../requests/centrifuge";
 import { initStores } from "../requests/init";
-import { appState } from "../stores/AppState";
 
 const MOTION = WINDOW_HEIGHT / 8;
 
@@ -73,17 +72,28 @@ export const LoadingScreen = observer((props: LoadingScreenProps) => {
     cacheManager.readToken()
       .then(async (token) => {
         if (token === false) {
-          props.navigation.navigate('Login');
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+
           return;
         }
 
         const status = await cacheManager.updateToken(token);
         if (status === false) {
-          props.navigation.navigate('Login');
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
         } else {
           initCentrifuge();
           initStores();
-          props.navigation.navigate('Home');
+
+          props.navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
         }
       })
       .catch(reason => {

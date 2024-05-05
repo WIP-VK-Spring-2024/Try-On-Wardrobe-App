@@ -1,5 +1,5 @@
 import { getOutfitImageName } from "../cacheManager/utils";
-import { Outfit, outfitStore } from "../stores/OutfitStore";
+import { Outfit, OutfitItem, outfitStore } from "../stores/OutfitStore";
 import RNFS from 'react-native-fs';
 import { ajax } from "./common";
 import { userPhotoStore } from "../stores/UserPhotoStore";
@@ -10,7 +10,7 @@ const makeFormData = (outfit: Outfit) => {
 
     console.log(outfit);
 
-    let formData = new FormData();
+    const formData = new FormData();
 
     formData.append('name', outfit.name);
     formData.append('privacy', outfit.privacy);
@@ -31,9 +31,21 @@ const makeFormData = (outfit: Outfit) => {
     formData.append('transforms', JSON.stringify(transforms));
     
     return formData;
-}
+};
 
-export const updateOutfit = async (outfit: Outfit) => {
+export const updateOutfitFields = async (outfit: Outfit) => {
+    const formData = new FormData();
+
+    formData.append('name', outfit.name);
+    formData.append('privacy', outfit.privacy);
+
+    return ajax.apiPut(`/outfits/${outfit.uuid}`, {
+        credentials: true,
+        body: formData
+    })
+};
+
+export const updateOutfit = async (outfit: Outfit, oldItems: string[]) => {
     console.log('update outfit')
     if (outfit.uuid === undefined) {
         console.error('no outfit uuid');
@@ -70,6 +82,22 @@ export const updateOutfit = async (outfit: Outfit) => {
                     uri: newPath
                 })
 
+                const items = outfit.items.map(elem => elem.garmentUUID);
+                console.log("items", items);
+                console.log("old items", oldItems);
+
+                if (!items.every(uuid => oldItems.includes(uuid)) &&
+                  userPhotoStore.photos.length > 0
+                ) {
+                  ajax.apiPost('/try-on/outfit', {
+                    body: JSON.stringify({
+                      user_image_id: userPhotoStore.photos[0].uuid,
+                      outfit_id: outfit.uuid,
+                    }),
+                    credentials: true,
+                  });
+                }
+
                 return true;
             })
             .catch(reason => {
@@ -80,7 +108,7 @@ export const updateOutfit = async (outfit: Outfit) => {
         console.error(reason);
         return false;
     })
-}
+};
 
 export const uploadOutfit = async (outfit: Outfit) => {
     console.log('upload outfit', outfit)

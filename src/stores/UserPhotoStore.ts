@@ -18,6 +18,7 @@ class UserPhotoStore {
       setPhotos: action,
       addPhoto: action,
       removePhoto: action,
+      clear: action,
     });
   }
 
@@ -38,6 +39,10 @@ class UserPhotoStore {
     if (idx != -1) {
       this.photos.splice(idx, 1);
     }
+  }
+
+  clear() {
+    this.photos = [];
   }
 }
 
