@@ -227,21 +227,16 @@ export class CacheManager {
             return true;
         })
 
-        Promise.all([changedToLocal, ...adds, ...dels]).then(() => {
+        return Promise.all([changedToLocal, ...adds, ...dels]).then(() => {
             garmentStore.setGarments(newGarmentStore.garments);
             console.log('writing to disk')
             this.writeGarmentCards();
+            return true;
         })
     }
 
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {        
-        // console.log('local', localOutfits)
-        // console.log('remote', remoteOutfits)
-        
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
-        
-        // console.log(compRes)
-        // console.log(compRes.diffs)
         
         const newOutfitStore = new OutfitStore();
 
@@ -250,11 +245,6 @@ export class CacheManager {
         const outfitsWithImages = newOutfitStore.outfits.filter(imageExists);
 
         const changedToLocal = Promise.all(this.changeImageToLocal(outfitsWithImages, getOutfitImageName));
-
-        // outfitStore.setOutfits(remoteOutfits);
-
-        // console.log('outfits', remoteOutfits);
-
         const adds = compRes.toAddIndices.map(async id => {
             const outfit = remoteOutfits[id];
             const imageName = getOutfitImageName(outfit);
@@ -309,9 +299,10 @@ export class CacheManager {
             }
         })
 
-        Promise.all([changedToLocal, ...adds, ...dels, ...imageUpdates]).then(() => {
+        return Promise.all([changedToLocal, ...adds, ...dels, ...imageUpdates]).then(() => {
             outfitStore.setOutfits(newOutfitStore.outfits);
             this.writeOutfits();
+            return true;
         })
     }
 }

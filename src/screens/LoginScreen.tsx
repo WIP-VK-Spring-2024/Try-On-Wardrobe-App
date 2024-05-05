@@ -54,7 +54,7 @@ const LoginTab = observer((props: TabProps) => {
     ajax.apiPost('/login', {
       body: JSON.stringify(params)
     }).then(async resp => {
-      resp.json().then((json: LoginResponse) => {
+      resp.json().then(async (json: LoginResponse) => {
         
         if ('msg' in json) {
           console.error(json.msg);
@@ -71,11 +71,14 @@ const LoginTab = observer((props: TabProps) => {
         cacheManager.writeToken();
 
         initCentrifuge();
-        initStores();
+        const initStatus = initStores();
+
+        props.navigation.navigate('Loading');
 
         setLogin('');
         setPassword('');
 
+        await initStatus;
         props.navigation.navigate('Home');
 
         return true;

@@ -54,12 +54,13 @@ export const initStores = () => {
                         return [];
                     });
 
-    Promise.all([localGarments, remoteGarments])
+    const garmentsUpdated = Promise.all([localGarments, remoteGarments])
         .then(([local, remote]) => {
             if (typeof remote !== 'boolean') {
-                cacheManager.updateGarments(local, remote);
-                // garmentStore.setGarments(remote);
+                return cacheManager.updateGarments(local, remote);
             }
+
+            return remote;
     })
 
     ajax.apiGet('/photos', {
@@ -150,9 +151,9 @@ export const initStores = () => {
             return [];
         });
 
-    Promise.all([localOutfits, remoteOutfits])
+    const outfitsUpdated = Promise.all([localOutfits, remoteOutfits])
         .then(([local, remote]) => {
-            cacheManager.updateOutfits(local, remote);
+            return cacheManager.updateOutfits(local, remote);
         })
     
     ajax.apiGet('/outfits/purposes', {
@@ -168,4 +169,6 @@ export const initStores = () => {
             outfitPurposeStore.setItems(json);
         }).catch(reason => console.error(reason))
     })
+
+    return Promise.all([garmentsUpdated, outfitsUpdated]);
 }

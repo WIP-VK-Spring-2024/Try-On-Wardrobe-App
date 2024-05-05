@@ -5,7 +5,7 @@ import {config} from '@gluestack-ui/config';
 import {
   GluestackUIProvider,
 } from '@gluestack-ui/themed';
-import {NavigationContainer} from '@react-navigation/native';
+import {createNavigationContainerRef, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {observer} from 'mobx-react-lite';
@@ -29,8 +29,51 @@ import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
 import { TryOnCardScreen } from './screens/TryOnCardScreen';
 import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
+import { cacheManager } from './cacheManager/cacheManager';
+import { initCentrifuge } from './requests/centrifuge';
+import { initStores } from './requests/init';
 
 export const Stack = createNativeStackNavigator();
+
+const navigationContainerRef = createNavigationContainerRef();
+
+cacheManager.readToken()
+  .then(async (token) => {
+    if (navigationContainerRef.current === null) {
+      console.error('No navigation container');
+      return;
+    }
+
+    if (token === false) {
+      navigationContainerRef.current.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+
+      return;
+    }
+
+    const status = await cacheManager.updateToken(token);
+    if (status === false) {
+      navigationContainerRef.current.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } else {
+
+      initCentrifuge();
+
+      const initStatus = await initStores();
+
+      navigationContainerRef.current.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    }
+  })
+  .catch(reason => {
+    console.error(reason);
+  })
 
 const App = observer((): JSX.Element => {
   const backgroundStyle = {
@@ -97,7 +140,7 @@ const App = observer((): JSX.Element => {
       />
       <GluestackUIProvider config={config}>
         <GestureHandlerRootView>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationContainerRef}>
             <ScreenStack/>
           </NavigationContainer>
         </GestureHandlerRootView>

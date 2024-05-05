@@ -23,7 +23,7 @@ interface BouncingCircleProps {
   icon: ReactNode
 }
 
-const BouncingCircle = (props: BouncingCircleProps) => {
+const BouncingIcon = (props: BouncingCircleProps) => {
   const offset = useSharedValue(0);
 
   const circleProps = useAnimatedProps(() => ({
@@ -47,11 +47,10 @@ const BouncingCircle = (props: BouncingCircleProps) => {
 
   return (
     <AnimatedGroup
-      x={WINDOW_WIDTH / 4 * (props.id + 1)}
+      x={WINDOW_WIDTH / 4 * (props.id + 1) - 25}
       y={WINDOW_HEIGHT / 2}
       animatedProps={circleProps}
     >
-      {/* <HangerIcon width={50} height={50} fill={ACTIVE_COLOR}/> */}
       {props.icon}
     </AnimatedGroup>
   )
@@ -68,45 +67,12 @@ export const LoadingScreen = observer((props: LoadingScreenProps) => {
     <GarmentIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
   ]
 
-  useEffect(() => {
-    cacheManager.readToken()
-      .then(async (token) => {
-        if (token === false) {
-          props.navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
-
-          return;
-        }
-
-        const status = await cacheManager.updateToken(token);
-        if (status === false) {
-          props.navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
-        } else {
-          initCentrifuge();
-          initStores();
-
-          props.navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          });
-        }
-      })
-      .catch(reason => {
-        console.error(reason);
-      })
-  }, [])
-
   return (
     <View>
       <Svg>
           {
             [...Array(3).keys()].map(i => (
-              <BouncingCircle
+              <BouncingIcon
                 key={i}
                 id={i}
                 icon={icons[i]}
