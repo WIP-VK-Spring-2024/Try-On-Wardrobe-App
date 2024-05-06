@@ -13,6 +13,7 @@ import { cacheManager } from "../cacheManager/cacheManager";
 import { profileStore } from "../stores/ProfileStore";
 import { Gender } from "../stores/common";
 import { convertLoginResponse, LoginSuccessResponse } from "../utils"
+import { ErrorMessage } from "../components/ErrorMessage"
 
 interface LoginBtnProps {
   text: string
@@ -41,11 +42,28 @@ interface ErrorResponse {
 
 type LoginResponse = LoginSuccessResponse | ErrorResponse;
 
+const errorMsgTimeout = 5000;
+
 const LoginTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isErrorShown, setIsErrorShown] = useState(false);
+
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
+
   const logIn = () => {
+    if (login.length === 0 || password.length === 0) {
+      return;
+    }
+
     const params = {
       name: login,
       password: password
@@ -54,10 +72,20 @@ const LoginTab = observer((props: TabProps) => {
     ajax.apiPost('/login', {
       body: JSON.stringify(params)
     }).then(async resp => {
+      switch (resp.status) {
+        case 404:
+        case 403:
+        case 400:
+          setError('Неправильный логин или пароль');
+          return;
+        default:
+          break;
+      }
+
       resp.json().then(async (json: LoginResponse) => {
-        
         if ('msg' in json) {
           console.error(json.msg);
+          setError(json.msg);
           return false;
         }
         
@@ -79,7 +107,10 @@ const LoginTab = observer((props: TabProps) => {
         setPassword('');
 
         await initStatus;
-        props.navigation.navigate('Home');
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }]
+        })
 
         return true;
       })
@@ -90,6 +121,8 @@ const LoginTab = observer((props: TabProps) => {
 
   return (
     <TabContentContainer>
+      <ErrorMessage msg={errorMsg} shown={isErrorShown}/>
+
       <LoginInput
         value={login}
         setValue={setLogin}
@@ -112,7 +145,22 @@ const SignUpTab = observer((props: TabProps) => {
   const [password, setPassword] = useState("");
   const [sex, setSex] = useState<Gender>("female");
 
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isErrorShown, setIsErrorShown] = useState(false);
+
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
+
   const signUp = () => {
+    if (login.length === 0 || email.length === 0 || password.length === 0) {
+      return;
+    }
+
     const params = {
       name: login,
       email: email,
@@ -128,11 +176,39 @@ const SignUpTab = observer((props: TabProps) => {
       .then(json => {
         console.log(json);
 
+        if ('msg' in json) {
+          if (json.msg === 'resource already exists') {
+            setError('Пользователь с таким логином или почтой уже существует');
+            return false;
+          }
+          
+          if (!('errors' in json)) {
+            setError(json.msg);
+            return false;
+          }
+
+          const errors: string[] = [];
+
+          if ('Email' in json.errors) {
+            errors.push('Неправильный формат почты');
+          }
+
+          if ('Name' in json.errors) {
+            errors.push('Логин может содержать только буквы русского и латинского алфавитов, цифры и следующие спецсимволы: "-_()+=~@^:?;$#№%*@|{}[\]!<>"');
+          }
+
+          setError(errors.join('\n\n'));
+          return false;
+        }
+
         appState.login(json.token, json.user_id);
         profileStore.setUser(convertLoginResponse(json));
         cacheManager.writeToken();
 
-        props.navigation.navigate('Home');
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }]
+        })
       })
       .catch(reason => {
         console.error(reason);
@@ -141,6 +217,8 @@ const SignUpTab = observer((props: TabProps) => {
 
   return (
     <TabContentContainer>
+      <ErrorMessage msg={errorMsg} shown={isErrorShown}/>
+
       <LoginInput
         value={login}
         setValue={setLogin}
