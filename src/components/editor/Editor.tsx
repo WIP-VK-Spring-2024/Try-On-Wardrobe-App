@@ -23,6 +23,7 @@ import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen";
 import { Outfit } from "../../stores/OutfitStore";
 import { EditorItemList } from "./EditorItemsList";
 import { GestureDetectorViewList } from "./GestureDetectorViewList";
+import { itemFromRect } from "./utils";
 
 interface OutfitEditorProps {
   positions: SharedValue<GarmentRect[]>
@@ -404,6 +405,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
     copy.sort((a, b) => a.zIndex - b.zIndex);
 
+    console.log('resort', copy.map(item => item.zIndex))
+
     return copy;
   })
 
@@ -411,6 +414,54 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
     const newPositions = [...positions.value];
     newPositions[id].zIndex = zIndex;
     positions.value = newPositions;
+  }
+
+  const moveUp = (id: number) => {
+    const newPositions = [...positions.value];
+    
+    const currentZIndex = newPositions[id].zIndex;
+
+    let closestId: number | undefined = undefined;
+
+    newPositions.forEach((el, i) => {
+      if (el.zIndex > currentZIndex) {
+        if (closestId === undefined || el.zIndex < newPositions[closestId].zIndex) {
+          closestId = i; 
+        }
+      }
+    })
+
+    if (closestId !== undefined) {
+      const newZIndex = newPositions[closestId].zIndex;
+      newPositions[closestId].zIndex = newPositions[id].zIndex;
+      newPositions[id].zIndex = newZIndex;
+
+      positions.value = newPositions;
+    }
+  }
+
+  const moveDown = (id: number) => {
+    const newPositions = [...positions.value];
+    
+    const currentZIndex = newPositions[id].zIndex;
+
+    let closestId: number | undefined = undefined;
+
+    newPositions.forEach((el, i) => {
+      if (el.zIndex < currentZIndex) {
+        if (closestId === undefined || el.zIndex > newPositions[closestId].zIndex) {
+          closestId = i; 
+        }
+      }
+    })
+
+    if (closestId !== undefined) {
+      const newZIndex = newPositions[closestId].zIndex;
+      newPositions[closestId].zIndex = newPositions[id].zIndex;
+      newPositions[id].zIndex = newZIndex;
+
+      positions.value = newPositions;
+    }
   }
 
   return (
@@ -464,14 +515,6 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
           }}/>
         </GestureDetector>
 
-        {/* {
-          positions.value.map((_, i) => {
-            return (
-              <GestureDetectorView key={i} gesture={getPanGesture(i)} positions={positions} id={i}/>
-            )
-          })
-        } */}
-
         <GestureDetectorViewList
           positions={sortedPositions}
           getPanGesture={getPanGesture}
@@ -489,8 +532,10 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
       <EditorMenu 
         selectedId={activeId}
         outfit={outfit}
-        positions={positions}
-        updateZIndex={updateZIndex}
+        positions={sortedPositions}
+        
+        moveUp={moveUp}
+        moveDown={moveDown}
       />
     </View>
   );

@@ -23,6 +23,7 @@ export const itemFromRect = (r: GarmentRect) => {
           height: r.height,
           angle: r.angle,
           scale: r.scale,
+          zIndex: r.zIndex
         })
     })
 }

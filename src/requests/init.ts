@@ -104,6 +104,7 @@ export const initStores = () => {
                 height: number
                 scale: number
                 angle: number
+                z_index: number
             }
         }
     }
@@ -113,14 +114,15 @@ export const initStores = () => {
     }).then(async data => {
         const json = await data.json();
 
-        // console.log('outfits', json)
+        console.log('outfits', json[0])
 
         return json.map((outfit: OutfitResponse) => {
+            let z = 0;
             const items = Object.entries(outfit.transforms)
                 .map(([uuid, transform]) => {
                     return new OutfitItem({
                         garmentUUID: uuid,
-                        rect: new OutfitItemRect(transform)
+                        rect: new OutfitItemRect({...transform, zIndex: transform.z_index || z++})
                     })
                 })
 

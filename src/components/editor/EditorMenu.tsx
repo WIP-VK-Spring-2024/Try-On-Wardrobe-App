@@ -1,21 +1,27 @@
 import { Image, Pressable, View } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useEffect } from "react";
 import { RobotoText } from "../common";
 import { getImageSource } from "../../utils";
-import Animated, { SharedValue, useAnimatedStyle } from "react-native-reanimated";
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from "react-native-reanimated";
 import { Outfit } from "../../stores/OutfitStore";
-import { Rectangle } from "./models";
+import { Rectangle, RectangleWithIndex } from "./models";
 
 interface EditorMenuProps {
-  positions: SharedValue<Rectangle[]>,
+  positions: SharedValue<RectangleWithIndex[]>,
   selectedId: SharedValue<number | undefined>
   outfit: Outfit
-  updateZIndex: (id: number, zIndex: number)=>void
+  // updateZIndex: (id: number, zIndex: number)=>void
+  moveUp: (id: number)=>void
+  moveDown: (id: number)=>void
 }
 
 export const EditorMenu = observer((props: EditorMenuProps) => {
   const garments = props.outfit.items;
+
+  useEffect(() => {
+    console.log('rerender')
+  })
 
   const getStyle = (i: number) => useAnimatedStyle(() => {
     return {
@@ -36,9 +42,9 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
         onPress={() => {
           console.log('down')
           if (props.selectedId.value !== undefined) {
-            const zIndex = props.positions.value[props.selectedId.value].zIndex;
+            props.moveDown(props.selectedId.value);
 
-            props.updateZIndex(props.selectedId.value, zIndex - 1);
+            // props.updateZIndex(props.selectedId.value, closest || zIndex - 1);
           }
 
         }}
@@ -78,13 +84,10 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
 
       <Pressable
         onPress={() => {
-          console.log('down')
+          console.log('up')
           if (props.selectedId.value !== undefined) {
-            const zIndex = props.positions.value[props.selectedId.value].zIndex;
-
-            props.updateZIndex(props.selectedId.value, zIndex + 1);
+            props.moveUp(props.selectedId.value);
           }
-
         }}
       >
         <RobotoText>up</RobotoText>

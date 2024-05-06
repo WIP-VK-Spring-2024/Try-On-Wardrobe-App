@@ -192,7 +192,9 @@ export class Outfit {
             })
         }
 
-        const cardToItem = async (garment: GarmentCard) => {
+        const maxZIndex = Math.max(...this.items.map(i => i.rect.zIndex));
+
+        const cardToItem = async (garment: GarmentCard, i: number) => {
             const dimensions = await getDimensions(garment.image);
             const aspectRatio = dimensions.width / dimensions.height;
             return new OutfitItem({
@@ -202,6 +204,7 @@ export class Outfit {
                     y: 300,
                     width: 200 * aspectRatio,
                     height: 200,
+                    zIndex: maxZIndex + i + 1
                 })
             })
         }
@@ -209,10 +212,6 @@ export class Outfit {
         const items = await Promise.all(garments.map(cardToItem));
 
         this.addItems(items);
-
-        // Image.getSize(getImageSource(item.image).uri, (width, height) => {
-        //     console.log(width, height);
-        // })
     }
 
     removeGarment(garment: GarmentCard) {
