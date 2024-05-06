@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { OutfitEditor } from "../../components/editor/Editor";
 import { BackHeader } from "../../components/Header";
@@ -73,8 +73,40 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
 
   const images = useSharedValue<(SkImage | undefined)[]>([]);
 
+  // useEffect(() => {
+  //   const imagePromises = outfit.items
+  //     .map((item, i) => {
+  //       if (item.image === undefined) {
+  //         return undefined;
+  //       }
+
+  //       return loadSkImage(item.image)
+  //         .then(img => {
+  //           if (img === null) {
+  //             return undefined;
+  //           }
+
+  //           return img;
+  //         })
+  //         .catch(reason => {
+  //           console.error(reason);
+  //           return undefined;
+  //         })
+  //     })
+
+  //   Promise.all(imagePromises).then(skImages => {
+  //     console.log('images update in screen', skImages.length)
+  //     images.value = skImages;
+  //   })
+  // }, [])
+
+  const canvasRef = useCanvasRef();
+
   useEffect(() => {
-    const imagePromises = outfit.items
+    autorun(() => {
+      positions.value = outfit.items.map(rectFromItem);
+
+      const imagePromises = outfit.items
       .map((item, i) => {
         if (item.image === undefined) {
           return undefined;
@@ -94,16 +126,10 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
           })
       })
 
-    Promise.all(imagePromises).then(skImages => {
-      images.value = skImages;
-    })
-  }, [])
-
-  const canvasRef = useCanvasRef();
-
-  useEffect(() => {
-    autorun(() => {
-      positions.value = outfit.items.map(rectFromItem);
+      Promise.all(imagePromises).then(skImages => {
+        console.log('images update in screen', skImages.length)
+        images.value = skImages;
+      })
     })
   }, [])
 
@@ -166,7 +192,8 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       />
       { appState.error==='network' && <ConnectionErrorAlert/> }
       { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
-      <OutfitEditor 
+      <OutfitEditor
+        navigation={props.navigation}
         positions={positions}
         images={images}
         outfit={outfit} 

@@ -143,6 +143,7 @@ export class Outfit {
             addItem: action,
             addItems: action,
             addGarments: action,
+            removeGarmentWithUUID: action,
             removeGarment: action,
         })
     }
@@ -214,8 +215,16 @@ export class Outfit {
         this.addItems(items);
     }
 
-    removeGarment(garment: GarmentCard) {
-        this.items = this.items.filter(item => item.garmentUUID !== garment.uuid!);
+    removeGarmentWithUUID(uuid: string) {
+        this.items = this.items.filter(item => item.garmentUUID !== uuid);
+    }
+
+    removeGarment(garment: GarmentCard | string) {
+        if (typeof garment === 'string') {
+            this.removeGarmentWithUUID(garment);
+        } else {
+            this.removeGarmentWithUUID(garment.uuid!);
+        }
     }
 }
 

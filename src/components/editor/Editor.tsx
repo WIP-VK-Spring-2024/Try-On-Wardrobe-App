@@ -26,6 +26,7 @@ import { GestureDetectorViewList } from "./GestureDetectorViewList";
 import { itemFromRect } from "./utils";
 
 interface OutfitEditorProps {
+  navigation: any
   positions: SharedValue<GarmentRect[]>
   images: SharedValue<(SkImage | undefined)[]>
 
@@ -33,7 +34,7 @@ interface OutfitEditorProps {
   outfit: Outfit
 }
 
-export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: OutfitEditorProps) => {
+export const OutfitEditor = observer(({positions, canvasRef, outfit, images, navigation}: OutfitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0, w: 0, h: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);
@@ -47,7 +48,7 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
   const getPanGesture = (index: number) => {
     const id = useDerivedValue(() => {
-      const ind = sortedPositions.value[index].index;
+      const ind = sortedPositions.value[index]?.index || 0;
       return ind;
     });
 
@@ -405,16 +406,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
 
     copy.sort((a, b) => a.zIndex - b.zIndex);
 
-    console.log('resort', copy.map(item => item.zIndex))
-
     return copy;
   })
-
-  const updateZIndex = (id: number, zIndex: number) => {
-    const newPositions = [...positions.value];
-    newPositions[id].zIndex = zIndex;
-    positions.value = newPositions;
-  }
 
   const moveUp = (id: number) => {
     const newPositions = [...positions.value];
@@ -529,7 +522,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images}: Ou
         </GestureDetector>
       </View>
 
-      <EditorMenu 
+      <EditorMenu
+        navigation={navigation}
         selectedId={activeId}
         outfit={outfit}
         positions={sortedPositions}
