@@ -12,7 +12,7 @@ import { ajax } from "../requests/common";
 import { cacheManager } from "../cacheManager/cacheManager";
 import { profileStore } from "../stores/ProfileStore";
 import { Gender } from "../stores/common";
-import { convertLoginResponse, LoginSuccessResponse } from "../utils"
+import { convertLoginResponse, LoginSuccessResponse, nameErrorMsg } from "../utils"
 import { ErrorMessage } from "../components/ErrorMessage"
 
 interface LoginBtnProps {
@@ -194,7 +194,7 @@ const SignUpTab = observer((props: TabProps) => {
           }
 
           if ('Name' in json.errors) {
-            errors.push('Логин может содержать только буквы русского и латинского алфавитов, цифры и следующие спецсимволы: "-_()+=~@^:?;$#№%*@|{}[\]!<>"');
+            errors.push(nameErrorMsg('Логин'));
           }
 
           setError(errors.join('\n\n'));

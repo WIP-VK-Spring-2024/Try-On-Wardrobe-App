@@ -7,6 +7,7 @@ import { DELETE_BTN_COLOR } from "../consts";
 
 interface ErrorMessageProps {
   shown: boolean
+  // setShown: (shown: boolean) => void
   msg: string
 };
 
