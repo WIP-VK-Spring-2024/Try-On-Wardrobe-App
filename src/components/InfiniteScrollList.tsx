@@ -1,10 +1,8 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, FlatListProps, StyleSheetProperties } from "react-native";
-import { ajax } from "../requests/common";
+import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
 import { getLast } from "../utils";
-import { RefreshControl } from "@gluestack-ui/themed";
-import { useFocusEffect } from "@react-navigation/native";
+import { RefreshControl, ScrollView } from "@gluestack-ui/themed";
 import { RobotoText } from "./common";
 
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
@@ -100,8 +98,10 @@ export const InfiniteScrollList = observer(
         }
       />
     ) : (
-      <RobotoText fontSize={22} textAlign="center">
-        {props.noItemsText || 'Ничего не найдено'}
-      </RobotoText>
+      <ScrollView h="100%" marginTop={10} contentContainerStyle={{justifyContent: "center"}}>
+        <RobotoText fontSize={22} textAlign="center">
+          {props.noItemsText || 'Ничего не найдено'}
+        </RobotoText>
+      </ScrollView>
     );
 })

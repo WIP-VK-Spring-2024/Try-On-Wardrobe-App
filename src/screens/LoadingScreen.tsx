@@ -62,17 +62,17 @@ interface LoadingScreenProps {
 const navigateToLoginOrOnboarding = (navigation: any) => {
   cacheManager.readViewedOnboarding()
     .then((viewed) => {
-      if (viewed) {
+      // if (viewed) {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Login' }],
         });
-      } else {
+      /* } else {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Onboarding' }],
         });
-      }
+      } */
     });
 };
 
@@ -98,9 +98,13 @@ export const LoadingScreen = observer((props: LoadingScreenProps) => {
           initCentrifuge();
           initStores();
 
+          // props.navigation.reset({
+          //   index: 0,
+          //   routes: [{ name: 'Home' }],
+          // });
           props.navigation.reset({
             index: 0,
-            routes: [{ name: 'Home' }],
+            routes: [{ name: 'Onboarding' }],
           });
         }
       })

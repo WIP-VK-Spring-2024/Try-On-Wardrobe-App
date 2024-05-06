@@ -73,13 +73,14 @@ const LoginTab = observer((props: TabProps) => {
         initCentrifuge();
         const initStatus = initStores();
 
-        props.navigation.navigate('Loading');
+        // props.navigation.navigate('Loading');
 
         setLogin('');
         setPassword('');
 
         await initStatus;
-        props.navigation.navigate('Home');
+        // props.navigation.navigate('Home');
+        props.navigation.navigate('Onboarding');
 
         return true;
       })
