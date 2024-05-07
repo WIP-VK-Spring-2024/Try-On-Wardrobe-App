@@ -26,7 +26,7 @@ const makeFormData = (outfit: Outfit) => {
     });
 
     const transforms =  Object.fromEntries(outfit.items
-        .map(item => ([item.garmentUUID, item.rect.getTransforms()])));
+        .map(item => ([item.garmentUUID, {...item.rect.getTransforms(), z_index: item.rect.zIndex}])));
 
     formData.append('transforms', JSON.stringify(transforms));
     

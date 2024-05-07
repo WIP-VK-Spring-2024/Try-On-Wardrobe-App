@@ -11,7 +11,8 @@ interface OutfitItemRectProps {
     width?: number
     height?: number
     angle?: number
-    scale?: number 
+    scale?: number
+    zIndex?: number
 }
 
 export class OutfitItemRect {
@@ -21,6 +22,7 @@ export class OutfitItemRect {
     height: number
     angle: number
     scale: number
+    zIndex: number
 
     halfWidth: number;
     halfHeight: number;
@@ -32,6 +34,7 @@ export class OutfitItemRect {
         this.height = props.height || 0;
         this.angle = props.angle || 0;
         this.scale = props.scale || 1;
+        this.zIndex = props.zIndex || 0;
 
         this.halfWidth = this.width / 2;
         this.halfHeight = this.height / 2;
@@ -44,7 +47,8 @@ export class OutfitItemRect {
             angle: this.angle,
             width: this.width,
             height: this.height,
-            scale: this.scale,     
+            scale: this.scale,  
+            zIndex: this.zIndex,
         }
     }
 
@@ -139,6 +143,7 @@ export class Outfit {
             addItem: action,
             addItems: action,
             addGarments: action,
+            removeGarmentWithUUID: action,
             removeGarment: action,
         })
     }
@@ -188,7 +193,9 @@ export class Outfit {
             })
         }
 
-        const cardToItem = async (garment: GarmentCard) => {
+        const maxZIndex = Math.max(...this.items.map(i => i.rect.zIndex));
+
+        const cardToItem = async (garment: GarmentCard, i: number) => {
             const dimensions = await getDimensions(garment.image);
             const aspectRatio = dimensions.width / dimensions.height;
             return new OutfitItem({
@@ -198,6 +205,7 @@ export class Outfit {
                     y: 300,
                     width: 200 * aspectRatio,
                     height: 200,
+                    zIndex: maxZIndex + i + 1
                 })
             })
         }
@@ -205,14 +213,18 @@ export class Outfit {
         const items = await Promise.all(garments.map(cardToItem));
 
         this.addItems(items);
-
-        // Image.getSize(getImageSource(item.image).uri, (width, height) => {
-        //     console.log(width, height);
-        // })
     }
 
-    removeGarment(garment: GarmentCard) {
-        this.items = this.items.filter(item => item.garmentUUID !== garment.uuid!);
+    removeGarmentWithUUID(uuid: string) {
+        this.items = this.items.filter(item => item.garmentUUID !== uuid);
+    }
+
+    removeGarment(garment: GarmentCard | string) {
+        if (typeof garment === 'string') {
+            this.removeGarmentWithUUID(garment);
+        } else {
+            this.removeGarmentWithUUID(garment.uuid!);
+        }
     }
 }
 

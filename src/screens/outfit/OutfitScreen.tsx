@@ -168,7 +168,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const header = (
     <BackHeader
       navigation={props.navigation}
-      text={outfit.name === "Без названия" ? "Комплект" : outfit.name}
+      text={outfit.name === "Без названия" ? "Образ" : outfit.name}
       rightMenu={
         <HeaderMenu
           onDelete={async () => {

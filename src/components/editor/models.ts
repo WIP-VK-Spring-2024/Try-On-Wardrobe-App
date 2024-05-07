@@ -7,13 +7,18 @@ export interface RectangleProps {
     angle: number,
     width: number,
     height: number,
-    scale: number
+    scale: number,
+    zIndex: number,
 }
   
 export interface Rectangle extends RectangleProps {
     halfWidth: number,
     halfHeight: number,
-    image?: ImageType,
+    // image?: ImageType,
+}
+
+export interface RectangleWithIndex extends Rectangle {
+    index: number
 }
 
 export interface RectangleWithPayload<T> extends Rectangle {
