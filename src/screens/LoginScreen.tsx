@@ -79,6 +79,10 @@ const LoginTab = observer((props: TabProps) => {
         setPassword('');
 
         await initStatus;
+
+        appState.setViewedOnboarding(true);
+        cacheManager.writeViewedOnboarding();
+
         props.navigation.reset({
           index: 0,
           routes: [{ name: 'Home' }],
@@ -134,6 +138,9 @@ const SignUpTab = observer((props: TabProps) => {
         appState.login(json.token, json.user_id);
         profileStore.setUser(convertLoginResponse(json));
         cacheManager.writeToken();
+
+        appState.setViewedOnboarding(true);
+        cacheManager.writeViewedOnboarding();
 
         props.navigation.reset({
           index: 0,

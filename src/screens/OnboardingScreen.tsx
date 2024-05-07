@@ -12,6 +12,8 @@ import FeedIcon from "../../assets/icons/paper.svg";
 
 import { SvgProps } from "react-native-svg";
 import { ACTIVE_COLOR, BASE_COLOR, PRIMARY_COLOR } from "../consts";
+import { cacheManager } from "../cacheManager/cacheManager";
+import { appState } from "../stores/AppState";
 
 interface PageProps {
   key: string
@@ -79,14 +81,20 @@ export const OnboardingScreen = observer((props: { navigation: any }) => {
       renderPrevButton={() => <RobotoText padding={12}>Назад</RobotoText>}
       renderDoneButton={() => (
         <View>
-          <RobotoText padding={0} textAlign="center">Начать</RobotoText>
-          <RobotoText padding={0} textAlign="center">пользоваться</RobotoText>
+          <RobotoText padding={0} textAlign="center">
+            Начать
+          </RobotoText>
+          <RobotoText padding={0} textAlign="center">
+            пользоваться
+          </RobotoText>
         </View>
       )}
-      onDone={() => props.navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      })}
+      onDone={() => {
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      }}
     />
   );
 });

@@ -59,55 +59,12 @@ interface LoadingScreenProps {
   navigation: any
 }
 
-const navigateToLoginOrOnboarding = (navigation: any) => {
-  cacheManager.readViewedOnboarding()
-    .then((viewed) => {
-      if (viewed) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Login' }],
-        });
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Onboarding' }],
-        });
-      }
-    });
-};
-
 export const LoadingScreen = observer((props: LoadingScreenProps) => {
   const icons = [
     <HangerIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
     <OutfitIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
     <GarmentIcon width={50} height={50} fill={ACTIVE_COLOR}/>,
   ]
-
-  useEffect(() => {
-    cacheManager.readToken()
-      .then(async (token) => {
-        if (token === false) {
-          navigateToLoginOrOnboarding(props.navigation);
-          return;
-        }
-
-        const status = await cacheManager.updateToken(token);
-        if (status === false) {
-          navigateToLoginOrOnboarding(props.navigation);
-        } else {
-          initCentrifuge();
-          initStores();
-
-          props.navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          });
-        }
-      })
-      .catch(reason => {
-        console.error(reason);
-      })
-  }, [])
 
   return (
     <View>

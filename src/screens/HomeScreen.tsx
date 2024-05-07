@@ -38,7 +38,7 @@ const requestPermission = async () => {
 export const HomeScreen = observer(({navigation}: {navigation: any}) => {
   useEffect(() => {
     requestPermission();
-  }, [])
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -58,7 +58,7 @@ export const HomeScreen = observer(({navigation}: {navigation: any}) => {
 
       return () => subscription.remove();
     }, [appState.createMenuVisible])
-  )
+  );
   
   return (
     <>

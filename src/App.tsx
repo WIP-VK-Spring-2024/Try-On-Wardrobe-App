@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
@@ -38,49 +38,58 @@ export const Stack = createNativeStackNavigator();
 
 const navigationContainerRef = createNavigationContainerRef();
 
-cacheManager.readToken()
-  .then(async (token) => {
-    if (navigationContainerRef.current === null) {
-      console.error('No navigation container');
-      return;
-    }
-
-    if (token === false) {
-      navigationContainerRef.current.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-
-      return;
-    }
-
-    const status = await cacheManager.updateToken(token);
-    if (status === false) {
-      navigationContainerRef.current.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    } else {
-
-      initCentrifuge();
-
-      const initStatus = await initStores();
-
-      navigationContainerRef.current.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }
-  })
-  .catch(reason => {
-    console.error(reason);
-  })
+const navigateToLoginOrOnboarding = (navigation: any) => {
+  cacheManager.readViewedOnboarding()
+    .then((viewed) => {
+      if (viewed) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Onboarding' }],
+        });
+      }
+    });
+};
 
 const App = observer((): JSX.Element => {
   const backgroundStyle = {
     backgroundColor: Colors.lighter,
     flex: 1,
   };
+
+  useEffect(() => {
+    cacheManager.readToken()
+    .then(async (token) => {
+      if (navigationContainerRef.current === null) {
+        console.error('No navigation container');
+        return;
+      }
+
+      if (token === false) {
+        navigateToLoginOrOnboarding(navigationContainerRef.current);
+        return;
+      }
+
+      const status = await cacheManager.updateToken(token);
+      if (status === false) {
+        navigateToLoginOrOnboarding(navigationContainerRef.current);
+      } else {
+        initCentrifuge();
+        const initStatus = await initStores();
+
+        navigationContainerRef.current.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    })
+    .catch(reason => {
+      console.error(reason);
+    })}, []);
 
   const ScreenStack = observer(() => {
     return (
