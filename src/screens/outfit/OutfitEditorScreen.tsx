@@ -1,4 +1,4 @@
-import React, { useDebugValue, useEffect, useState } from "react";
+import React, { useDebugValue, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { OutfitEditor } from "../../components/editor/Editor";
 import { BackHeader } from "../../components/Header";
@@ -75,6 +75,8 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
 
   const canvasRef = useCanvasRef();
 
+  const canSaveRef = useRef<boolean>(true);
+
   useEffect(() => {
     autorun(() => {
       positions.value = outfit.items.map(rectFromItem);
@@ -106,6 +108,12 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
   }, [])
 
   const save = () => {
+    if (!canSaveRef.current) {
+      return;
+    }
+
+    canSaveRef.current = false;
+
     outfit.setItems(positions.value.map(itemFromRect));
 
     canvasRef.current?.makeImageSnapshotAsync()
@@ -134,6 +142,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
           } else {
             appState.setError('network');
           }
+          canSaveRef.current = true;
         }
 
         if (outfit.uuid === undefined) {

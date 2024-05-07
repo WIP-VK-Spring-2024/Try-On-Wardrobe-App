@@ -59,7 +59,7 @@ export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
           />
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
-          Try-On
+          TryOn Wardrobe
         </RobotoText>
       </Box>
       {rightMenu === null || rightMenu || <GarmentHeaderButtons />}
