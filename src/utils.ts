@@ -37,6 +37,16 @@ export const getOptionalImageSource = (image?: ImageType) => {
   return image === undefined ? image : getImageSource(image);
 }
 
+export const nameErrorMsg = (
+  fieldName: string,
+  opts?: {
+    plural?: boolean,
+    spaces?: boolean,
+  }
+) => {
+  return `${fieldName} ${opts?.plural ? 'могут' : 'может'} содержать только буквы русского и латинского алфавитов, ${opts?.spaces && 'пробелы,'} цифры и следующие спецсимволы: "-_()+=~@^:?;$#№%*@|{}[\]!<>"`;
+};
+
 export const deepEqualArr = (arr1: any[], arr2: any[]) => {
   return arr1.every(el => arr2.includes(el)) && arr2.every(el => arr1.includes(el));
 }

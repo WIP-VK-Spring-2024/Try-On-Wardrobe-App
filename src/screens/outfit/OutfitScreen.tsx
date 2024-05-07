@@ -5,7 +5,7 @@ import { appState, processNetworkError } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View, HStack } from "@gluestack-ui/themed";
 import { RobotoText, DeleteMenu, AlertModal } from "../../components/common";
-import { getImageSource } from "../../utils";
+import { getImageSource, nameErrorMsg } from "../../utils";
 import { Outfit, OutfitEdit, OutfitItem } from "../../stores/OutfitStore";
 import { tryOnStore } from '../../stores/TryOnStore'
 
@@ -22,6 +22,7 @@ import { ButtonFooter } from "../../components/Footer";
 import { UpdateableTextInput } from "../../components/UpdateableTextInput";
 import { PrivacyCheckbox } from "../../components/PrivacyCheckbox";
 import { TryOnButton } from "../../components/TryOnButton";
+import { ErrorMessage } from "../../components/ErrorMessage";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -143,9 +144,22 @@ const HeaderMenu = (props: HeaderMenuProps) => {
   )
 }
 
+const errorMsgTimeout = 5000;
+
 export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const outfit: Outfit = props.route.params.outfit;
   const [oldItems, setOldItems] = useState(outfit.items.map(item => item.garmentUUID));
+
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isErrorShown, setIsErrorShown] = useState(false);
+
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
 
   const garments: GarmentCard[] = outfit.items
     .map((item: OutfitItem) => item.garment)
@@ -192,11 +206,36 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       onPress={() => {
         console.log(edit);
 
-        updateOutfitFields(edit).then(_ => {
-          edit.saveChanges();
-          appState.setSuccessMessage('Изменения успешно сохранены');
-          setTimeout(() => appState.closeSuccessMessage(), 2000);
-        }).catch(err => processNetworkError(err));;
+        updateOutfitFields(edit)
+          .then(resp => resp.json())
+          .then(json => {
+            if (!('msg' in json)) {
+              edit.saveChanges();
+              appState.setSuccessMessage('Изменения успешно сохранены');
+              setTimeout(() => appState.closeSuccessMessage(), 2000);
+              return;
+            }
+
+            edit.clearChanges();
+      
+            if (!('errors' in json)) {
+              setError(json.msg);
+              return;
+            }
+
+            const errors: string[] = [];
+          
+            if ('Name' in json.errors) {
+              errors.push(nameErrorMsg('Название образа', {spaces: true}));
+            }
+
+            if ('Tags' in json.errors) {
+              errors.push(nameErrorMsg('Теги', {spaces: true, plural: true}));
+            }
+
+            setError(errors.join('\n\n'));
+          })
+          .catch(err => processNetworkError(err));
       }}
     />
   ) : null;
@@ -307,6 +346,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
             inEditing={inEditing}
             setInEditing={setInEditing}
           />
+          <ErrorMessage shown={isErrorShown} msg={errorMsg} />
           <View flexDirection="row">
             <View flex={3}></View>
             <View flex={5}>

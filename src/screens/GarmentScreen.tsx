@@ -13,7 +13,7 @@ import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
 import { TryOnButton } from "../components/TryOnButton"
 import { UpdateableTextInput } from '../components/UpdateableTextInput'
-import { getImageSource } from '../utils'
+import { getImageSource, nameErrorMsg } from '../utils'
 
 import HashTagIcon from '../../assets/icons/hashtag.svg';
 import CrossIcon from '../../assets/icons/cross.svg';
@@ -29,6 +29,8 @@ import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
+import { ErrorMessage } from '../components/ErrorMessage';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -68,12 +70,25 @@ const GarmentImage = observer(({garment} : {garment: GarmentCard}) => {
   )
 });
 
+const errorMsgTimeout = 5000;
+
 export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(props.route.params.garment as GarmentCard));
   const [tagInputValue, setTagInputValue] = useState('');
+
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isErrorShown, setIsErrorShown] = useState(false);
+
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
 
   useEffect(() => {
     garment.clearChanges();
@@ -95,8 +110,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   })
 
   const saveChanges = () => {
-    garment.saveChanges();
-
     setTagInputValue('');
 
     const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
@@ -119,11 +132,37 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
      credentials: true,
       body: JSON.stringify(new_garment)
     })
-      .then(()=>{
+    .then(resp => resp.json())
+    .then(json => {
+      console.log(json);
+
+      if (!('msg' in json)) {
+        garment.saveChanges();
         appState.setSuccessMessage('Изменения успешно сохранены');
         setTimeout(() => appState.closeSuccessMessage(), 2000);
-      })
-      .catch(res => console.error(res));
+        return;
+      }
+
+      garment.clearChanges();
+      
+      if (!('errors' in json)) {
+        setError(json.msg);
+        return;
+      }
+
+      const errors: string[] = [];
+    
+      if ('Name' in json.errors) {
+        errors.push(nameErrorMsg('Название вещи', {spaces: true}));
+      }
+
+      if ('Tags' in json.errors) {
+        errors.push(nameErrorMsg('Теги', {spaces: true, plural: true}));
+      }
+
+      setError(errors.join('\n\n'));
+    })
+    .catch(res => console.error(res));
   }
 
   const CloseAlertDialog = observer(() => {
@@ -374,13 +413,16 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           marginRight={20}
           marginBottom={100}>
           <GarmentImage garment={garment} />
-
+          
           <UpdateableTextInput
             text={garment.name}
             onUpdate={text => garment.setName(text)}
             inEditing={inEditing}
             setInEditing={setInEditing}
           />
+
+          <ErrorMessage shown={isErrorShown} msg={errorMsg} />
+
 
           <GarmentSeasonIcons />
           <GarmentTypeSelector />

@@ -9,9 +9,6 @@ import { G } from "react-native-svg";
 import HangerIcon from '../../assets/icons/hanger.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
 import OutfitIcon from '../../assets/icons/outfit.svg';
-import { cacheManager } from "../cacheManager/cacheManager";
-import { initCentrifuge } from "../requests/centrifuge";
-import { initStores } from "../requests/init";
 
 const MOTION = WINDOW_HEIGHT / 8;
 
