@@ -24,7 +24,7 @@ import SummerIcon from '../../assets/icons/seasons/summer.svg';
 import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 
 import TrashIcon from '../../assets/icons/trash.svg';
-import { deleteGarment } from '../requests/garment';
+import { deleteGarment, updateGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
@@ -112,27 +112,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
   const saveChanges = () => {
     setTagInputValue('');
 
-    const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
-
-    const garmentUpdate = (garment: GarmentCard) => ({
-      uuid: garment.uuid,
-      name: garment.name,
-      type_id: garment.type?.uuid,
-      subtype_id: garment.subtype?.uuid,
-      style_id: garment.style?.uuid,
-      tags: garment.tags,
-      seasons: garment.seasons
-    });
-
-    const new_garment = garmentUpdate(garment);
-
-    clearObj(new_garment);
-
-    ajax.apiPut('/clothes/' + garment.uuid, {
-     credentials: true,
-      body: JSON.stringify(new_garment)
-    })
-    .then(resp => resp.json())
+    updateGarment(garment)
     .then(json => {
       console.log(json);
 

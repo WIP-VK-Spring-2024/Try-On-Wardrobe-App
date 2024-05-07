@@ -49,9 +49,7 @@ const floatingStyle = StyleSheet.create({
   },
   menuItem: {
     flexDirection: 'row',
-    // gap: 10,
     alignItems: 'center',
-    // justifyContent: 'flex-start'
     justifyContent: 'space-between'
   }
 });
@@ -88,19 +86,13 @@ export const MenuItem = observer(({text, onPress, Icon, stroke, fontSize, iconSi
 
   return (
     <Pressable
-      // style={floatingStyle.menuItem}
       flexDirection='row'
       alignItems='center'
       onPress={onPress}
-      // flex={1}
     >
       <View
-        // width={35}
-        // height={35}
-        // flex={1}
       >
         <Icon {...props}/>
-        {/* <RobotoText>kek</RobotoText> */}
       </View>
       
       <View

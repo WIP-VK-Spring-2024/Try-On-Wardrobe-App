@@ -187,3 +187,5 @@ export function imageExists<T extends {image: ImageType | undefined}>(value: T):
 export function notEmpty<T>(value: T | undefined): value is T {
   return value !== undefined;
 }
+
+export const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
