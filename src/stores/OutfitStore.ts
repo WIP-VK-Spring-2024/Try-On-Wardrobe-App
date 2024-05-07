@@ -193,7 +193,7 @@ export class Outfit {
             })
         }
 
-        const maxZIndex = Math.max(...this.items.map(i => i.rect.zIndex));
+        const maxZIndex = Math.max(...this.items.map(i => i.rect.zIndex), 0);
 
         const cardToItem = async (garment: GarmentCard, i: number) => {
             const dimensions = await getDimensions(garment.image);
@@ -212,6 +212,7 @@ export class Outfit {
 
         const items = await Promise.all(garments.map(cardToItem));
 
+        console.log(items);
         this.addItems(items);
     }
 
