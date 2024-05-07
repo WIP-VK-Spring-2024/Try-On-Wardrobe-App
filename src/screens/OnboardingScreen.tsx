@@ -83,11 +83,10 @@ export const OnboardingScreen = observer((props: { navigation: any }) => {
           <RobotoText padding={0} textAlign="center">пользоваться</RobotoText>
         </View>
       )}
-      // onDone={() => props.navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Login' }],
-      // })}
-      onDone={() => props.navigation.navigate('Home')}
+      onDone={() => props.navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      })}
     />
   );
 });

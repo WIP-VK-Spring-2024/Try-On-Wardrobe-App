@@ -73,14 +73,16 @@ const LoginTab = observer((props: TabProps) => {
         initCentrifuge();
         const initStatus = initStores();
 
-        // props.navigation.navigate('Loading');
+        props.navigation.navigate('Loading');
 
         setLogin('');
         setPassword('');
 
         await initStatus;
-        // props.navigation.navigate('Home');
-        props.navigation.navigate('Onboarding');
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
 
         return true;
       })
@@ -133,7 +135,10 @@ const SignUpTab = observer((props: TabProps) => {
         profileStore.setUser(convertLoginResponse(json));
         cacheManager.writeToken();
 
-        props.navigation.navigate('Home');
+        props.navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       })
       .catch(reason => {
         console.error(reason);
