@@ -211,6 +211,8 @@ const SignUpTab = observer((props: TabProps) => {
 
         appState.setViewedOnboarding(true);
         cacheManager.writeViewedOnboarding();
+        
+        initCentrifuge();
 
         props.navigation.reset({
           index: 0,
