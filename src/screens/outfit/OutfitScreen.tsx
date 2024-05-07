@@ -392,7 +392,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       <CloseAlertDialog />
       {garments.filter(garment => garment.tryOnAble).length > 0 &&
         <TryOnButton
-          garments={garments}
+          outfitId={outfit.uuid}
           navigation={props.navigation}
           marginBottom={edit.hasChanges ? 56 : 0}
           nextScreen='Outfit'

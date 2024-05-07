@@ -8,7 +8,8 @@ import { GarmentCard } from "../stores/GarmentStore";
 import { RobotoText } from "./common"
 
 interface TryOnButtonProps {
-  garments: GarmentCard[]
+  outfitId?: string
+  garments?: GarmentCard[]
   navigation: any
   marginBottom?: number
   nextScreen?: string
@@ -17,6 +18,7 @@ interface TryOnButtonProps {
 
 export const TryOnButton = observer(
   ({
+    outfitId,
     garments,
     navigation,
     marginBottom,
@@ -24,7 +26,7 @@ export const TryOnButton = observer(
     nextScreenParams,
   }: TryOnButtonProps) => {
   
-  garments = garments.filter(garment => garment.tryOnAble);
+  garments = garments?.filter(garment => garment.tryOnAble);
 
   return (
     <Fab
@@ -34,13 +36,14 @@ export const TryOnButton = observer(
       right={10}
       bgColor={EXTRA_COLOR}
       gap={5}
-      isDisabled={garments.length < 1}
+      isDisabled={garments ? garments.length < 1 : outfitId === undefined}
       onPress={() => {
         tryOnScreenGarmentSelectionStore.clearSelectedItems();
 
-        garments.forEach(garment => tryOnScreenGarmentSelectionStore.select(garment));
+        garments?.forEach(garment => tryOnScreenGarmentSelectionStore.select(garment));
 
         navigation.navigate('TryOn/Person', {
+          outfitId: outfitId,
           next: nextScreen,
           params: nextScreenParams,
         });
