@@ -55,8 +55,6 @@ interface PromptFormProps {
 }
 
 const PromptForm = observer((props: PromptFormProps) => {
-  const [prompt, setPrompt] = useState(props.prompt);
-
   return (
     <FormControl>
       <FormControlLabel>
@@ -65,10 +63,8 @@ const PromptForm = observer((props: PromptFormProps) => {
       <Textarea>
           <TextareaInput
             placeholder="Свидание, вечер" 
-            value={prompt}
-            onChangeText={setPrompt}
-            onEndEditing={()=>props.setPrompt(prompt)}
-            onFocus={()=>console.log('focus')}
+            value={props.prompt}
+            onChangeText={props.setPrompt}
           />
       </Textarea>
       <FormControlHelper>

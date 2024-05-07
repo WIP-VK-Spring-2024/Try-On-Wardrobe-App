@@ -129,6 +129,8 @@ export const initCentrifuge = async () => {
         connection: centrifuge,
         name: `outfit-gen:user#${appState.userID}`,
         onPublication: ctx => {
+            console.log(ctx)
+            console.log(ctx.data)
             const outfits = ctx.data.outfits.map((outfit: {clothes: {clothes_id: string}[]}) => 
                 outfit.clothes.map(c => c.clothes_id))
             

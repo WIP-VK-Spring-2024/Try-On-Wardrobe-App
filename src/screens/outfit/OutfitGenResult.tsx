@@ -116,20 +116,17 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
       x: (width - itemWidth) / 2,
       y: (i * (itemHeight + 10)) + 10,
       width: itemWidth,
-      height: itemHeight
+      height: itemHeight,
+      zIndex: i
     });
 
     return new OutfitItem({
       garmentUUID: uuid,
-      rect: rect
+      rect: rect,
     });
   })
 
   const [uuid, setUUID] = useState<string | undefined>(undefined);
-
-  // const outfit = new Outfit({
-  //   items: items
-  // });
 
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const canvasRef = useCanvasRef();
@@ -142,7 +139,6 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
     return canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const bytes = image.encodeToBase64();
-        RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
 
         const fileName = `${Date.now()}.png`
         const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
