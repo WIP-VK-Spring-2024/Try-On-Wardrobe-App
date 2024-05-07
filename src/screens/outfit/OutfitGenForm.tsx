@@ -10,10 +10,10 @@ import { outfitGenFormTagsStore, outfitPurposeStore } from "../../stores/OutfitG
 import { Checkbox } from "../../components/Checkbox";
 import { RobotoText } from "../../components/common";
 import { Divider } from "@gluestack-ui/themed";
-import { TagCheckboxBlock } from "../../components/TagCheckboxBlock";
 import { BackHeader } from "../../components/Header";
 import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
+
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
@@ -54,8 +54,6 @@ interface PromptFormProps {
 }
 
 const PromptForm = observer((props: PromptFormProps) => {
-  const [prompt, setPrompt] = useState(props.prompt);
-
   return (
     <FormControl>
       <FormControlLabel>
@@ -64,10 +62,8 @@ const PromptForm = observer((props: PromptFormProps) => {
       <Textarea>
           <TextareaInput
             placeholder="Свидание, вечер" 
-            value={prompt}
-            onChangeText={setPrompt}
-            onEndEditing={()=>props.setPrompt(prompt)}
-            onFocus={()=>console.log('focus')}
+            value={props.prompt}
+            onChangeText={props.setPrompt}
           />
       </Textarea>
       <FormControlHelper>
@@ -90,17 +86,21 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
     <ButtonFooter
       text="Сгенерировать"
       onPress={() => {
+        console.log("Sending prompt:", prompt);
+
         const urlParams = new URLSearchParams({
-            prompt: prompt,
-            amount: "4",
-            use_weather: useWeather.toString(),
+          prompt: [prompt, ...outfitGenFormTagsStore.selectedItems].join(', '),
+          amount: "4",
+          use_weather: useWeather.toString(),
         });
 
         for (const purpose of outfitPurposeStore.selectedItems.map(p => p.name)) {
-            urlParams.append("purposes", purpose)
+          urlParams.append("purposes", purpose)
         }
 
-        ajax.apiGet('/outfits/gen?'+urlParams.toString())
+        ajax.apiGet('/outfits/gen?'+urlParams.toString(), {
+          credentials: true
+        })
 
         props.navigation.navigate('OutfitGenResult');
       }}
@@ -135,10 +135,6 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             isChecked={useWeather}
             onChange={weather => setUseWeather(weather)}
         />
-        <Divider h="$0.5" marginTop={10} marginBottom={10}/>
-
-        <RobotoText>Теги</RobotoText>
-        <TagCheckboxBlock tagStore={outfitGenFormTagsStore}/>
       </View>
     </BaseScreen>
   )

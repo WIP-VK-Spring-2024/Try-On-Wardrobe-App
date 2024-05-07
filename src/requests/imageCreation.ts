@@ -24,7 +24,7 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
         body: formData
     }).then(resp => {
         console.log(resp);
-        
+        // return resp.text().then(text => console.log(text))
         return resp.json().then(res => {
         garmentStore.addGarment(new GarmentCard({
             uuid: res.uuid,
@@ -38,7 +38,8 @@ const uploadGarmentImage = (image: ImageOrVideo) => {
         }))
         appState.setCreateMenuVisible(false);
         return true;
-    }).catch(err => console.error(err))
+    })
+    .catch(err => console.error(err))
 })
     .catch(err => console.error(err));
 }

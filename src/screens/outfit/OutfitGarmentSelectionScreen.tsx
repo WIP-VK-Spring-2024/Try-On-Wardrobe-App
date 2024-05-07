@@ -18,6 +18,7 @@ export const OutfitGarmentSelectionScreen = observer(
   (props: OutfitGarmentSelectionScreenProps) => {
 
     const outfit = props.route.params.outfit;
+    const oldItems = props.route.params.oldItems;
 
     const header = (
       <BackHeader
@@ -32,27 +33,27 @@ export const OutfitGarmentSelectionScreen = observer(
         onPress={async ()=>{
           await outfit.addGarments(outfitScreenGarmentSelectionStore.selectedItems);
           outfitScreenGarmentSelectionStore.clearSelectedItems();
-          props.navigation.dispatch(StackActions.pop(1));
-          props.navigation.navigate("Editor", {outfit: outfit});
+          props.navigation.dispatch(StackActions.pop(2));
+          props.navigation.navigate("Editor", {outfit: outfit, oldItems: oldItems});
         }}
       />
       : null;
 
     return (
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
+        <TypeFilter
+          typeStore={outfitScreenTypeSelectionStore}
+          subtypeStore={outfitScreenSubtypeSelectionStore}
+        />
         {outfitScreenGarmentSelectionStore.items.length > 0 ? (
-          <>
-            {' '}
-            <TypeFilter
-              typeStore={outfitScreenTypeSelectionStore}
-              subtypeStore={outfitScreenSubtypeSelectionStore}
-            />
-            <MultipleSelectionGarmentList
-              store={outfitScreenGarmentSelectionStore}
-            />
-          </>
+          <MultipleSelectionGarmentList
+            store={outfitScreenGarmentSelectionStore}
+          />
         ) : (
-          <NoClothesMessage afterIconText="в главном меню!"/>
+          <NoClothesMessage
+            category={outfitScreenSubtypeSelectionStore.selectedItem?.name || ''}
+            afterIconText="в главном меню!"
+          />
         )}
       </BaseScreen>
     );

@@ -116,20 +116,17 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
       x: (width - itemWidth) / 2,
       y: (i * (itemHeight + 10)) + 10,
       width: itemWidth,
-      height: itemHeight
+      height: itemHeight,
+      zIndex: i
     });
 
     return new OutfitItem({
       garmentUUID: uuid,
-      rect: rect
+      rect: rect,
     });
   })
 
   const [uuid, setUUID] = useState<string | undefined>(undefined);
-
-  // const outfit = new Outfit({
-  //   items: items
-  // });
 
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const canvasRef = useCanvasRef();
@@ -139,32 +136,51 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
       items: items
     });
 
-    canvasRef.current?.makeImageSnapshotAsync()
+    return canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const bytes = image.encodeToBase64();
-        RNFS.mkdir(RNFS.DocumentDirectoryPath + '/outfit');
 
         const fileName = `${Date.now()}.png`
+        const path = RNFS.DocumentDirectoryPath + `/images/outfits/${fileName}`;
 
-        RNFS.writeFile(RNFS.DocumentDirectoryPath + `/outfit/${fileName}`, bytes, 'base64');
+        RNFS.writeFile(path, bytes, 'base64');
 
         outfit.setImage({
           type: 'local',
-          uri: `/outfit/${fileName}`
+          uri: path
         });
 
-        uploadOutfit(outfit).then(() => {
-          setUUID(outfit.uuid);
-          outfitStore.addOutfit(outfit);
-        })
+        return uploadOutfit(outfit)
+          .then(() => {
+            setUUID(outfit.uuid);
+            outfitStore.addOutfit(outfit);
+            return outfit;
+          })
+          .catch(reason => {
+            console.error(reason);
+            return false;
+          })
+
       })
-      .catch(reason => console.error(reason))
+      .catch(reason => {
+        console.error(reason)
+        return false;
+      })
   }
 
   return (
     <Pressable
       onPress={() => {
         const outfit = outfitStore.outfits.find(o => o.uuid === uuid);
+
+        if (outfit === undefined) {
+          setIsSelected(!isSelected);
+          onSave()?.then((res) => {
+            if (res) {
+              props.navigation.navigate('Outfit', {outfit: res})
+            }
+          })
+        }
 
         if (outfit !== undefined) {
           props.navigation.navigate('Outfit', {outfit: outfit})

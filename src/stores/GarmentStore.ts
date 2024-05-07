@@ -8,6 +8,14 @@ export const GARMENT_TYPE_DRESS = 'Платья'
 export const GARMENT_TYPE_UPPER = 'Верх'
 export const GARMENT_TYPE_LOWER = 'Низ'
 
+export const typeIsTryOnAble = (type: GarmentType | undefined) => {
+  return type !== undefined && (
+    type.name === GARMENT_TYPE_UPPER
+    || type.name === GARMENT_TYPE_LOWER
+    || type.name === GARMENT_TYPE_DRESS
+  )
+}
+
 export interface Updateable {
   uuid: string,
   name: string
@@ -92,6 +100,7 @@ export class GarmentCard {
   }
 
   setName(name: string) {
+    console.log("name updated in store", name);
     this.name = name;
   }
 
@@ -120,6 +129,7 @@ export class GarmentCard {
 
   setType(type: GarmentType) {
     this.type = type;
+    this.tryOnAble = typeIsTryOnAble(type);
   }
 
   setSubtype(subtype: Updateable | undefined) {
@@ -184,6 +194,7 @@ export class GarmentStore {
 
       addGarment: action,
       removeGarment: action,
+      clearGarments: action,
 
       tags: computed,
       subtypes: computed,
@@ -206,7 +217,7 @@ export class GarmentStore {
   }
 
   addGarment(garment: GarmentCard) {
-    this.garments.push(garment);
+    this.garments.unshift(garment);
   }
 
   removeGarment(garment_uuid: string) {
@@ -235,6 +246,10 @@ export class GarmentStore {
 
   getStyleByUUID = (uuid: string) => {
     return this.styles.find(st => st.uuid === uuid);
+  }
+
+  clearGarments() {
+    this.garments = [];
   }
 
   get tags() {
@@ -284,9 +299,7 @@ export class GarmentStore {
   }
 
   get usedTypes(): GarmentType[] {
-    return getUnique(this.garments.map(garment => garment.type?.uuid))
-            .filter(notEmpty)
-            .map(garmentStore.getTypeByUUID)
+    return this.types
             .filter(notEmpty)
             .map(type => ({
               name: type.name,
@@ -343,6 +356,11 @@ export class GarmentCardEdit extends GarmentCard {
     this.seasons = this.origin.seasons.slice();
     this.image = this.origin.image;
     this.type = this.origin.type;
+
+    if (this.origin.type) {
+      this.tryOnAble = typeIsTryOnAble(this.origin.type);
+    }
+
     this.subtype = this.origin.subtype;
     this.style = this.origin.style;
     this.color = this.origin.color;
@@ -356,6 +374,11 @@ export class GarmentCardEdit extends GarmentCard {
     this.origin.seasons = this.seasons.slice();
     this.origin.image = this.image;
     this.origin.type = this.type;
+
+    if (this.type) {
+      this.origin.tryOnAble = typeIsTryOnAble(this.type);
+    }
+
     this.origin.subtype = this.subtype;
     this.origin.style = this.style;
     this.origin.color = this.color;

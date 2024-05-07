@@ -1,58 +1,45 @@
 import React from 'react';
-import { BaseList, AddItemCard, CARD_SIZE, ModalListImage, ListImage } from './BaseList';
+import { BaseList, AddItemCard, ListImage, CARD_PROPS } from './BaseList';
 import { Pressable } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 import { tryOnStore } from '../stores/TryOnStore';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
-import { getImageSource } from '../utils';
-import { Rating } from '../stores/common';
-
-const style = StyleSheet.create({
-    overlay: {
-      position: 'absolute',
-      bottom: 5,
-    },
-  });
+import { getImageSource } from '../utils'
 
 const TryOnResultCard = observer(
-    ({
-        source,
-        onPress,
-        uuid,
-        rating
-    }: {
-        source: string | ImageSourcePropType;
-        onPress: () => void;
-        uuid: string;
-        rating: Rating;
-    }) => {
-        return (
-            <Pressable
-                borderRadius={20}
-                backgroundColor="#ffffff"
-                onPress={onPress}
-                w="49%"
-                h={CARD_SIZE.height}>
-                <ListImage source={source} />
-            </Pressable>
-        );
-    },
+  ({
+    source,
+    onPress,
+  }: {
+    source: string | ImageSourcePropType;
+    onPress: () => void;
+  }) => {
+    return (
+      <Pressable onPress={onPress}>
+        <ListImage source={source} />
+      </Pressable>
+    );
+  },
 );
 
-export const TryOnResultList = observer(({navigation}: {navigation: any}) => {
-    const cards = tryOnStore.results.map((item) => (
-        <TryOnResultCard
-            source={getImageSource(item.image)}
-            onPress={()=>{
-              navigation.navigate('TryOnCard', {tryOnResult: item});
-            }}
-            // onPress={() => {}}
-            uuid={item.uuid}
-            rating={item.rating}
-        />
+export const TryOnResultList = observer(
+  ({ navigation }: { navigation: any }) => {
+    const cards = tryOnStore.results.map((item, i) => (
+      <TryOnResultCard
+        key={i}
+        source={getImageSource(item.image)}
+        onPress={() => navigation.navigate('TryOnCard', { tryOnResult: item })}
+      />
     ));
 
-    cards.unshift(<AddItemCard text="Новая примерка" onPress={() => navigation.navigate('Person')}/>)
+    cards.unshift(
+      <AddItemCard
+        key="add"
+        text="Новая примерка"
+        onPress={() => navigation.navigate('TryOn/Clothes')}
+      />,
+    );
 
     return <BaseList items={cards} />;
-});
+  },
+);

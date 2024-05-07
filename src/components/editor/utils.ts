@@ -17,12 +17,13 @@ export const itemFromRect = (r: GarmentRect) => {
     return new OutfitItem({
         garmentUUID: r.payload,
         rect: new OutfitItemRect({
-        x: r.x,
-        y: r.y,
-        width: r.width,
-        height: r.height,
-        angle: r.angle,
-        scale: r.scale
+          x: r.x,
+          y: r.y,
+          width: r.width,
+          height: r.height,
+          angle: r.angle,
+          scale: r.scale,
+          zIndex: r.zIndex
         })
     })
 }

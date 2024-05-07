@@ -13,7 +13,8 @@ import { outfitScreenStyleSelectionStore, outfitScreenTagsSelectionStore } from 
 import EditorIcon from '../../../assets/icons/editor.svg';
 import MagicIcon from '../../../assets/icons/magic.svg';
 
-import { View } from '@gluestack-ui/themed'
+import { MenuItemLabel, View } from '@gluestack-ui/themed'
+import { RobotoText } from '../../components/common';
 
 interface OutfitListProps {
   navigation: any
@@ -24,7 +25,7 @@ const creationMenuItemsFontSize = 16;
 const AddOutfitCard = (props: {navigation: any}) => {
   return (
     <AddItemCard>
-      <View gap={10}>
+      <View gap={10} width="100%" height="100%" justifyContent='center'>
         <MenuItem
           onPress={() => {
             const newOutfit = new Outfit();
@@ -66,7 +67,7 @@ export const OutfitList = observer((props: OutfitListProps) => {
     </Pressable>
   ))
 
-  return <BaseList items={outfits} addItemCard={<AddOutfitCard navigation={props.navigation}/>}/>
+  return <BaseList items={outfits} addItemCard={<AddOutfitCard navigation={props.navigation} key="add"/>}/>
 });
 
 interface OutfitSelectionScreenProps {

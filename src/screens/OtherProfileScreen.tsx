@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { profileStore, Subscription, User } from "../stores/ProfileStore";
+import React, { useState } from "react";
+import { Subscription, User } from "../stores/ProfileStore";
 import { observer } from "mobx-react-lite";
-import {
-  Avatar,
-  AvatarFallbackText,
-  View,
-  Button,
-} from '@gluestack-ui/themed';
+import { View } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
-import { BaseScreen } from "./BaseScreen";
-import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
-import { userSub, userUnsub } from "../requests/user"
-import { BackButton } from "../components/Profile"
-import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollList";
+import { BackButton, SubscribeButton } from "../components/Profile"
+import { FetchDataType } from "../components/InfiniteScrollList";
 import { PostData } from "../stores/common"
 import { ajax } from "../requests/common"
-import { convertPostResponse } from "../utils";
+import { convertPostResponse, getOptionalImageSource } from "../utils";
 import { PostList } from "../components/Posts";
+import { Avatar } from "../components/Avatar";
 
 interface OtherUserHeaderProps {
   navigation: any
@@ -24,46 +17,26 @@ interface OtherUserHeaderProps {
 }
 
 const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
-  const [isSubbed, setIsSubbed] = useState(user.isSubbed);
+  const [isSubbed, setIsSubbed] = useState(user.is_subbed);
 
   return (
-    <View flexDirection="row" w="100%"  alignItems="center" $base-padding="$2">
-      <BackButton navigation={navigation} flex={2}/>
+    <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2">
+      <BackButton navigation={navigation} flex={2} />
 
       <View flexDirection="row" alignItems="center" gap={20} flex={9}>
-        <Avatar bg={PRIMARY_COLOR} borderRadius="$full" size="lg">
-          <AvatarFallbackText>{user.name}</AvatarFallbackText>
-        </Avatar>
-        <RobotoText fontSize={18} numberOfLines={1}>{user.name}</RobotoText>
+        <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
+        <RobotoText fontSize={18} numberOfLines={1}>
+          {user.name}
+        </RobotoText>
       </View>
 
-      
-      <Button
-        flex={4}
-        marginRight={5}
-        size="xs"
-        action={isSubbed ? 'negative' : 'primary'}
-        bgColor={isSubbed ? "#bb0000" : ACTIVE_COLOR}
-        onPress={() => {
-          if (isSubbed) {
-            userUnsub(user.uuid)
-              .then(_ => {
-                setIsSubbed(false);
-                profileStore.currentUser?.removeSub(user.uuid);
-              });
-          } else {
-            userSub(user.uuid)
-              .then(_ => {
-                setIsSubbed(true);
-                profileStore.currentUser?.addSub(user);
-              });
-          }
-        }}
-        >
-        <RobotoText fontSize={14} color="#ffffff">{
-          isSubbed? 'Отписаться' : 'Подписаться'}
-        </RobotoText>
-      </Button>
+      <View flex={5} marginRight={5}>
+        <SubscribeButton
+          isSubbed={isSubbed}
+          setIsSubbed={setIsSubbed}
+          user={user}
+        />
+      </View>
     </View>
   );
 });

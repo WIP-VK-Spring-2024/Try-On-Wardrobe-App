@@ -5,14 +5,14 @@ import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { BASE_COLOR, ACTIVE_COLOR, WINDOW_WIDTH, PRIMARY_COLOR } from '../consts';
 
 import SelectedIcon from '../../assets/icons/selected.svg';
-import {NoClothesMessage} from './components/NoClothesMessage';
+import { NoClothesMessage } from './NoClothesMessage';
 
 import { observer } from 'mobx-react-lite';
 import { garmentScreenGarmentSelectionStore } from '../store';
 
 import { getImageSource } from '../utils';
-import { MultipleSelectionStore } from '../stores/SelectionStore';
-import { GARMENT_TYPE_DRESS, GarmentCard } from '../stores/GarmentStore';
+import { MultipleSelectionStore, SingleSelectionStore } from '../stores/SelectionStore';
+import { GARMENT_TYPE_DRESS, GARMENT_TYPE_LOWER, GARMENT_TYPE_UPPER, GarmentCard, GarmentType } from '../stores/GarmentStore';
 import { RobotoText } from './common';
 import { tryOnValidationStore } from '../stores/TryOnStore';
 
@@ -25,7 +25,6 @@ const style = StyleSheet.create({
 });
 
 const overlaySize = WINDOW_WIDTH / 10;
-const forbiddenIconSize = WINDOW_WIDTH / 12;
 
 interface ClothesListCardProps {
   source: string | ImageSourcePropType;
@@ -40,7 +39,7 @@ const ClothesListCard = observer(
     onPress,
   } : ClothesListCardProps) => {
     return (
-      <Pressable bg={BASE_COLOR} onPress={onPress} w="49%" h={CARD_SIZE.height}>
+      <Pressable bg={BASE_COLOR} onPress={onPress} w={CARD_SIZE.width} h={CARD_SIZE.height}>
         <ListImage source={source} />
 
         {selected && (
@@ -78,10 +77,11 @@ interface MultipleSelectionGarmentListProps {
 }
 
 export const MultipleSelectionGarmentList = observer((props: MultipleSelectionGarmentListProps) => {
-  const clothes = props.store.items.map((item) => {
+  const clothes = props.store.items.map((item, i) => {
     const selected = props.store.selectedItems.includes(item)
 
     return <ClothesListCard
+        key={i}
         source={getImageSource(item.image)}
         selected={selected}
         onPress={() => props.store.toggle(item)}
@@ -117,7 +117,7 @@ const DisableableClothesListCard = observer(
         bg={BASE_COLOR}
         onPress={() => disabled ? setInfoShown(!infoShown)
                                 : onPress()}
-        w="49%"
+        w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         {infoShown ? <View {...CARD_PROPS} alignItems='center' justifyContent='center'>{info}</View> 
                    : <ListImage source={source} opacity={disabled ? 0.4 : 1} />}
@@ -141,11 +141,12 @@ const DisableableClothesListCard = observer(
 
 interface DisableableSelectionGarmentListProps {
     store: MultipleSelectionStore<GarmentCard>
+    typeStore: SingleSelectionStore<GarmentType>
     disabledPredicate: (item: GarmentCard) => boolean
 }
 
 export const DisableableSelectionGarmentList = observer((props: DisableableSelectionGarmentListProps) => {
-  const clothes = props.store.items.map((item) => {
+  const clothes = props.store.items.map((item, i) => {
     const selected = props.store.selectedItems.includes(item)
     const disabled = !selected && (props.disabledPredicate ? props.disabledPredicate(item) : false);
 
@@ -155,11 +156,32 @@ export const DisableableSelectionGarmentList = observer((props: DisableableSelec
                   ? 'Вы уже выбрали вещь категории "Платья" для примерки. Платья невозможно примерять с любыми другими вещами'
                   : `При примерке нескольких вещей возможно выбрать только одну вещь категории "${item.type?.name}"`
 
+    const onPress = () => {
+      props.store.toggle(item);
+
+      if (!props.store.isSelected(item) || tryOnValidationStore.selectableTypes.size === 0) {
+        return;
+      }
+
+      switch (item.type?.name) {
+        case GARMENT_TYPE_LOWER:
+          props.typeStore.selectBy((item) => item.name === GARMENT_TYPE_UPPER);
+          break;
+        case GARMENT_TYPE_UPPER:
+          props.typeStore.selectBy((item) => item.name === GARMENT_TYPE_LOWER);
+          break;
+        case GARMENT_TYPE_DRESS:
+          props.typeStore.selectBy((item) => item.name === GARMENT_TYPE_DRESS);
+          break;
+      }
+    };
+
     return <DisableableClothesListCard
+        key={i}
         source={getImageSource(item.image)}
         selected={selected}
         disabled={disabled}
-        onPress={() => props.store.toggle(item)}
+        onPress={onPress}
         info={<RobotoText>{msg}</RobotoText>}
     />
   })

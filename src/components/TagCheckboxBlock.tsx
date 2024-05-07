@@ -19,7 +19,9 @@ export const TagCheckboxBlock = observer(({tagStore}: TagCheckboxBlockProps) => 
       rowGap={10}
       aria-label="tags"
       value={tagStore.selectedItems}
-      onChange={tags => tagStore.setSelectedItems(tags)}
+      onChange={tags => {
+        tagStore.setSelectedItems(tags)
+      }}
     >
       {
         tags.map((tag, i) => <Checkbox key={i} value={tag} label={tag} isChecked={tagStore.isSelected(tag)}/>)

@@ -5,7 +5,7 @@ import Animated, { ZoomInEasyDown, ZoomOutEasyDown } from 'react-native-reanimat
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
 import { ACTIVE_COLOR } from '../consts';
-import { Box } from '@gluestack-ui/themed';
+import { Box, Text } from '@gluestack-ui/themed';
 import { Pressable, View } from '@gluestack-ui/themed';
 import { createGarmentFromCamera, createGarmentFromGallery } from '../requests/imageCreation';
 import { RobotoText } from './common';
@@ -48,11 +48,9 @@ const floatingStyle = StyleSheet.create({
     elevation: 5,
   },
   menuItem: {
-    display: 'flex',
     flexDirection: 'row',
-    gap: 10,
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'space-between'
   }
 });
 
@@ -88,20 +86,33 @@ export const MenuItem = observer(({text, onPress, Icon, stroke, fontSize, iconSi
 
   return (
     <Pressable
-      style={floatingStyle.menuItem}
+      flexDirection='row'
+      alignItems='center'
       onPress={onPress}
-      width={iconSize}
-      height={iconSize}
     >
-      <Icon {...props}/>
-      <RobotoText fontSize={fontSize || menuEntryFontSize}>{text}</RobotoText>
+      <View
+      >
+        <Icon {...props}/>
+      </View>
+      
+      <View
+        flexShrink={1}
+      >
+        <Text
+          flexShrink={1}
+          fontSize={fontSize || menuEntryFontSize}
+          flexWrap="wrap"
+        >
+          {text}
+        </Text>
+      </View>
     </Pressable>
 )
 });
 
 export const AddMenu = observer((props: {navigation: any}) => {
   const openCreatedGarment = () => {
-    props.navigation.navigate('Garment', {garment: garmentStore.garments[garmentStore.garments.length - 1]});   
+    props.navigation.navigate('Garment', {garment: garmentStore.garments[0]});   
   }
 
   const [step, setStep] = useState<Step>('main');

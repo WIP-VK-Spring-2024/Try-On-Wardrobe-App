@@ -1,12 +1,13 @@
 import RNFS from 'react-native-fs';
-import { GarmentCard, garmentStore } from '../stores/GarmentStore';
+import { GarmentCard, GarmentStore, garmentStore } from '../stores/GarmentStore';
 import { arrayComp, getOutfitImageName } from './utils';
-import { LoginSuccessResponse, getImageSource, joinPath } from '../utils';
-import { Outfit, outfitStore } from '../stores/OutfitStore';
+import { LoginSuccessResponse, getImageSource, imageExists, joinPath, notEmpty } from '../utils';
+import { Outfit, OutfitStore, outfitStore } from '../stores/OutfitStore';
 import { appState } from '../stores/AppState';
 import { ajax } from '../requests/common';
 import { profileStore } from '../stores/ProfileStore';
 import { convertLoginResponse } from "../utils"
+import { ImageType } from '../models';
 
 // saves:
 // - images
@@ -135,6 +136,29 @@ export class CacheManager {
         })
     }
 
+    async readViewedOnboarding() {
+        const path = this.joinDataDirPath('/onboarding.json');
+
+        try {
+            const _ = await RNFS.readFile(path);
+            appState.setViewedOnboarding(true);
+            return true;
+        } catch (e) {
+            appState.setViewedOnboarding(false);
+            return false;
+        }
+    }
+
+    async writeViewedOnboarding() {
+        if (!appState.viewedOnboarding) {
+            return false;
+        }
+
+        const path = this.joinDataDirPath('/onboarding.json');
+        RNFS.writeFile(path, JSON.stringify({viewed: appState.viewedOnboarding}));
+        return true;
+    }
+
     async downloadImage(remoteURI: string, path: string) {
         try {
             const downloadRes = await RNFS.downloadFile({
@@ -144,7 +168,7 @@ export class CacheManager {
             return downloadRes.statusCode;
         }
         catch (err) {
-            console.error(err);
+            console.error('downloading img', remoteURI, err);
         }
     }
 
@@ -165,21 +189,25 @@ export class CacheManager {
         return status;
     }
 
-    async changeImageToLocal(garments: GarmentCard[]) {
-        return garments.map(async garment => {
-            if (garment.image.type === 'remote') {
-                const image_name = `${garment.uuid}.png`;
+    changeImageToLocal<T extends {image: ImageType, setImage(img: ImageType):void}>
+    (items: T[], getImageName: (item: T) => string) {
+        return items.map(async item => {
+            if (item.image.type === 'remote') {
+                // const image_name = `${item.uuid}.png`;
+                const image_name = getImageName(item);
                 const image_path = joinPath(this.clothesDirPath, image_name);
                 const alreadyExists = await RNFS.exists(image_path);
+
                 if (!alreadyExists) {
-                    const status = await this.downloadImage(getImageSource(garment.image).uri, image_path);
+                    const status = await this.downloadImage(getImageSource(item.image).uri, image_path);
+                    console.log(status)
                     if (status !== 200) {
                         console.error(status);
                         return false;
                     }
                 }
 
-                garment.setImage({
+                item.setImage({
                     type: 'local',
                     uri: image_path
                 })
@@ -188,15 +216,17 @@ export class CacheManager {
         })
     }
 
-    async updateGarments(localGarments: GarmentCard[], remoteGarments: GarmentCard[]) {
+    async updateGarments(localGarments: GarmentCard[], remoteGarments: GarmentCard[]) {    
         const filteredLocalGarments = localGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
         const filteredRemoteGarments = remoteGarments.filter(el => el.uuid !== undefined) as unknown as withUUID[];
 
         const compRes = arrayComp(filteredLocalGarments, filteredRemoteGarments, compByUUID);
 
-        garmentStore.setGarments(remoteGarments);
+        const newGarmentStore = new GarmentStore();
 
-        this.changeImageToLocal(garmentStore.garments);
+        newGarmentStore.setGarments(remoteGarments);
+
+        const changedToLocal = Promise.all(this.changeImageToLocal(newGarmentStore.garments, (item: GarmentCard) => `${item.uuid}.png`));
 
         const adds = compRes.toAddIndices.map(async id => {
             const garment = filteredRemoteGarments[id] as GarmentCard;
@@ -204,7 +234,7 @@ export class CacheManager {
             const imagePath = joinPath(this.clothesDirPath, imageName);
             const status = await this.downloadImage(getImageSource(garment.image).uri, imagePath);
             if (status === 200) {
-                garmentStore.getGarmentByUUID(garment.uuid!)?.setImage({
+                newGarmentStore.getGarmentByUUID(garment.uuid!)?.setImage({
                     type: 'local',
                     uri: imagePath
                 })
@@ -220,25 +250,24 @@ export class CacheManager {
             return true;
         })
 
-        Promise.all([...adds, ...dels]).then(() => {
+        return Promise.all([changedToLocal, ...adds, ...dels]).then(() => {
+            garmentStore.setGarments(newGarmentStore.garments);
+            console.log('writing to disk')
             this.writeGarmentCards();
+            return true;
         })
     }
 
     async updateOutfits(localOutfits: Outfit[], remoteOutfits: Outfit[]) {        
-        // console.log('local', localOutfits)
-        // console.log('remote', remoteOutfits)
-
-        
         const compRes = arrayComp(localOutfits, remoteOutfits, compByUUID);
         
-        // console.log(compRes)
-        // console.log(compRes.diffs)
+        const newOutfitStore = new OutfitStore();
 
-        outfitStore.setOutfits(remoteOutfits);
+        newOutfitStore.setOutfits(remoteOutfits);
 
-        // console.log('outfits', remoteOutfits);
+        const outfitsWithImages = newOutfitStore.outfits.filter(imageExists);
 
+        const changedToLocal = Promise.all(this.changeImageToLocal(outfitsWithImages, getOutfitImageName));
         const adds = compRes.toAddIndices.map(async id => {
             const outfit = remoteOutfits[id];
             const imageName = getOutfitImageName(outfit);
@@ -283,7 +312,7 @@ export class CacheManager {
                     })
 
                     if (status === 200) {
-                        outfitStore.getOutfitByUUID(local.uuid!)?.setImage({
+                        newOutfitStore.getOutfitByUUID(local.uuid!)?.setImage({
                             type: 'local',
                             uri: newPath
                         })
@@ -293,8 +322,10 @@ export class CacheManager {
             }
         })
 
-        Promise.all([...adds, ...dels, ...imageUpdates]).then(() => {
+        return Promise.all([changedToLocal, ...adds, ...dels, ...imageUpdates]).then(() => {
+            outfitStore.setOutfits(newOutfitStore.outfits);
             this.writeOutfits();
+            return true;
         })
     }
 }

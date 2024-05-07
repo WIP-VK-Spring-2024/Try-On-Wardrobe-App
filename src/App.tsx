@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
-import {PermissionsAndroid, SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {config} from '@gluestack-ui/config';
 import {
   GluestackUIProvider,
 } from '@gluestack-ui/themed';
-import {NavigationContainer} from '@react-navigation/native';
+import {createNavigationContainerRef, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {observer} from 'mobx-react-lite';
 
-import RNFS from 'react-native-fs';
 import { GarmentScreen } from './screens/GarmentScreen';
 
 import { HomeScreen } from './screens/HomeScreen';
-import { GarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
+import { TryOnGarmentSelectionScreen, PersonSelectionScreen, TryOnMainScreen } from './screens/TryOnScreens';
 import { ResultScreen } from './screens/ResultScreen';
 import { CurrentUserProfileScreen } from './screens/ProfileScreen';
 import { OtherUserProfileScreen } from './screens/OtherProfileScreen';
@@ -28,49 +27,76 @@ import { LoginScreen } from './screens/LoginScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { PostScreen } from './screens/PostScreen';
 import { FeedScreen } from './screens/FeedScreen';
+import { OnboardingScreen } from './screens/OnboardingScreen';
 import { TryOnCardScreen } from './screens/TryOnCardScreen';
 import { OutfitGarmentSelectionScreen } from './screens/outfit/OutfitGarmentSelectionScreen';
+import { cacheManager } from './cacheManager/cacheManager';
+import { initCentrifuge } from './requests/centrifuge';
+import { initStores } from './requests/init';
 
 export const Stack = createNativeStackNavigator();
 
-const pictures_path = RNFS.DocumentDirectoryPath + '/images/clothes';
+const navigationContainerRef = createNavigationContainerRef();
 
-RNFS.mkdir(pictures_path);
+const navigateToLoginOrOnboarding = (navigation: any) => {
+  cacheManager.readViewedOnboarding()
+    .then((viewed) => {
+      if (viewed) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Onboarding' }],
+        });
+      }
+    });
+};
 
 const App = observer((): JSX.Element => {
-  useEffect(() => {
-    requestPermission()
-  }, [])
-
-  const requestPermission = async () => {
-    try {
-      console.log('asking for permission')
-      const granted = await PermissionsAndroid.requestMultiple(
-        [
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-        ]
-      )
-      if (granted['android.permission.CAMERA'] && granted['android.permission.WRITE_EXTERNAL_STORAGE'] && granted['android.permission.READ_MEDIA_IMAGES']) {
-        console.log("You can use the camera");
-      } else {
-        console.log("Camera permission denied");
-      }
-    } catch (error) {
-      console.log('permission error', error)
-    }
-  }
-
   const backgroundStyle = {
     backgroundColor: Colors.lighter,
     flex: 1,
   };
 
+  useEffect(() => {
+    cacheManager.readToken()
+    .then(async (token) => {
+      if (navigationContainerRef.current === null) {
+        console.error('No navigation container');
+        return;
+      }
+
+      if (token === false) {
+        navigateToLoginOrOnboarding(navigationContainerRef.current);
+        return;
+      }
+
+      const status = await cacheManager.updateToken(token);
+      if (status === false) {
+        navigateToLoginOrOnboarding(navigationContainerRef.current);
+      } else {
+        initCentrifuge();
+        const initStatus = await initStores();
+
+        navigationContainerRef.current.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    })
+    .catch(reason => {
+      console.error(reason);
+    })}, []);
+
   const ScreenStack = observer(() => {
     return (
       <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='Loading'>
         <Stack.Screen name="Loading" component={LoadingScreen} />
+
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         
         <Stack.Screen name="Login" component={LoginScreen} />
 
@@ -80,7 +106,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="Home" component={HomeScreen} />
 
-        <Stack.Screen name="Person" component={PersonSelectionScreen} />
+        <Stack.Screen name="TryOn/Person" component={PersonSelectionScreen} />
 
         <Stack.Screen name="Profile" component={CurrentUserProfileScreen} />
         <Stack.Screen name="OtherProfile" component={OtherUserProfileScreen} />
@@ -89,7 +115,7 @@ const App = observer((): JSX.Element => {
 
         <Stack.Screen name="TryOnCard" component={TryOnCardScreen} />
 
-        <Stack.Screen name="Clothes" component={GarmentSelectionScreen} />
+        <Stack.Screen name="TryOn/Clothes" component={TryOnGarmentSelectionScreen} />
 
         <Stack.Screen name="Result" component={ResultScreen} />
 
@@ -126,7 +152,7 @@ const App = observer((): JSX.Element => {
       />
       <GluestackUIProvider config={config}>
         <GestureHandlerRootView>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationContainerRef}>
             <ScreenStack/>
           </NavigationContainer>
         </GestureHandlerRootView>

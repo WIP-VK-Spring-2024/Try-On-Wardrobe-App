@@ -1,21 +1,22 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, FlatListProps, StyleSheetProperties } from "react-native";
-import { ajax } from "../requests/common";
+import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
 import { getLast } from "../utils";
-import { RefreshControl } from "@gluestack-ui/themed";
-import { useFocusEffect } from "@react-navigation/native";
+import { RefreshControl, ScrollView } from "@gluestack-ui/themed";
+import { RobotoText } from "./common";
 
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
 
 interface InfiniteScrollListProps<T> extends Omit<FlatListProps<T>, 'data'> {
+  data: T[]
+  setData: (data: T[])=>void
   fetchData: FetchDataType<T>
+  noItemsText?: string
 }
 
 export const InfiniteScrollList = observer(
 <T extends {created_at: string}>(props: InfiniteScrollListProps<T>) => {
-
-    const [data, setData] = useState<T[]>([]);
+    // const [data, setData] = useState<T[]>([]);
     
     const limit = 9;
     const [since, setSince] = useState((new Date()).toISOString());
@@ -35,7 +36,7 @@ export const InfiniteScrollList = observer(
             setLastPageReceived(true);
           }
 
-          setData([...data, ...recieved]);
+          props.setData([...props.data, ...recieved]);
         })
         .catch(reason => {
           console.error(reason);
@@ -65,7 +66,7 @@ export const InfiniteScrollList = observer(
       setRefreshing(true);
 
       setSince((new Date()).toISOString());
-      setData([]);
+      props.setData([]);
       setFirstPageRecieved(false);
       setLastPageReceived(false);
 
@@ -85,22 +86,22 @@ export const InfiniteScrollList = observer(
     }
   };
 
-    return (
+    return isFirstPageReceived && props.data.length > 0 ? (
       <FlatList
         {...props}
-      
-        data={data}
-
+        data={props.data}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.8}
         ListFooterComponent={ListEndLoader}
-
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-    )
+    ) : (
+      <ScrollView h="100%" marginTop={10} contentContainerStyle={{justifyContent: "center"}}>
+        <RobotoText fontSize={22} textAlign="center">
+          {props.noItemsText || 'Ничего не найдено'}
+        </RobotoText>
+      </ScrollView>
+    );
 })

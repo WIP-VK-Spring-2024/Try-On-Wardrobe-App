@@ -1,19 +1,20 @@
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { Box, Image, AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, ButtonGroup, View, Input, InputField, KeyboardAvoidingView, FormControl } from '@gluestack-ui/themed';
+import { Box,  View, Input, InputField } from '@gluestack-ui/themed';
 import { GarmentCard, GarmentCardEdit, garmentStore, Season } from '../stores/GarmentStore';
-import { ACTIVE_COLOR, PRIMARY_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR } from '../consts';
+import { ACTIVE_COLOR, SECONDARY_COLOR, DELETE_BTN_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, EXTRA_COLOR } from '../consts';
 import { Pressable } from '@gluestack-ui/themed';
-import { CustomSelect, IconWithCaption, RobotoText, UpdateableText, AlertModal } from '../components/common';
+import { CustomSelect, IconWithCaption, RobotoText, AlertModal } from '../components/common';
 import { BaseScreen } from './BaseScreen';
 import { Heading } from '@gluestack-ui/themed';
 import { Button } from '@gluestack-ui/themed';
-import { getImageSource, joinPath } from '../utils';
 import { ButtonFooter } from '../components/Footer';
 import { StackActions } from '@react-navigation/native';
 import { BackHeader } from '../components/Header';
+import { TryOnButton } from "../components/TryOnButton"
+import { UpdateableTextInput } from '../components/UpdateableTextInput'
+import { getImageSource, nameErrorMsg } from '../utils'
 
-import EditIcon from '../../assets/icons/edit.svg';
 import HashTagIcon from '../../assets/icons/hashtag.svg';
 import CrossIcon from '../../assets/icons/cross.svg';
 
@@ -23,11 +24,13 @@ import SummerIcon from '../../assets/icons/seasons/summer.svg';
 import AutumnIcon from '../../assets/icons/seasons/autumn.svg';
 
 import TrashIcon from '../../assets/icons/trash.svg';
-import { deleteGarment } from '../requests/garment';
+import { deleteGarment, updateGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
+import { ErrorMessage } from '../components/ErrorMessage';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -67,12 +70,25 @@ const GarmentImage = observer(({garment} : {garment: GarmentCard}) => {
   )
 });
 
+const errorMsgTimeout = 5000;
+
 export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const [garment, setGarmentEditStore] = useState(new GarmentCardEdit(props.route.params.garment as GarmentCard));
   const [tagInputValue, setTagInputValue] = useState('');
+
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isErrorShown, setIsErrorShown] = useState(false);
+
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
 
   useEffect(() => {
     garment.clearChanges();
@@ -88,75 +104,46 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     return props.navigation.addListener('beforeRemove', (e: any) => {
       if (garment.hasChanges) {
         setShowAlertDialog(true);
-
         e.preventDefault();
       }
     })
   })
 
   const saveChanges = () => {
-    garment.saveChanges();
-
     setTagInputValue('');
 
-    const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key])
+    updateGarment(garment)
+    .then(json => {
+      console.log(json);
 
-    const garmentUpdate = (garment: GarmentCard) => ({
-      uuid: garment.uuid,
-      name: garment.name,
-      type_id: garment.type?.uuid,
-      subtype_id: garment.subtype?.uuid,
-      style_id: garment.style?.uuid,
-      tags: garment.tags,
-      seasons: garment.seasons
-    })
-
-    const new_garment = garmentUpdate(garment)
-
-    clearObj(new_garment)
-
-    ajax.apiPut('/clothes/' + garment.uuid, {
-     credentials: true,
-      body: JSON.stringify(new_garment)
-    })
-      .then(()=>{
+      if (!('msg' in json)) {
+        garment.saveChanges();
         appState.setSuccessMessage('Изменения успешно сохранены');
-        setTimeout(()=>appState.closeSuccessMessage(), 2000);
-      })
-      .catch(res => console.error(res))
-  }
+        setTimeout(() => appState.closeSuccessMessage(), 2000);
+        return;
+      }
 
-  const GarmentNameInput = observer(
-    () => {
-      return (
-        <Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="center"
-          alignItems="center"
-          gap={20}>
-          <View flex={1}></View>
-          <View flex={10}>
-            <UpdateableText
-              numberOfLines={1}
-              text={garment.name}
-              inEditing={inEditing}
-              onUpdate={(text: string) => {
-                garment.setName(text);
-              }}
-            />
-          </View>
-          <Pressable
-            flex={1}
-            onPress={() => {
-              setInEditing((oldInEditing: boolean) => !oldInEditing);
-            }}>
-            <EditIcon stroke="#000000" />
-          </Pressable>
-        </Box>
-      );
-    },
-  );
+      garment.clearChanges();
+      
+      if (!('errors' in json)) {
+        setError(json.msg);
+        return;
+      }
+
+      const errors: string[] = [];
+    
+      if ('Name' in json.errors) {
+        errors.push(nameErrorMsg('Название вещи', {spaces: true}));
+      }
+
+      if ('Tags' in json.errors) {
+        errors.push(nameErrorMsg('Теги', {spaces: true, plural: true}));
+      }
+
+      setError(errors.join('\n\n'));
+    })
+    .catch(res => console.error(res));
+  }
 
   const CloseAlertDialog = observer(() => {
     return (
@@ -168,7 +155,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         isOpen={showAlertDialog}
         hide={() => setShowAlertDialog(false)}
         onAccept={() => {
-          garment.saveChanges();
+          saveChanges();
           props.navigation.dispatch(StackActions.pop(1));
         }}
         onReject={() => {
@@ -199,7 +186,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         return ACTIVE_COLOR;
       }
   
-      return PRIMARY_COLOR;
+      return ACTIVE_COLOR+'44';
     }
   
     const seasonIconProps = (season: Season) => ({
@@ -242,7 +229,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
         justifyContent='space-between'
       >
         <CustomSelect
-          width="49%"
+          w="49%"
           items={garmentStore.types}
           selectedItem={garment.type?.name}
           onChange={(value) => {
@@ -258,10 +245,11 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
               }
             }
           }}
-          placeholder='Тип'
+          placeholder='Категория'
         />
+
         <CustomSelect
-          width="49%"
+          w="49%"
           items={garmentStore.getAllSubtypes(garment.type)}
           selectedItem={garment.subtype?.name}
           onChange={(value) => {
@@ -271,7 +259,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
               garment.setSubtype(subtype);
             }
           }}
-          placeholder='Подтип'
+          placeholder='Подкатегория'
           disabled={garment.type === undefined}
         />
       </Box>
@@ -280,20 +268,20 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
   const GarmentStyleSelector = observer(() => {
     return (
-      <CustomSelect
-        items={garmentStore.styles}
-        selectedItem={garment.style?.name}
-        onChange={value => {
-          const style = garmentStore.getStyleByUUID(value);
+        <CustomSelect
+          items={garmentStore.styles}
+          selectedItem={garment.style?.name}
+          onChange={value => {
+            const style = garmentStore.getStyleByUUID(value);
 
-          if (style !== undefined) {
-            garment.setStyle(style);
-          }
-        }}
-        placeholder='Стиль'
-      />
-    )
-  })
+            if (style !== undefined) {
+              garment.setStyle(style);
+            }
+          }}
+          placeholder="Стиль"
+        />
+    );
+  });
 
   const Tag = observer((props: {name: string, isEditable: boolean}) => {
     return (
@@ -380,36 +368,62 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     )
   });
 
+  const footer = garment.hasChanges ? (
+    <ButtonFooter text="Сохранить изменения" onPress={saveChanges} />
+  ) : null;
+
   return (
-    <BaseScreen 
-      navigation={props.navigation}
-      header={<GarmentHeader route={props.route} navigation={props.navigation} name={garment.name}/>}
-      footer={
-        <ButtonFooter text='Сохранить' onPress={saveChanges}/>
-      }
-    >
-      <View
-        display="flex" 
-        flexDirection='column' 
-        gap={20}
-        alignContent='center'
-        marginLeft={20}
-        marginRight={20}
-        marginBottom={100}
-      >
-        <GarmentImage garment={garment}/>
-        <GarmentNameInput/>
-        <GarmentSeasonIcons/>
-        <GarmentTypeSelector />
-        <GarmentStyleSelector />
+    <>
+      <BaseScreen
+        navigation={props.navigation}
+        header={
+          <GarmentHeader
+            route={props.route}
+            navigation={props.navigation}
+            name={garment.name}
+          />
+        }
+        footer={footer}>
+        <View
+          display="flex"
+          flexDirection="column"
+          gap={20}
+          alignContent="center"
+          marginLeft={20}
+          marginRight={20}
+          marginBottom={100}>
+          <GarmentImage garment={garment} />
+          
+          <UpdateableTextInput
+            text={garment.name}
+            onUpdate={text => garment.setName(text)}
+            inEditing={inEditing}
+            setInEditing={setInEditing}
+          />
 
-        <GarmentTagBlock 
-          tagInputValue={tagInputValue}
-          setTagInputValue={setTagInputValue}
+          <ErrorMessage shown={isErrorShown} msg={errorMsg} />
+
+
+          <GarmentSeasonIcons />
+          <GarmentTypeSelector />
+          <GarmentStyleSelector />
+
+          <GarmentTagBlock
+            tagInputValue={tagInputValue}
+            setTagInputValue={setTagInputValue}
+          />
+
+          <CloseAlertDialog />
+        </View>
+      </BaseScreen>
+
+      {props.route.params.garment.tryOnAble && (
+        <TryOnButton
+          garments={[props.route.params.garment]}
+          navigation={props.navigation}
+          marginBottom={garment.hasChanges ? 56 : 0}
         />
-
-        <CloseAlertDialog />
-      </View>
-    </BaseScreen>
+      )}
+    </>
   );
 });

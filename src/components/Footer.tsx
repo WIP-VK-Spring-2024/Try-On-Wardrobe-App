@@ -49,7 +49,7 @@ const NavigationButton = observer(
               height={size}
             />
           </View>
-          <RobotoText color={TEXT_COLOR} fontSize={size / 4}>
+          <RobotoText color={TEXT_COLOR} fontSize={size / 3}>
             {text}
           </RobotoText>
       </Pressable>
@@ -58,7 +58,7 @@ const NavigationButton = observer(
 );
 
 export const Footer = observer(({navigation}: {navigation: any}) => {
-  const normalSize = WINDOW_WIDTH / 8;
+  const normalSize =  35;
   const addBtnSize = normalSize + 10;
 
   return (
@@ -125,7 +125,7 @@ export const ButtonFooter = observer(({text, onPress, children}: ButtonFooterPro
   return (
     <Button paddingHorizontal={0} onPress={onPress} bgColor={SECONDARY_COLOR} h={65} w="100%" justifyContent="center">
       <Center>
-        <RobotoText color="white" fontSize="$3xl">
+        <RobotoText color="white" fontSize="$2xl">
           {text || 'Выбрать'}
         </RobotoText>
       </Center>

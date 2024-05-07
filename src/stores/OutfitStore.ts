@@ -3,6 +3,7 @@ import { ImageType } from '../models';
 import { GarmentCard, garmentStore } from './GarmentStore';
 import { Image } from 'react-native';
 import { getImageSource } from '../utils';
+import { Privacy } from './common';
 
 interface OutfitItemRectProps {
     x?: number
@@ -10,7 +11,8 @@ interface OutfitItemRectProps {
     width?: number
     height?: number
     angle?: number
-    scale?: number 
+    scale?: number
+    zIndex?: number
 }
 
 export class OutfitItemRect {
@@ -20,6 +22,7 @@ export class OutfitItemRect {
     height: number
     angle: number
     scale: number
+    zIndex: number
 
     halfWidth: number;
     halfHeight: number;
@@ -31,6 +34,7 @@ export class OutfitItemRect {
         this.height = props.height || 0;
         this.angle = props.angle || 0;
         this.scale = props.scale || 1;
+        this.zIndex = props.zIndex || 0;
 
         this.halfWidth = this.width / 2;
         this.halfHeight = this.height / 2;
@@ -43,7 +47,8 @@ export class OutfitItemRect {
             angle: this.angle,
             width: this.width,
             height: this.height,
-            scale: this.scale,     
+            scale: this.scale,  
+            zIndex: this.zIndex,
         }
     }
 
@@ -93,42 +98,66 @@ export class OutfitItem {
 
 interface OutfitProps {
     uuid?: string
+    name?: string
+    privacy?: Privacy
     updated_at?: string
     items?: OutfitItem[]
     image?: ImageType
+    try_on_result_id?: string
 }
 
 export class Outfit {
     uuid: string | undefined
+    name: string
+    privacy: Privacy
     updated_at: string | undefined
     image: ImageType | undefined
     items: OutfitItem[]
+    try_on_result_id?: string
 
     constructor(props?: OutfitProps) {
         this.uuid = props?.uuid
         this.updated_at = props?.updated_at;
         this.image = props?.image;
+        this.privacy = props?.privacy || 'public'
+        this.name = props?.name || 'Без названия';
         this.items = props?.items || [];
+        this.try_on_result_id = props?.try_on_result_id
 
         makeObservable(this, {
             uuid: observable,
+            name: observable,
+            privacy: observable,
             updated_at: observable,
             image: observable,
             items: observable,
+            try_on_result_id: observable,
 
             setUUID: action,
             setUpdatedAt: action,
             setImage: action,
+            setName: action,
+            setPrivacy: action,
             setItems: action,
+            setTryOnResult: action,
             addItem: action,
             addItems: action,
             addGarments: action,
+            removeGarmentWithUUID: action,
             removeGarment: action,
         })
     }
 
     setUUID(uuid: string) {
         this.uuid = uuid;
+    }
+
+    setName(name: string) {
+        this.name = name;
+    }
+
+    setPrivacy(privacy: Privacy) {
+        this.privacy = privacy;
     }
 
     setUpdatedAt(updated_at: string) {
@@ -141,6 +170,10 @@ export class Outfit {
 
     setItems(items: OutfitItem[]) {
         this.items = items;
+    }
+
+    setTryOnResult(try_on_result_id: string) {
+        this.try_on_result_id = try_on_result_id;
     }
 
     addItem(item: OutfitItem) {
@@ -160,7 +193,9 @@ export class Outfit {
             })
         }
 
-        const cardToItem = async (garment: GarmentCard) => {
+        const maxZIndex = Math.max(...this.items.map(i => i.rect.zIndex), 0);
+
+        const cardToItem = async (garment: GarmentCard, i: number) => {
             const dimensions = await getDimensions(garment.image);
             const aspectRatio = dimensions.width / dimensions.height;
             return new OutfitItem({
@@ -170,21 +205,69 @@ export class Outfit {
                     y: 300,
                     width: 200 * aspectRatio,
                     height: 200,
+                    zIndex: maxZIndex + i + 1
                 })
             })
         }
 
         const items = await Promise.all(garments.map(cardToItem));
 
+        console.log(items);
         this.addItems(items);
-
-        // Image.getSize(getImageSource(item.image).uri, (width, height) => {
-        //     console.log(width, height);
-        // })
     }
 
-    removeGarment(garment: GarmentCard) {
-        this.items = this.items.filter(item => item.garmentUUID !== garment.uuid!);
+    removeGarmentWithUUID(uuid: string) {
+        this.items = this.items.filter(item => item.garmentUUID !== uuid);
+    }
+
+    removeGarment(garment: GarmentCard | string) {
+        if (typeof garment === 'string') {
+            this.removeGarmentWithUUID(garment);
+        } else {
+            this.removeGarmentWithUUID(garment.uuid!);
+        }
+    }
+}
+
+export class OutfitEdit extends Outfit {
+    origin: Outfit;
+
+    constructor(origin: Outfit) {
+      super(origin)
+  
+      this.origin = origin;
+      this.clearChanges();
+  
+      makeObservable(this, {
+        origin: observable,
+  
+        setOrigin: action,
+        clearChanges: action,
+        saveChanges: action,
+  
+        hasChanges: computed
+      });
+    }
+  
+    setOrigin(origin: Outfit) {
+      this.origin = origin;
+    }
+  
+    get hasChanges() {
+      return !(
+        this.name === this.origin.name &&
+        this.privacy === this.origin.privacy
+      );
+    }
+  
+    clearChanges() {
+        this.name = this.origin.name;
+        this.privacy = this.origin.privacy;
+    }
+  
+    saveChanges() {
+        this.origin.name = this.name;
+        this.origin.privacy = this.privacy;
     }
 }
 
@@ -204,6 +287,7 @@ export class OutfitStore {
             setOutfits: action,
             addOutfit: action,
             removeOutfit: action,
+            clear: action,
         })
     }
 
@@ -213,9 +297,9 @@ export class OutfitStore {
 
     addOutfit(outfit?: Outfit) {
         if (outfit === undefined) {
-            this.outfits.push(new Outfit());
+            this.outfits.unshift(new Outfit());
         } else {
-            this.outfits.push(outfit);
+            this.outfits.unshift(outfit);
         }
     }
 
@@ -225,6 +309,10 @@ export class OutfitStore {
 
     getOutfitByUUID(outfitUUID: string) {
         return this.outfits.find(outfit => outfit.uuid === outfitUUID);
+    }
+
+    clear() {
+        this.outfits = [];
     }
 };
 

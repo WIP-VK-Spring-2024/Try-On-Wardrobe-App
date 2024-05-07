@@ -16,21 +16,19 @@ import { UserPhoto } from '../stores/UserPhotoStore';
 
 interface PersonListCardProps {
   source: string | ImageSourcePropType;
-  navigation: any;
   id: number;
   onDelete: () => void;
+  onPress: () => void;
 }
 
 const PersonListCard = observer(
-  ({ source, navigation, id, onDelete }: PersonListCardProps) => {
+  ({ source, id, onDelete, onPress }: PersonListCardProps) => {
     return (
       <Pressable
+        key={id}
         bg={BASE_COLOR}
-        onPress={() => {
-          userPhotoSelectionStore.toggle(id);
-          navigation.navigate('Clothes');
-        }}
-        w="49%"
+        onPress={() => onPress()}
+        w={CARD_SIZE.width}
         h={CARD_SIZE.height}>
         <ListImage source={source} />
         <Pressable position='absolute' top={8} right={8} onPress={onDelete}>
@@ -41,17 +39,27 @@ const PersonListCard = observer(
   },
 );
 
-export const PeopleList = observer(({navigation, onItemDelete}: {navigation: any, onItemDelete: (item: UserPhoto) => void}) => {
+interface PeopleListProps {
+  navigation: any
+  onItemDelete: (item: UserPhoto) => void
+  onPress: () => void
+}
+
+export const PeopleList = observer(({onItemDelete, onPress}: PeopleListProps) => {
     const people = userPhotoSelectionStore.items.map((item, i) => (
       <PersonListCard
-        navigation={navigation}
+        key={i}
+        onPress={() => {
+          userPhotoSelectionStore.select(i);
+          onPress();
+        }}
         source={getImageSource(item.image)}
         id={i}
         onDelete={() => onItemDelete(item)}
       />
     ));
   
-    people.unshift(<AddItemCard text="Новое фото для примерки" onPress={async () => {
+    people.unshift(<AddItemCard key="add" text="Новое фото для примерки" onPress={async () => {
         const created = await createUserPhotoFromGallery();
         if (!created) {
           console.log('user photo not created')

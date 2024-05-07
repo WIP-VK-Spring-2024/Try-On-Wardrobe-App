@@ -5,6 +5,8 @@ import { garmentStore } from "../stores/GarmentStore";
 import { resultStore } from "../store";
 import { runInAction } from "mobx";
 import { outfitGenResutlStore, outfitGenUUIDStore } from "../stores/OutfitGenStores";
+import { TryOnResult, tryOnStore } from '../stores/TryOnStore'
+import { outfitStore } from "../stores/OutfitStore";
 
 interface CentrifugeSubscriptionProps {
     connection: Centrifuge
@@ -28,7 +30,7 @@ const subsribeToChannel = (props: CentrifugeSubscriptionProps) => {
     });
 
     channel.on('error', ctx => {
-        console.log(`error in ${props.name}`, ctx);
+        console.error(`error in ${props.name}`, ctx);
     })
 
     channel.on('publication', props.onPublication);
@@ -73,7 +75,6 @@ export const initCentrifuge = async () => {
             const tags = ctx.data.classification.tags;
             const seasons = ctx.data.classification.seasons;
             
-            
             runInAction(() => {
                 garment.image = {
                     type: 'remote',
@@ -108,8 +109,19 @@ export const initCentrifuge = async () => {
         connection: centrifuge,
         name: `try-on:user#${appState.userID}`,
         onPublication: ctx => {
-            resultStore.setResultUrl(staticEndpoint + ctx.data.image);
-            resultStore.setResultUUID(ctx.data.uuid);
+            console.log(ctx.data)
+            if (ctx.data.outfit_id === undefined) {
+                resultStore.setResultUrl(staticEndpoint + ctx.data.image);
+                resultStore.setResultUUID(ctx.data.uuid);
+            } else {
+                outfitStore.outfits
+                    .find(item => item.uuid === ctx.data.outfit_id)
+                    ?.setTryOnResult(ctx.data.uuid);
+            }
+
+            if (!tryOnStore.results.find(item => item.uuid === ctx.data.uuid)) {
+                tryOnStore.addResult(new TryOnResult({...ctx.data, image: {uri: ctx.data.image}}));
+            }
         }
     });
 
@@ -117,6 +129,8 @@ export const initCentrifuge = async () => {
         connection: centrifuge,
         name: `outfit-gen:user#${appState.userID}`,
         onPublication: ctx => {
+            console.log(ctx)
+            console.log(ctx.data)
             const outfits = ctx.data.outfits.map((outfit: {clothes: {clothes_id: string}[]}) => 
                 outfit.clothes.map(c => c.clothes_id))
             

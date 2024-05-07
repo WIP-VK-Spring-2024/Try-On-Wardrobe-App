@@ -9,26 +9,47 @@ import { RobotoText } from './common';
 import ImageModal from 'react-native-image-modal';
 import { ImageSourceType } from '../utils';
 
-export const CARD_SIZE = {
-  height: (((WINDOW_WIDTH - 30) / 2) * 3) / 2,
-  width: (WINDOW_WIDTH - 30) / 2,
-};
+export const COLUMN_NUM = Math.round(WINDOW_WIDTH / 160);
+
+export const getCardSize = () => {
+  const width = (WINDOW_WIDTH - (COLUMN_NUM + 1) * 10) / COLUMN_NUM;
+
+  return {
+    width,
+    height: width * 3 / 2
+  }
+}
+
+export const CARD_SIZE = getCardSize();
+
+function divideIntoParts<T>(items: T[], numberOfParts: number) {
+  let item_pairs = [];
+  for (let i = 0; i < items.length; i++) {
+      if (i % numberOfParts === 0) {
+          item_pairs.push([items[i]]);
+      } else {
+          item_pairs[item_pairs.length - 1].push(items[i]);
+      }
+  }
+
+  return item_pairs;
+}
 
 const divideIntoPairs = (items: any[]) => {
-    let item_pairs = [];
-    for (let i = 0; i < items.length; i++) {
-        if (i % 2 === 0) {
-            item_pairs.push([items[i]]);
-        } else {
-            item_pairs[item_pairs.length - 1].push(items[i]);
-        }
-    }
+  let item_pairs = [];
+  for (let i = 0; i < items.length; i++) {
+      if (i % 2 === 0) {
+          item_pairs.push([items[i]]);
+      } else {
+          item_pairs[item_pairs.length - 1].push(items[i]);
+      }
+  }
 
-    return item_pairs;
+  return item_pairs;
 };
 
 interface BaseListProps {
-    items: any
+    items: React.ReactNode[]
     addItemCard?: React.ReactNode
 }
 
@@ -40,7 +61,7 @@ export const BaseList = observer((props: BaseListProps) => {
         return [props.addItemCard, ...props.items];
     }
 
-    const pairs = divideIntoPairs(getItemsWithAddItemCard());
+    const parts = divideIntoParts(getItemsWithAddItemCard(), COLUMN_NUM);
     return (
         <Box
             bg={BASE_COLOR}
@@ -48,11 +69,10 @@ export const BaseList = observer((props: BaseListProps) => {
             flexDirection="column"
             gap={10}
             padding={10}>
-            {pairs.map((item_pair, i) => {
+            {parts.map((item_part, i) => {
                 return (
                     <Box key={i} display="flex" flexDirection="row" gap={10}>
-                        {item_pair[0]}
-                        {item_pair[1]}
+                        {item_part}
                     </Box>
                 );
             })}
@@ -112,20 +132,22 @@ export const AddItemCard = observer(
         width={CARD_SIZE.width}
         height={CARD_SIZE.height}
         display="flex"
-        flexDirection="row"
         alignItems="center"
         justifyContent="center"
         gap={10}>
         {children ||
-          <>
+          <View
+            flexDirection='column'
+            alignItems='center'
+          >
             <AddBtnIcon
-              width={45}
-              height={45}
+              width={35}
+              height={35}
               fill={ADD_BTN_COLOR}
               stroke={FOOTER_COLOR}
             />
-            <RobotoText fontSize={16}>{text || 'Добавить'}</RobotoText>
-          </>
+            <RobotoText textAlign='center' fontSize={16}>{text || 'Добавить'}</RobotoText>
+          </View>
         }
       </Pressable>
     );

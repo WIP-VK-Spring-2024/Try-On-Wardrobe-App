@@ -1,4 +1,4 @@
-import { makeObservable, observable, action, computed, autorun } from 'mobx';
+import { makeObservable, observable, action, computed } from 'mobx';
 
 type FilterPredicateType<T> = (item: T) => boolean
 type FilterPredicatesType<T> = {[key: string]: FilterPredicateType<T>}

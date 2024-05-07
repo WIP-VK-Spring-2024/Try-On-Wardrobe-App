@@ -1,9 +1,9 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
-import {Avatar, AvatarFallbackText, Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
+import { Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
 import {PRIMARY_COLOR, ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
 import {RobotoText} from './common';
-import { StackActions, useNavigation } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 
 import FilterIcon from '../../assets/icons/filter.svg';
 import SettingsIcon from '../../assets/icons/settings.svg';
@@ -17,9 +17,9 @@ import { garmentScreenFilteredGarmentStore,
 
 import { FilterStore } from '../stores/FilterStore';
 import { GarmentCard } from '../stores/GarmentStore';
-import { ajax } from '../requests/common';
-import { cacheManager } from '../cacheManager/cacheManager';
 import { profileStore } from '../stores/ProfileStore';
+import { Avatar } from './Avatar';
+import { getOptionalImageSource } from '../utils';
 
 const HeaderBase = (props: PropsWithChildren) => {
   return (
@@ -49,18 +49,17 @@ export const Header = observer(({ rightMenu, navigation }: HeaderProps) => {
       <Box display="flex" flexDirection="row" gap="$2" alignItems="center">
         <Pressable
           onPress={() => {
-              navigation.navigate('Profile');
-          }}
-        >
-          <Avatar 
-            bg={PRIMARY_COLOR} 
-            borderRadius="$full"
-          >
-            <AvatarFallbackText>{profileStore.currentUser?.name}</AvatarFallbackText>
-          </Avatar>
+            navigation.navigate('Profile');
+          }}>
+          <Avatar
+            name={profileStore.currentUser?.name || ''}
+            source={
+              getOptionalImageSource(profileStore.currentUser?.avatar)
+            }
+          />
         </Pressable>
         <RobotoText color={TEXT_COLOR} fontSize="$2xl">
-          Try-On
+          TryOn Wardrobe
         </RobotoText>
       </Box>
       {rightMenu === null || rightMenu || <GarmentHeaderButtons />}
