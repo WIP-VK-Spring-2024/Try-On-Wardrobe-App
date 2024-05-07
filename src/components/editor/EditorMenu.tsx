@@ -106,7 +106,7 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
         justifyContent="center"
         gap={20}
       >
-        <Pressable
+        {/* <Pressable
           onPress={() => {
             if (props.selectedId.value !== undefined) {
               const newPositions = [...props.positions.value];
@@ -123,11 +123,10 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
           }}
         >
           <TrashIcon width={ELEMENT_SIZE} height={ELEMENT_SIZE}/>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable
           onPress={() => {
-            console.log('down')
             if (props.selectedId.value !== undefined) {
               props.moveDown(props.selectedId.value);
             }
@@ -138,7 +137,6 @@ export const EditorMenu = observer((props: EditorMenuProps) => {
         </Pressable>
         <Pressable
           onPress={() => {
-            console.log('up')
             if (props.selectedId.value !== undefined) {
               props.moveUp(props.selectedId.value);
             }

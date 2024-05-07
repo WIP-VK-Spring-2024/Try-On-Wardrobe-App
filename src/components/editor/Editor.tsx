@@ -24,6 +24,7 @@ import { Outfit } from "../../stores/OutfitStore";
 import { EditorItemList } from "./EditorItemsList";
 import { GestureDetectorViewList } from "./GestureDetectorViewList";
 import { itemFromRect } from "./utils";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface OutfitEditorProps {
   navigation: any
@@ -32,9 +33,11 @@ interface OutfitEditorProps {
 
   canvasRef: React.RefObject<SkiaDomView>
   outfit: Outfit
+
+  onSave: ()=>void
 }
 
-export const OutfitEditor = observer(({positions, canvasRef, outfit, images, navigation}: OutfitEditorProps) => {
+export const OutfitEditor = observer(({positions, canvasRef, outfit, images, navigation, onSave}: OutfitEditorProps) => {
   const [basePosition, setBasePosition] = useState({x: 0, y: 0, w: 0, h: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);

@@ -73,33 +73,6 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
 
   const images = useSharedValue<(SkImage | undefined)[]>([]);
 
-  // useEffect(() => {
-  //   const imagePromises = outfit.items
-  //     .map((item, i) => {
-  //       if (item.image === undefined) {
-  //         return undefined;
-  //       }
-
-  //       return loadSkImage(item.image)
-  //         .then(img => {
-  //           if (img === null) {
-  //             return undefined;
-  //           }
-
-  //           return img;
-  //         })
-  //         .catch(reason => {
-  //           console.error(reason);
-  //           return undefined;
-  //         })
-  //     })
-
-  //   Promise.all(imagePromises).then(skImages => {
-  //     console.log('images update in screen', skImages.length)
-  //     images.value = skImages;
-  //   })
-  // }, [])
-
   const canvasRef = useCanvasRef();
 
   useEffect(() => {
@@ -127,13 +100,12 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       })
 
       Promise.all(imagePromises).then(skImages => {
-        console.log('images update in screen', skImages.length)
         images.value = skImages;
       })
     })
   }, [])
 
-  const onSave = () => {
+  const save = () => {
     outfit.setItems(positions.value.map(itemFromRect));
 
     canvasRef.current?.makeImageSnapshotAsync()
@@ -188,7 +160,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       <OutfitEditorHeader 
         navigation={props.navigation}
         outfit={outfit}
-        onSave={onSave}
+        onSave={save}
       />
       { appState.error==='network' && <ConnectionErrorAlert/> }
       { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
@@ -198,6 +170,7 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
         images={images}
         outfit={outfit} 
         canvasRef={canvasRef}
+        onSave={save}
       />
     </View>
   )
