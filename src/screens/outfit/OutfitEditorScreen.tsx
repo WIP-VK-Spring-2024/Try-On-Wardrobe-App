@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { OutfitEditor } from "../../components/editor/Editor";
 import { BackHeader } from "../../components/Header";
@@ -9,7 +9,7 @@ import { useSharedValue } from "react-native-reanimated";
 import { RectangleWithPayload } from "../../components/editor/models";
 import { autorun } from "mobx";
 import { itemFromRect, loadSkImage, rectFromItem } from "../../components/editor/utils";
-import { useCanvasRef } from "@shopify/react-native-skia";
+import { SkImage, useCanvasRef } from "@shopify/react-native-skia";
 
 import { Outfit, outfitStore } from "../../stores/OutfitStore";
 import { updateOutfit, uploadOutfit } from "../../requests/outfit";
@@ -71,25 +71,47 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
 
   const positions = useSharedValue<GarmentRect[]>(outfit.items.map(rectFromItem));
 
+  const images = useSharedValue<(SkImage | undefined)[]>([]);
+
   const canvasRef = useCanvasRef();
 
   useEffect(() => {
     autorun(() => {
       positions.value = outfit.items.map(rectFromItem);
+
+      const imagePromises = outfit.items
+      .map((item, i) => {
+        if (item.image === undefined) {
+          return undefined;
+        }
+
+        return loadSkImage(item.image)
+          .then(img => {
+            if (img === null) {
+              return undefined;
+            }
+
+            return img;
+          })
+          .catch(reason => {
+            console.error(reason);
+            return undefined;
+          })
+      })
+
+      Promise.all(imagePromises).then(skImages => {
+        images.value = skImages;
+      })
     })
   }, [])
 
-  const onSave = () => {
+  const save = () => {
     outfit.setItems(positions.value.map(itemFromRect));
 
     canvasRef.current?.makeImageSnapshotAsync()
       .then(image => {
         const makeName = () => {
-          // if (outfit.uuid  === undefined) {
-            return`${Date.now()}.png`;
-          // }
-          
-          // return getOutfitImageName(outfit);
+          return`${Date.now()}.png`;
         }
         
         const fileName = makeName();
@@ -138,11 +160,18 @@ export const OutfitEditorScreen = observer((props: OutfitEditorScreenProps) => {
       <OutfitEditorHeader 
         navigation={props.navigation}
         outfit={outfit}
-        onSave={onSave}
+        onSave={save}
       />
       { appState.error==='network' && <ConnectionErrorAlert/> }
       { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
-      <OutfitEditor positions={positions} outfit={outfit} canvasRef={canvasRef}/>
+      <OutfitEditor
+        navigation={props.navigation}
+        positions={positions}
+        images={images}
+        outfit={outfit} 
+        canvasRef={canvasRef}
+        onSave={save}
+      />
     </View>
   )
 });

@@ -7,6 +7,7 @@ import {
   vec,
   Points,
   SkiaDomView,
+  SkImage,
 } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
@@ -20,15 +21,24 @@ import { GestureDetectorView } from "./GestureDetectorView";
 import { EditorMenu } from "./EditorMenu";
 import { GarmentRect } from "../../screens/outfit/OutfitEditorScreen";
 import { Outfit } from "../../stores/OutfitStore";
+import { EditorItemList } from "./EditorItemsList";
+import { GestureDetectorViewList } from "./GestureDetectorViewList";
+import { itemFromRect } from "./utils";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface OutfitEditorProps {
+  navigation: any
   positions: SharedValue<GarmentRect[]>
+  images: SharedValue<(SkImage | undefined)[]>
+
   canvasRef: React.RefObject<SkiaDomView>
   outfit: Outfit
+
+  onSave: ()=>void
 }
 
-export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEditorProps) => {
-  const [basePosition, setBasePosition] = useState({x: 0, y: 0});
+export const OutfitEditor = observer(({positions, canvasRef, outfit, images, navigation, onSave}: OutfitEditorProps) => {
+  const [basePosition, setBasePosition] = useState({x: 0, y: 0, w: 0, h: 0});
 
   const movingId = useSharedValue<number | undefined>(undefined);
   const activeId = useSharedValue<number | undefined>(undefined);
@@ -39,17 +49,22 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
 
   const aref = useRef<View | null>(null);
 
-  const getPanGesture = (id: number) => {
+  const getPanGesture = (index: number) => {
+    const id = useDerivedValue(() => {
+      const ind = sortedPositions.value[index]?.index || 0;
+      return ind;
+    });
+
     return Gesture.Native()
     .onTouchesDown((event) => {
       const touch = event.allTouches[0];
 
-      movingId.value = id;
-      activeId.value = id;
+      movingId.value = id.value;
+      activeId.value = id.value;
 
       const c = {
-        x: positions.value[id].halfWidth,
-        y: positions.value[id].halfHeight
+        x: positions.value[id.value].halfWidth,
+        y: positions.value[id.value].halfHeight
       }
 
       const cursor = {
@@ -62,7 +77,7 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
         y: cursor.y - c.y
       };
 
-      const {scale, angle} = positions.value[id];
+      const {scale, angle} = positions.value[id.value];
 
       cursorPosition.value = {
         x: c.x + (centerCursor.x * Math.cos(angle) - centerCursor.y * Math.sin(angle)) * scale,
@@ -76,8 +91,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
 
       const oldPositions = [...positions.value];
 
-      oldPositions[id].x = coords.x;
-      oldPositions[id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       positions.value = oldPositions;
 
@@ -92,8 +107,8 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
 
       const oldPositions = [...positions.value];
 
-      oldPositions[id].x = coords.x;
-      oldPositions[id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       positions.value = oldPositions;
     })
@@ -389,34 +404,91 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
       activeId.value = undefined;
     })
 
+  const sortedPositions = useDerivedValue(() => {
+    const copy = positions.value.map((pos, i) => ({...pos, index: i}));
+
+    copy.sort((a, b) => a.zIndex - b.zIndex);
+
+    return copy;
+  })
+
+  const moveUp = (id: number) => {
+    const newPositions = [...positions.value];
+    
+    const currentZIndex = newPositions[id].zIndex;
+
+    let closestId: number | undefined = undefined;
+
+    newPositions.forEach((el, i) => {
+      if (el.zIndex > currentZIndex) {
+        if (closestId === undefined || el.zIndex < newPositions[closestId].zIndex) {
+          closestId = i; 
+        }
+      }
+    })
+
+    if (closestId !== undefined) {
+      const newZIndex = newPositions[closestId].zIndex;
+      newPositions[closestId].zIndex = newPositions[id].zIndex;
+      newPositions[id].zIndex = newZIndex;
+
+      positions.value = newPositions;
+    }
+  }
+
+  const moveDown = (id: number) => {
+    const newPositions = [...positions.value];
+    
+    const currentZIndex = newPositions[id].zIndex;
+
+    let closestId: number | undefined = undefined;
+
+    newPositions.forEach((el, i) => {
+      if (el.zIndex < currentZIndex) {
+        if (closestId === undefined || el.zIndex > newPositions[closestId].zIndex) {
+          closestId = i; 
+        }
+      }
+    })
+
+    if (closestId !== undefined) {
+      const newZIndex = newPositions[closestId].zIndex;
+      newPositions[closestId].zIndex = newPositions[id].zIndex;
+      newPositions[id].zIndex = newZIndex;
+
+      positions.value = newPositions;
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}
         ref={aref}
         onLayout={() => {
           aref.current?.measure((x, y, w, h, px, py) => {
-            setBasePosition({x: px, y: py});
+            setBasePosition({x: px, y: py, w, h});
           })
         }}
       >
         <Canvas style={styles.container} ref={canvasRef}>
           <Fill color="white" />
-          {
-            positions.value.map((_, i) => (
-              <EditorItem 
-                key={i} 
-                id={i} 
-                positions={positions}
-                image={positions.value[i].image}
-                // skImage={positions.value[i].skImage}
-              />
-            ))
-          }
+          <EditorItemList
+            positions={sortedPositions}
+            images={images}
+          />
+        </Canvas>
 
+        <Canvas style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: basePosition.w,
+          height: basePosition.h
+        }}>
           <Group
-            transform={activeTranforms}
-            origin={activeOrigin}
-          >
+              transform={activeTranforms}
+              origin={activeOrigin}
+            >
             <Points
               points={boundingBoxPoints}
               mode="polygon"
@@ -427,7 +499,6 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
             <RotateHandle rotateHandleCoords={rotateHandleCoords} activeId={activeId}/>
             <ScaleHandle coords={scaleHandleCoords}/>
           </Group>
-
         </Canvas>
 
         <GestureDetector gesture={cancelSelectionGesture}>
@@ -440,13 +511,10 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
           }}/>
         </GestureDetector>
 
-        {
-          positions.value.map((_, i) => {
-            return (
-              <GestureDetectorView key={i} gesture={getPanGesture(i)} positions={positions} id={i}/>
-            )
-          })
-        }
+        <GestureDetectorViewList
+          positions={sortedPositions}
+          getPanGesture={getPanGesture}
+        />
 
         <GestureDetector gesture={rotateGesture}>
           <Animated.View style={rotateHandleStyle}/>
@@ -457,7 +525,15 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit}: OutfitEdit
         </GestureDetector>
       </View>
 
-      <EditorMenu selectedId={activeId} outfit={outfit}/>
+      <EditorMenu
+        navigation={navigation}
+        selectedId={activeId}
+        outfit={outfit}
+        positions={sortedPositions}
+        
+        moveUp={moveUp}
+        moveDown={moveDown}
+      />
     </View>
   );
 });
@@ -467,4 +543,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%"
   },
+  
+  floatingCanvas: {
+    heigh: "100%",
+    width: "100%",
+    position: "absolute",
+    top: 0,
+  }
 });

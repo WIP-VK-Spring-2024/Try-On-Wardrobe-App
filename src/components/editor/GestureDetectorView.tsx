@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useDebugValue } from 'react'
 import { GestureDetector, NativeGesture } from 'react-native-gesture-handler';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Rectangle } from './models';
 
-export const GestureDetectorView = (props: {gesture: NativeGesture, positions: SharedValue<Rectangle[]>, id: number}) => {
+interface GestureDetectorViewProps {
+  gesture: NativeGesture
+  positions: SharedValue<Rectangle[]>
+  id: number
+}
+
+export const GestureDetectorView = (props: GestureDetectorViewProps) => {
   const style = useAnimatedStyle(() => {
     return {
       position: "absolute",
