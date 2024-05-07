@@ -43,7 +43,7 @@ export const OutfitEditorHeader = (props: OutfitEditorHeaderProps) => {
           ]
         })
       }}
-      text="Комплект"
+      text="Редактор"
       rightMenu={
       <Pressable
         onPress={props.onSave}
@@ -51,7 +51,6 @@ export const OutfitEditorHeader = (props: OutfitEditorHeaderProps) => {
         <SaveIcon
           width={30}
           height={30}
-
           fill={ACTIVE_COLOR}
         />
       </Pressable>}

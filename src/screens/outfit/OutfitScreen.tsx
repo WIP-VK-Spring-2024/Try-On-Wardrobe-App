@@ -5,12 +5,12 @@ import { appState, processNetworkError } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View, HStack } from "@gluestack-ui/themed";
 import { RobotoText, DeleteMenu, AlertModal } from "../../components/common";
-import { getImageSource, nameErrorMsg } from "../../utils";
+import { getImageSource, getOptionalImageSource, nameErrorMsg } from "../../utils";
 import { Outfit, OutfitEdit, OutfitItem } from "../../stores/OutfitStore";
 import { tryOnStore } from '../../stores/TryOnStore'
 
 import { BackHeader } from "../../components/Header";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR } from "../../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR, WINDOW_WIDTH } from "../../consts";
 import { StackActions, useFocusEffect } from "@react-navigation/native";
 import { deleteOutfit, updateOutfit, updateOutfitFields } from "../../requests/outfit";
 import { ButtonFooter } from "../../components/Footer";
@@ -25,6 +25,7 @@ import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
 import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 import EditIcon from '../../../assets/icons/editor.svg';
+import ImageModal from "react-native-image-modal";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -291,6 +292,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     setOldItems(outfit.items.map(item => item.garmentUUID));
   }, []));
 
+  const tryOnImage = tryOnStore.results.find(item => item.uuid === outfit.try_on_result_id)?.image;
+
   return (
     <>
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
@@ -319,7 +322,6 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
             >
               <EditIcon width={40} height={40} fill={ACTIVE_COLOR}/>
             </View>
-
           </Pressable>
         ) : (
           <View
@@ -332,16 +334,13 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
                 <RobotoText>Загрузка...</RobotoText>
               </HStack>
             ) : (
-              <Image
-                source={getImageSource(
-                  tryOnStore.results.find(
-                    item => item.uuid === outfit.try_on_result_id,
-                  )?.image || { type: 'local', uri: '' },
-                )}
-                w="100%"
-                height={WINDOW_HEIGHT / 2}
+              <ImageModal
+                source={getOptionalImageSource(tryOnImage) || {uri: ''}}
+                style={{
+                  width: WINDOW_WIDTH,
+                  height: WINDOW_HEIGHT / 2,
+                }}
                 resizeMode="contain"
-                alt="try-on"
               />
             )}
           </View>
