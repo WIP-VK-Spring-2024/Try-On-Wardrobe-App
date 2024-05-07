@@ -13,16 +13,18 @@ import { BackHeader } from "../../components/Header";
 import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR } from "../../consts";
 import { StackActions, useFocusEffect } from "@react-navigation/native";
 import { deleteOutfit, updateOutfit, updateOutfitFields } from "../../requests/outfit";
-import DotsIcon from '../../../assets/icons/dots-vertical.svg';
-import OutfitIcon from '../../../assets/icons/outfit.svg';
-import HangerIcon from '../../../assets/icons/hanger.svg';
-import TrashIcon from '../../../assets/icons/trash.svg';
-import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 import { ButtonFooter } from "../../components/Footer";
 import { UpdateableTextInput } from "../../components/UpdateableTextInput";
 import { PrivacyCheckbox } from "../../components/PrivacyCheckbox";
 import { TryOnButton } from "../../components/TryOnButton";
 import { ErrorMessage } from "../../components/ErrorMessage";
+
+import DotsIcon from '../../../assets/icons/dots-vertical.svg';
+import OutfitIcon from '../../../assets/icons/outfit.svg';
+import HangerIcon from '../../../assets/icons/hanger.svg';
+import TrashIcon from '../../../assets/icons/trash.svg';
+import AddBtnIcon from '../../../assets/icons/add-btn.svg';
+import EditIcon from '../../../assets/icons/editor.svg';
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -294,6 +296,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
         {status === 'outfit' ? (
           <Pressable
+            backgroundColor="white"
             onPress={() =>
               props.navigation.navigate('Editor', { outfit: outfit, oldItems: oldItems })
             }>
@@ -308,6 +311,15 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
                 alt="outfit"
               />
             )}
+
+            <View
+              position="absolute"
+              bottom={10}
+              right={10}
+            >
+              <EditIcon width={40} height={40} fill={ACTIVE_COLOR}/>
+            </View>
+
           </Pressable>
         ) : (
           <View
