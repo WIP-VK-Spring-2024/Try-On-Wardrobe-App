@@ -109,6 +109,7 @@ export const initCentrifuge = async () => {
         connection: centrifuge,
         name: `try-on:user#${appState.userID}`,
         onPublication: ctx => {
+            console.log(ctx.data)
             if (ctx.data.outfit_id === undefined) {
                 resultStore.setResultUrl(staticEndpoint + ctx.data.image);
                 resultStore.setResultUUID(ctx.data.uuid);
@@ -119,7 +120,7 @@ export const initCentrifuge = async () => {
             }
 
             if (!tryOnStore.results.find(item => item.uuid === ctx.data.uuid)) {
-                tryOnStore.addResult(new TryOnResult(ctx.data));
+                tryOnStore.addResult(new TryOnResult({...ctx.data, image: {uri: ctx.data.image}}));
             }
         }
     });
