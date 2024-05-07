@@ -13,7 +13,6 @@ interface GestureDetectorViewListProps {
 
 export const GestureDetectorViewList = observer((props: GestureDetectorViewListProps) => {
   const indexedPositions = useDerivedValue(() => {
-    console.log('update', props.positions.value.map(item => [item.index, item.zIndex]))
     return props.positions.value.map((item, i) => ({...item, i}))
   })
 
