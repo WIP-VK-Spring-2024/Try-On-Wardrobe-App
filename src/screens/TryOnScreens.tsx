@@ -126,6 +126,7 @@ export const PersonSelectionScreen = observer(
 
     const nextScreen = route.params.next || 'Result';
     const nextScreenParams = route.params.params;
+    const outfitId = route.params.outfitId;
 
     useFocusEffect(React.useCallback(() => {
       userPhotoSelectionStore.unselect();
@@ -179,9 +180,13 @@ export const PersonSelectionScreen = observer(
           <PeopleList
             navigation={navigation}
             onPress={() =>
-              tryOn(() => {
-                navigation.navigate(nextScreen, nextScreenParams);
-              })
+              outfitId
+                ? tryOnOutfit(outfitId, () => {
+                    navigation.navigate(nextScreen, nextScreenParams);
+                  })
+                : tryOn(() => {
+                    navigation.navigate(nextScreen, nextScreenParams);
+                  })
             }
             onItemDelete={item => {
               setDeleteUUID(item.uuid);
@@ -235,6 +240,26 @@ const tryOn = (navigate: () => void) => {
 
   ajax
     .apiPost('/try-on', {
+      credentials: true,
+      body: JSON.stringify(tryOnBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(navigate)
+    .catch(err => console.error(err));
+};
+
+const tryOnOutfit = (outfitId: string, navigate: () => void) => {  
+  const tryOnBody = {
+    outfit_id: outfitId,
+    user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
+  };
+
+  console.log(tryOnBody);
+
+  ajax
+    .apiPost('/try-on/outfit', {
       credentials: true,
       body: JSON.stringify(tryOnBody),
       headers: {

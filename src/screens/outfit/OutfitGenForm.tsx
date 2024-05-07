@@ -10,11 +10,10 @@ import { outfitGenFormTagsStore, outfitPurposeStore } from "../../stores/OutfitG
 import { Checkbox } from "../../components/Checkbox";
 import { RobotoText } from "../../components/common";
 import { Divider } from "@gluestack-ui/themed";
-import { TagCheckboxBlock } from "../../components/TagCheckboxBlock";
 import { BackHeader } from "../../components/Header";
 import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
-import { processColorsInProps } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
