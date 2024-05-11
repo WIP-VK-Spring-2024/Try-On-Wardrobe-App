@@ -51,6 +51,7 @@ const PostCommentContentColumn = observer((props: PostCommentContentColumnProps)
         <RobotoText
           w="100%"
           fontSize={18}
+          numberOfLines={1}
           fontWeight='bold'
         >
           {props.authorName}

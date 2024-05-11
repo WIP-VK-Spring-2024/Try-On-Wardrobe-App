@@ -295,12 +295,8 @@ export class OutfitStore {
         this.outfits = outfits;
     }
 
-    addOutfit(outfit?: Outfit) {
-        if (outfit === undefined) {
-            this.outfits.unshift(new Outfit());
-        } else {
-            this.outfits.unshift(outfit);
-        }
+    addOutfit(outfit: Outfit) {
+        this.outfits.unshift(outfit);
     }
 
     removeOutfit(outfitUUID: string) {

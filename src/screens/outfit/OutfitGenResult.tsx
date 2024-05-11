@@ -19,6 +19,8 @@ import { outfitGenUUIDStore } from "../../stores/OutfitGenStores";
 
 import FilledHeartIcon from '../../../assets/icons/heart-filled.svg';
 import HeartIcon from '../../../assets/icons/heart.svg';
+import { profileStore } from "../../stores/ProfileStore";
+import { ajax } from "../../requests/common";
 
 const MARGIN = 10;
 const GAP = 10;
@@ -131,8 +133,17 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const canvasRef = useCanvasRef();
 
+  const canSaveRef = useRef<boolean>(true);
+
   const onSave = () => {
+    if (!canSaveRef.current) {
+      return;
+    }
+
+    canSaveRef.current = false;
+
     const outfit = new Outfit({
+      privacy: profileStore.currentUser?.privacy || 'private',
       items: items
     });
 
@@ -203,7 +214,12 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
 
         onPress={() => {
           setIsSelected(!isSelected)
-          onSave();
+          if (!isSelected) {
+            canSaveRef.current = false;
+            ajax.apiDelete(`/outfits/${uuid}`, {credentials: true})
+          } else {
+            onSave();
+          }
         }}
       >
         {

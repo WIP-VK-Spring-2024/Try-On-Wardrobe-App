@@ -28,9 +28,9 @@ import { deleteGarment, updateGarment } from '../requests/garment';
 import { appState } from '../stores/AppState';
 
 import ImageModal from 'react-native-image-modal';
-import { ajax } from '../requests/common';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { errorMsgTimeout } from '../consts';
+import { TagBlock } from '../components/Tags';
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -281,91 +281,6 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
     );
   });
 
-  const Tag = observer((props: {name: string, isEditable: boolean}) => {
-    return (
-      <Box
-        display='flex'
-        flexDirection='row'
-        gap={4}
-        alignItems='center'
-      >
-        <HashTagIcon />
-        <RobotoText>{props.name}</RobotoText>
-        {
-          props.isEditable 
-          && <Pressable
-              onPress={() => {
-                garment.removeTag(props.name);
-              }}
-            >
-              <CrossIcon width={10} height={10} stroke={ACTIVE_COLOR}/>
-            </Pressable>
-        }
-      </Box>
-    )
-  });
-
-  const GarmentTagBlock = observer((props: {tagInputValue: string, setTagInputValue: (t: string)=>void}) => {
-    const [tagInputValue, setTagInputValue] = useState(props.tagInputValue);
-    
-    return (
-      <Box>
-        <Heading>
-          Теги
-        </Heading>
-        <Box
-          display='flex'
-          flexDirection='row'
-          flexWrap='wrap'
-          gap={20}
-          rowGap={10}
-          marginBottom={10}
-        >
-          {
-            garment.tags.map((tag, i) => {
-              return (
-                <Tag key={i} name={tag} isEditable={inEditing}/>
-              )
-            })
-          }
-        </Box>
-        <Box display='flex' flexDirection='row' justifyContent='space-between'>
-          <Input
-            w="67%"
-            variant="outline"
-            size="md"
-            isDisabled={false}
-            isInvalid={false}
-            isReadOnly={false}
-            justifyContent='space-between'
-          >
-            <InputField
-              type="text"
-              value={tagInputValue}
-              onChangeText={(text: string) => setTagInputValue(text)}
-              onEndEditing={()=>props.setTagInputValue(tagInputValue)}
-            />
-          </Input>
-          <Button
-              bg={SECONDARY_COLOR}
-              onPress={() => {
-                const value = tagInputValue.trim()
-                if (tagInputValue == '' || garment.tags.includes(value)) {
-                  return;
-                }
-                setTagInputValue('');
-                garment.addTag(value);
-              }}
-            >
-              <RobotoText color='#ffffff'>
-                Добавить
-              </RobotoText>
-          </Button>
-        </Box>
-      </Box>
-    )
-  });
-
   const footer = garment.hasChanges ? (
     <ButtonFooter text="Сохранить изменения" onPress={saveChanges} />
   ) : null;
@@ -406,7 +321,10 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
           <GarmentTypeSelector />
           <GarmentStyleSelector />
 
-          <GarmentTagBlock
+          <TagBlock
+            tags={garment.tags}
+            removeTag={(tag: string) => garment.removeTag(tag)}
+            addTag={(tag: string) => garment.addTag(tag)}
             tagInputValue={tagInputValue}
             setTagInputValue={setTagInputValue}
           />

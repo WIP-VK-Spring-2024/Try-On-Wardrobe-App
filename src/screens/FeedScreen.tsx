@@ -8,7 +8,7 @@ import { convertPostResponse } from "../utils";
 import { useFocusEffect } from "@react-navigation/native";
 import { appState } from "../stores/AppState";
 import { PostList } from "../components/Posts";
-
+import { AddMenu } from "../components/AddMenu"
 
 interface PostResponse {
   uuid: string
@@ -51,6 +51,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
       />
       
       <Footer navigation={props.navigation}/>
+      { appState.createMenuVisible && <AddMenu navigation={props.navigation}/>}
     </View>
   )
 });

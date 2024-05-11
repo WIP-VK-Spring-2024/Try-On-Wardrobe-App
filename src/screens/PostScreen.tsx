@@ -185,7 +185,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
             }}>
             <Avatar size="sm" name={postData.user_name} source={getOptionalImageSource(postData.user_image)}/>
 
-            <RobotoText fontWeight="bold">{postData.user_name}</RobotoText>
+            <RobotoText fontWeight="bold" numberOfLines={1}>{postData.user_name}</RobotoText>
           </Pressable>
 
           {postData.user_id != profileStore.currentUser?.uuid && (
