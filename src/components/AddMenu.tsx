@@ -89,6 +89,7 @@ export const MenuItem = observer(({text, onPress, Icon, stroke, fontSize, iconSi
       flexDirection='row'
       alignItems='center'
       onPress={onPress}
+      gap={5}
     >
       <View
       >

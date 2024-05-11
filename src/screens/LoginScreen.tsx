@@ -14,6 +14,7 @@ import { profileStore } from "../stores/ProfileStore";
 import { Gender } from "../stores/common";
 import { convertLoginResponse, LoginSuccessResponse, nameErrorMsg } from "../utils"
 import { ErrorMessage } from "../components/ErrorMessage"
+import { errorMsgTimeout } from '../consts';
 
 interface LoginBtnProps {
   text: string
@@ -42,7 +43,31 @@ interface ErrorResponse {
 
 type LoginResponse = LoginSuccessResponse | ErrorResponse;
 
-const errorMsgTimeout = 5000;
+const initApp = async (json: LoginSuccessResponse, navigation: any) => {
+  console.log(json);
+  appState.login(
+    json.token,
+    json.user_id
+  );
+
+  profileStore.setUser(convertLoginResponse(json));
+  cacheManager.writeToken();
+
+  initCentrifuge();
+  const initStatus = initStores();
+
+  navigation.navigate('Loading');
+
+  await initStatus;
+
+  appState.setViewedOnboarding(true);
+  cacheManager.writeViewedOnboarding();
+
+  navigation.reset({
+    index: 0,
+    routes: [{ name: 'Home' }],
+  });
+};
 
 const LoginTab = observer((props: TabProps) => {
   const [login, setLogin] = useState("");
@@ -88,33 +113,11 @@ const LoginTab = observer((props: TabProps) => {
           setError(json.msg);
           return false;
         }
-        
-        console.log(json);
-        appState.login(
-          json.token,
-          json.user_id
-        );
 
-        profileStore.setUser(convertLoginResponse(json));
-        cacheManager.writeToken();
-
-        initCentrifuge();
-        const initStatus = initStores();
-
-        props.navigation.navigate('Loading');
+        initApp(json, props.navigation);
 
         setLogin('');
         setPassword('');
-
-        await initStatus;
-
-        appState.setViewedOnboarding(true);
-        cacheManager.writeViewedOnboarding();
-
-        props.navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        });
 
         return true;
       })
@@ -205,19 +208,7 @@ const SignUpTab = observer((props: TabProps) => {
           return false;
         }
 
-        appState.login(json.token, json.user_id);
-        profileStore.setUser(convertLoginResponse(json));
-        cacheManager.writeToken();
-
-        appState.setViewedOnboarding(true);
-        cacheManager.writeViewedOnboarding();
-        
-        initCentrifuge();
-
-        props.navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        });
+        initApp(json, props.navigation);
       })
       .catch(reason => {
         console.error(reason);

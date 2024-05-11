@@ -27,6 +27,9 @@ import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 import EditIcon from '../../../assets/icons/editor.svg';
 import ImageModal from "react-native-image-modal";
 
+import { errorMsgTimeout } from '../../consts';
+
+
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
 
@@ -146,8 +149,6 @@ const HeaderMenu = (props: HeaderMenuProps) => {
     </Menu>
   )
 }
-
-const errorMsgTimeout = 5000;
 
 export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const outfit: Outfit = props.route.params.outfit;
