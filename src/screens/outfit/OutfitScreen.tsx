@@ -295,6 +295,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
 
   const tryOnImage = tryOnStore.results.find(item => item.uuid === outfit.try_on_result_id)?.image;
 
+  const isTryOnAble = garments.some(garment => garment.tryOnAble);
+
   return (
     <>
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
@@ -347,7 +349,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           </View>
         )}
 
-        <CarouselFooter />
+        {(isTryOnAble || outfit.try_on_result_id) && <CarouselFooter />}
 
         <View margin={20} flexDirection="column" gap={20}>
           <UpdateableTextInput
@@ -391,7 +393,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       </BaseScreen>
 
       <CloseAlertDialog />
-      {garments.filter(garment => garment.tryOnAble).length > 0 &&
+      {isTryOnAble &&
         <TryOnButton
           outfitId={outfit.uuid}
           navigation={props.navigation}

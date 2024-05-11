@@ -87,6 +87,10 @@ export const convertPostResponse = (item: any): PostData => {
         type: 'remote',
         uri: item.outfit_image,
       },
+      try_on_image: item.try_on_image ? {
+        type: 'remote',
+        uri: item.try_on_image,
+      } : undefined,
     };
 }
 

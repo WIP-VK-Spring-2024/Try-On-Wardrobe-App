@@ -172,7 +172,7 @@ export class Outfit {
         this.items = items;
     }
 
-    setTryOnResult(try_on_result_id: string) {
+    setTryOnResult(try_on_result_id?: string) {
         this.try_on_result_id = try_on_result_id;
     }
 

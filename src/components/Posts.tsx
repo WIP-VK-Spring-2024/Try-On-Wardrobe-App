@@ -77,7 +77,7 @@ export const PostCard = observer((props: PostCardProps) => {
       </Pressable>
 
       <View flex={1}>
-        <PostImage source={getImageSource(props.data.outfit_image)} />
+        <PostImage source={getImageSource(/* props.data.try_on_image ||  */props.data.outfit_image)} />
       </View>
 
       <RatingBlock

@@ -6,6 +6,7 @@ import { EXTRA_COLOR } from "../consts";
 import { tryOnScreenGarmentSelectionStore } from "../store"
 import { GarmentCard } from "../stores/GarmentStore";
 import { RobotoText } from "./common"
+import { outfitStore } from "../stores/OutfitStore";
 
 interface TryOnButtonProps {
   outfitId?: string
@@ -41,6 +42,8 @@ export const TryOnButton = observer(
         tryOnScreenGarmentSelectionStore.clearSelectedItems();
 
         garments?.forEach(garment => tryOnScreenGarmentSelectionStore.select(garment));
+        
+        outfitId && outfitStore.outfits.find(outfit => outfit.uuid === outfitId)?.setTryOnResult(undefined);
 
         navigation.navigate('TryOn/Person', {
           outfitId: outfitId,
