@@ -17,7 +17,7 @@ import { ajax } from "../requests/common";
 import { PostData } from "../stores/common"
 
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
-import { feedPropsMediator } from "../components/feed/mediator";
+import { feedPropsMediator, feedUserMediator } from "../components/feed/mediator";
 import { profileStore } from "../stores/ProfileStore";
 import { SubscribeButton } from "../components/Profile";
 
@@ -64,17 +64,27 @@ interface PostScreenProps {
 
 export const PostScreen = observer((props: PostScreenProps) => {
   const postData: PostData = props.route.params;
-  const [isSubbed, setIsSubbed] = useState(
-    profileStore.currentUser?.subs.find(
-      item => item.uuid === postData.user_id,
-    ) != undefined,
-  );
+
+  console.log(postData)
+
+  const setIsSubbed = (isSubbed: boolean) => {
+    feedUserMediator.propagate('0', {
+      user_id: postData.user_id,
+      isSubbed: isSubbed
+    })
+
+    props.navigation.setParams({
+      is_subbed: isSubbed
+    })
+  }
+
+  console.log('is subbed', props.route.params.is_subbed)
   
   const [ratingStatus, setRatingStatus] = useState<RatingStatus>(getStatusFromRating(postData.user_rating));
   const [rating, setRating] = useState<number>(postData.rating);
 
   const updateRatingStatus = (status: RatingStatus) => {
-    feedPropsMediator.propagate(postData.uuid, {status: status});
+    feedPropsMediator.propagate(postData.uuid, {propType: "status", payload: status});
     
     setRatingStatus(status);
 
@@ -132,8 +142,6 @@ export const PostScreen = observer((props: PostScreenProps) => {
       .catch(reason => console.error(reason));
   }, [])
 
-  console.log(props.route.params)
-
   return (
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост" />}
@@ -175,7 +183,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
                   user: {
                     name: postData.user_name,
                     uuid: postData.user_id,
-                    is_subbed: isSubbed,
+                    is_subbed: props.route.params.is_subbed,
                     avatar: postData.user_image,
                   },
                 });
@@ -190,7 +198,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
 
           {postData.user_id != profileStore.currentUser?.uuid && (
             <SubscribeButton
-              isSubbed={isSubbed}
+              isSubbed={props.route.params.is_subbed}
               setIsSubbed={setIsSubbed}
               user={{
                 name: postData.user_name,

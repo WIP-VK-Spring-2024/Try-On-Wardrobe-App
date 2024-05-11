@@ -1,12 +1,15 @@
 import React from 'react';
 
-import LikeIcon from '../../../assets/icons/my-like.svg';
-import DislikeIcon from '../../../assets/icons/my-dislike.svg';
 import { observer } from 'mobx-react-lite';
 import { View } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import { RobotoText } from '../common';
-import { PRIMARY_COLOR } from '../../consts';
+import { ACTIVE_COLOR, PRIMARY_COLOR } from '../../consts';
+
+import HeartIcon from '../../../assets/icons/heart.svg';
+import FilledHeartIcon from '../../../assets/icons/heart-filled.svg';
+//import LikeIcon from '../../../assets/icons/my-like.svg';
+import DislikeIcon from '../../../assets/icons/my-dislike.svg';
 
 export type RatingStatus = 'liked' | 'disliked' | undefined
 
@@ -42,7 +45,7 @@ export interface RatingBlockProps {
 }
 
 export const RatingBlock = observer((props: RatingBlockProps) => {
-  const icon_size = 16;
+  const icon_size = 20;
 
   const toggleRatingStatus = (status: RatingStatus) => {
     return () => {
@@ -65,17 +68,24 @@ export const RatingBlock = observer((props: RatingBlockProps) => {
         padding={5}
         onPress={toggleRatingStatus('liked')}
       >
-        <LikeIcon 
-          width={icon_size}
-          height={icon_size} 
-          stroke="#000000"
-          fill={props.status === 'liked' ? PRIMARY_COLOR: "#ffffff"}
-        />
+        {
+          props.status === 'liked'
+          ? <FilledHeartIcon
+            width={icon_size}
+            height={icon_size} 
+            stroke={ACTIVE_COLOR}
+            fill={ACTIVE_COLOR}
+          />
+          : <HeartIcon 
+            width={icon_size}
+            height={icon_size} 
+          />
+        }
       </Pressable>
 
       <RobotoText fontSize={14}>{props.rating}</RobotoText>
 
-      <Pressable
+      {/* <Pressable
         padding={5}
         onPress={toggleRatingStatus('disliked')}
       >
@@ -85,7 +95,7 @@ export const RatingBlock = observer((props: RatingBlockProps) => {
           stroke={"#000000"}
           fill={props.status === 'disliked' ? PRIMARY_COLOR : "#ffffff"}
         />
-      </Pressable>
+      </Pressable> */}
     </View>
   )
 })

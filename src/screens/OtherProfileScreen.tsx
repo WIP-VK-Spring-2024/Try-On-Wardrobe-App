@@ -10,18 +10,40 @@ import { ajax } from "../requests/common"
 import { convertPostResponse, getOptionalImageSource } from "../utils";
 import { PostList } from "../components/Posts";
 import { Avatar } from "../components/Avatar";
+import { feedUserMediator } from "../components/feed/mediator";
 
 interface OtherUserHeaderProps {
   navigation: any
+  route: any
   user: Subscription
 }
 
-const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
-  const [isSubbed, setIsSubbed] = useState(user.is_subbed);
+const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProps) => {
+  const setIsSubbed = (isSubbed: boolean) => {
+    feedUserMediator.propagate('0', {
+      user_id: user.uuid,
+      isSubbed
+    })
+
+    navigation.setParams({
+      user: {
+        ...user,
+        is_subbed: isSubbed
+      }
+    })
+  }
 
   return (
     <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2">
-      <BackButton navigation={navigation} flex={2} />
+      <BackButton navigation={navigation} flex={2} onBackPress={() => {
+        navigation.navigate({
+          name: "Post",
+          params: {
+            is_subbed: route.params.user.is_subbed
+          },
+          merge: true
+        })
+      }}/>
 
       <View flexDirection="row" alignItems="center" gap={20} flex={9}>
         <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
@@ -32,7 +54,7 @@ const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
 
       <View flex={5} marginRight={5}>
         <SubscribeButton
-          isSubbed={isSubbed}
+          isSubbed={route.params.user.is_subbed}
           setIsSubbed={setIsSubbed}
           user={user}
         />
@@ -69,6 +91,7 @@ export const OtherUserProfileScreen = observer(({navigation, route}: {navigation
       <OtherUserHeader
         user={user}
         navigation={navigation}
+        route={route}
       />
       <PostList fetchData={fetchUserPosts} navigation={navigation}/>
     </View>

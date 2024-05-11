@@ -10,7 +10,7 @@ import { FetchDataType, InfiniteScrollList } from "../components/InfiniteScrollL
 import { PostData } from "../stores/common"
 import { RobotoText } from "./common";
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "./feed/RatingBlock";
-import { feedAvatarMediator, feedPropsMediator } from "./feed/mediator";
+import { MediatorPropType, feedAvatarMediator, feedPropsMediator, feedUserMediator } from "./feed/mediator";
 import { ajax } from "../requests/common";
 import { Avatar } from "./Avatar";
 import { profileStore } from "../stores/ProfileStore";
@@ -51,6 +51,8 @@ export const PostCard = observer((props: PostCardProps) => {
       flexDirection="column"
       backgroundColor="white">
       <Pressable
+        width="100%"
+        padding={4}
         flexDirection="row"
         justifyContent="center"
         alignItems="center"
@@ -73,7 +75,7 @@ export const PostCard = observer((props: PostCardProps) => {
           source={getOptionalImageSource(props.data.user_image)}
         />
 
-        <RobotoText fontWeight='bold' numberOfLines={1}>{props.data.user_name}</RobotoText>
+        <RobotoText fontWeight='bold' numberOfLines={1} flex={1}>{props.data.user_name}</RobotoText>
       </Pressable>
 
       <View flex={1}>
@@ -98,10 +100,35 @@ interface PostListProps {
 export const PostList = observer(({fetchData, navigation, renderItem}: PostListProps) => {
   const [data, setData] = useState<PostData[]>([]);
 
+  const updateSubcribed = (userId: string, isSubbed: boolean) => {
+    console.log('updating subscription', userId, isSubbed)
+    
+    const newData = data.map(post => {
+      if (post.user_id !== userId) {
+        return post;
+      }
+
+      return {
+        ...post,
+        is_subbed: isSubbed
+      };
+    })
+
+    console.log(newData.map(i => ([i.user_id, i.is_subbed])))
+
+    setData(newData);
+  }
+
+  feedUserMediator.subscribe({
+    id: '0',
+    cb: prop => updateSubcribed(prop.user_id, prop.isSubbed)
+  })
+
   useEffect(() => {
     return () => {
       feedAvatarMediator.clear();
       feedPropsMediator.clear();
+      feedUserMediator.clear();
     }
   }, []);
   
@@ -144,8 +171,10 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
       feedPropsMediator.subscribe({
         id: item.uuid,
-        cb: (props: {status: RatingStatus}) => {
-          updateRatingStatus(props.status);
+        cb: (prop: MediatorPropType ) => {
+          if (prop.propType === 'status') {
+            updateRatingStatus(prop.payload);
+          }
         }
       });
 

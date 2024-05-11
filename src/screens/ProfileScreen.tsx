@@ -51,7 +51,7 @@ interface UserHeaderProps {
 const UserHeader = observer(({navigation, onLogout, onSettings, user}: UserHeaderProps) => {
   return (
     <View flexDirection="row" alignItems="center" $base-padding="$2">
-      <BackButton navigation={navigation} flex={2} />
+      <BackButton navigation={navigation} flex={2}/>
 
       <View flexDirection="row" alignItems="center" flex={9} gap={20}>
         <Pressable onPress={() => uploadAvatar()}>
