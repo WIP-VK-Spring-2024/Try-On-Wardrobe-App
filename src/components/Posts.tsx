@@ -223,7 +223,8 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
     style={{
       width: "100%",
-      padding: 10,
+      paddingLeft: 10,
+      paddingRight: 10
     }}
 
     contentContainerStyle={{

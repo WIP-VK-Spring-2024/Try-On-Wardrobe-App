@@ -269,15 +269,29 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         displayedNum={displayedSubsNum}
       />
 
-      <Tabs value={tab} setValue={setTab} tabs={[{
-        value: 'own',
-        header: 'Ваши посты',
-        content: <PostList fetchData={fetchOwnPosts} navigation={navigation} />
-      },{
-        value: 'liked',
-        header: 'Вам понравилось',
-        content: <View><PostList fetchData={fetchLikedPosts} navigation={navigation} /></View>
-      }]}/>
+      <View
+        flex={1}
+      >
+        <Tabs 
+          value={tab} 
+          setValue={setTab} 
+          containerStyle={{
+            height: "100%",
+          }}
+          contentContainerStyle={{
+            flex: 1
+          }}
+
+          tabs={[{
+            value: 'own',
+            header: 'Ваши посты',
+            content: <PostList fetchData={fetchOwnPosts} navigation={navigation} />
+          },{
+            value: 'liked',
+            header: 'Вам понравилось',
+            content: <View height="100%"><PostList fetchData={fetchLikedPosts} navigation={navigation} /></View>
+          }]}/>
+      </View>
 
       <AlertModal
         isOpen={logoutModalShown}

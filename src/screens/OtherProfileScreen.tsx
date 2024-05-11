@@ -36,8 +36,11 @@ const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProp
   return (
     <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2" gap={10}>
       <BackButton navigation={navigation} onBackPress={() => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+
         navigation.navigate({
-          name: "Post",
+          name: prevRoute.name,
           params: {
             is_subbed: route.params.user.is_subbed
           },
