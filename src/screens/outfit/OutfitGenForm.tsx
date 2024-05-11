@@ -13,6 +13,8 @@ import { Divider } from "@gluestack-ui/themed";
 import { BackHeader } from "../../components/Header";
 import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
+import { ErrorMessage } from "../../components/ErrorMessage";
+import { errorMsgTimeout } from "../../consts"
 
 
 const PurposeCheckboxGroup = observer(() => {
@@ -82,6 +84,16 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
   const [prompt, setPrompt] = useState('');
   const [useWeather, setUseWeather] = useState(true);
 
+  const [isErrorShown, setIsErrorShown] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [cancel, setCancel] = useState<NodeJS.Timeout>();
+  const setError = (msg: string) => {
+    clearTimeout(cancel);
+    setErrorMsg(msg);
+    setIsErrorShown(true);
+    setCancel(setTimeout(() => setIsErrorShown(false), errorMsgTimeout));
+  };
+
   const footer = (
     <ButtonFooter
       text="Сгенерировать"
@@ -100,9 +112,13 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
 
         ajax.apiGet('/outfits/gen?'+urlParams.toString(), {
           credentials: true
-        })
-
-        props.navigation.navigate('OutfitGenResult');
+        }).then(resp => {
+          if (resp.status === 400) {
+            setError('Недостаточно вещей для генерации образа - добавьте хотя бы 1 вещь категории "Верх" и 1 вещь категории "Низ" в свой гардероб');
+            return;
+          }
+          props.navigation.navigate('OutfitGenResult');
+        });
       }}
     />
   )
@@ -135,6 +151,7 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             isChecked={useWeather}
             onChange={weather => setUseWeather(weather)}
         />
+        <ErrorMessage shown={isErrorShown} msg={errorMsg} />
       </View>
     </BaseScreen>
   )

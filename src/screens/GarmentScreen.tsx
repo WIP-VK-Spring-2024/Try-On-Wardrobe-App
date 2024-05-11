@@ -30,7 +30,7 @@ import { appState } from '../stores/AppState';
 import ImageModal from 'react-native-image-modal';
 import { ajax } from '../requests/common';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { err } from 'react-native-svg/lib/typescript/xml';
+import { errorMsgTimeout } from '../consts';
 
 export const GarmentHeader = (props: {name?: string, route: any, navigation: any}) => {
   return (
@@ -69,8 +69,6 @@ const GarmentImage = observer(({garment} : {garment: GarmentCard}) => {
     />
   )
 });
-
-const errorMsgTimeout = 5000;
 
 export const GarmentScreen = observer((props: {route: any, navigation: any}) => {
   const [inEditing, setInEditing] = useState(false);

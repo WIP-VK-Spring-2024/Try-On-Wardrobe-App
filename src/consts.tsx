@@ -18,3 +18,5 @@ export const DELETE_BTN_COLOR = '#ff0000';
 
 export const WINDOW_WIDTH = Dimensions.get('window').width;
 export const WINDOW_HEIGHT = Dimensions.get('window').height;
+
+export const errorMsgTimeout = 5000;
