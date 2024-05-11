@@ -46,7 +46,7 @@ const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProp
       }}/>
 
       <View flexDirection="row" alignItems="center" gap={20} flex={9}>
-        <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
+        <Avatar size="md" name={user.name} source={getOptionalImageSource(user.avatar)}/>
         <RobotoText fontSize={18} numberOfLines={1}>
           {user.name}
         </RobotoText>

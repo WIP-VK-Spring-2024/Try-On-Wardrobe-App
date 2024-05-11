@@ -163,7 +163,6 @@ export const PostScreen = observer((props: PostScreenProps) => {
         </View>
 
         <View
-          w="100%"
           backgroundColor="#ffffff"
           padding={10}
           flexDirection="row"
@@ -173,6 +172,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
           alignItems="center"
           gap={10}>
           <Pressable
+            flex={1}
             flexDirection="row"
             justifyContent="center"
             alignItems="center"
@@ -193,20 +193,22 @@ export const PostScreen = observer((props: PostScreenProps) => {
             }}>
             <Avatar size="sm" name={postData.user_name} source={getOptionalImageSource(postData.user_image)}/>
 
-            <RobotoText fontWeight="bold">{postData.user_name}</RobotoText>
+            <RobotoText fontWeight="bold" numberOfLines={1} flex={1}>{postData.user_name}</RobotoText>
           </Pressable>
 
           {postData.user_id != profileStore.currentUser?.uuid && (
-            <SubscribeButton
-              isSubbed={props.route.params.is_subbed}
-              setIsSubbed={setIsSubbed}
-              user={{
-                name: postData.user_name,
-                avatar: postData.user_image,
-                uuid: postData.user_id,
-                is_subbed: postData.is_subbed,
-              }}
-            />
+            <View>
+              <SubscribeButton
+                isSubbed={props.route.params.is_subbed}
+                setIsSubbed={setIsSubbed}
+                user={{
+                  name: postData.user_name,
+                  avatar: postData.user_image,
+                  uuid: postData.user_id,
+                  is_subbed: postData.is_subbed,
+                }}
+              />
+            </View>
           )}
 
           <RatingBlock
