@@ -34,8 +34,8 @@ const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProp
   }
 
   return (
-    <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2">
-      <BackButton navigation={navigation} flex={2} onBackPress={() => {
+    <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2" gap={10}>
+      <BackButton navigation={navigation} onBackPress={() => {
         navigation.navigate({
           name: "Post",
           params: {
@@ -45,14 +45,14 @@ const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProp
         })
       }}/>
 
-      <View flexDirection="row" alignItems="center" gap={20} flex={9}>
+      <View flexDirection="row" alignItems="center" gap={10} flex={10}>
         <Avatar size="md" name={user.name} source={getOptionalImageSource(user.avatar)}/>
-        <RobotoText fontSize={18} numberOfLines={1}>
+        <RobotoText fontSize={18} numberOfLines={1} flex={1}>
           {user.name}
         </RobotoText>
       </View>
 
-      <View flex={5} marginRight={5}>
+      <View marginRight={5}>
         <SubscribeButton
           isSubbed={route.params.user.is_subbed}
           setIsSubbed={setIsSubbed}
