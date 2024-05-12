@@ -148,25 +148,36 @@ export const PostScreen = observer((props: PostScreenProps) => {
   }, [])
 
   const [status, setStatus] = useState<TryOnOutfitFooterStatus>('outfit');
+  const [height, setHeight] = useState(40);
+
+  const Footer = observer(() => {
+    return (
+      <View>
+        <TryOnButton
+          tryOnType="post"
+          navigation={props.navigation}
+          outfitId={postData.outfit_id}
+          marginBottom={height}
+        />
+        <AddCommentForm
+          height={height}
+          setHeight={setHeight}
+          addComment={addComment}
+          navigation={props.navigation}
+        />
+      </View>
+    );
+  });
 
   return (
     <>
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост" />}
       navigation={props.navigation}
-      footer={
-        <AddCommentForm addComment={addComment} navigation={props.navigation} />
-      }>
+      footer={<Footer />}
+    >
       <View w="100%" marginBottom={100} gap={10}>
         <View flexDirection="column" alignContent="center" margin={10} marginBottom={0}>
-          {postData.tryonable &&
-            <TryOnButton
-              tryOnType='post'
-              navigation={props.navigation}
-              marginBottom={0}
-              outfitId={postData.outfit_id}
-            />
-          }
           <ImageModal
             style={{
               width: WINDOW_WIDTH - 30,

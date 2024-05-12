@@ -14,11 +14,12 @@ import { profileStore } from "../../stores/ProfileStore";
 interface AddCommentFormProps {
   navigation: any
   addComment: (comment: PostCommentProps) => void
+  height: number
+  setHeight: (n: number) => void
 }
 
 export const AddCommentForm = observer((props: AddCommentFormProps) => {
   const [value, setValue] = useState("");
-  const [height, setHeight] = useState(25);
 
   return (
     <View
@@ -30,7 +31,7 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
         isDisabled={false}
         isInvalid={false}
         isReadOnly={false}
-        height={height}
+        height={props.height}
         >
         <InputField
           multiline={true}
@@ -39,7 +40,7 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
           value={value}
           onChangeText={setValue}
           onContentSizeChange={(e) => {
-            setHeight(e.nativeEvent.contentSize.height)
+            props.setHeight(e.nativeEvent.contentSize.height)
           }}
         />
         <Pressable
