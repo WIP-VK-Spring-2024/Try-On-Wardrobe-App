@@ -5,6 +5,8 @@ import { GarmentCard, Season, garmentStore } from "./stores/GarmentStore";
 import { TryOnResult} from "./stores/TryOnStore";
 import { Gender, Privacy, PostData } from "./stores/common";
 import { User } from "./stores/ProfileStore";
+import RNFS from "react-native-fs";
+import Share, { ShareOptions } from "react-native-share"
 
 export interface ImageSourceType {
   uri: string
@@ -87,6 +89,10 @@ export const convertPostResponse = (item: any): PostData => {
         type: 'remote',
         uri: item.outfit_image,
       },
+      try_on_image: item.try_on_image ? {
+        type: 'remote',
+        uri: item.try_on_image,
+      } : undefined,
     };
 }
 
@@ -189,3 +195,41 @@ export function notEmpty<T>(value: T | undefined): value is T {
 }
 
 export const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+
+interface ShareProps {
+    title: string
+    message?: string
+    images: ImageType[]
+}
+
+const sharingAd = 'Составляй свои образы и примеряй их в новом приложении TryOn Wardrobe!';
+
+export const share = async ({ title, message, images }: ShareProps) => {
+  const shareOptions: ShareOptions = {
+    title: title,
+    message: message || sharingAd,
+    type: 'image/jpeg',
+    urls: [],
+  };
+
+  const imageUrls = images.map(image => getImageSource(image).uri);
+
+  try {
+    for (let i = 0; i < imageUrls.length; ++i) {
+      const imgPath = `${RNFS.CachesDirectoryPath}/${i}.jpeg`;
+
+      const _ = await RNFS.downloadFile({
+        fromUrl: imageUrls[i],
+        toFile: imgPath,
+      }).promise;
+      
+      shareOptions.urls!.push('file://' + imgPath);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  if (shareOptions.urls && shareOptions.urls.length > 0) {
+    Share.open(shareOptions).catch(err => console.log(err));
+  }
+};

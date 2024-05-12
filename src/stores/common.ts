@@ -14,6 +14,7 @@ export interface PostData {
   uuid: string
   outfit_id: string
   outfit_image: ImageType
+  try_on_image?: ImageType
   user_image?: ImageType
   created_at: string
   user_name: string
@@ -21,5 +22,5 @@ export interface PostData {
   rating: number
   user_id: string
   is_subbed: boolean
+  tryonable: boolean
 }
-  

@@ -172,7 +172,7 @@ export class Outfit {
         this.items = items;
     }
 
-    setTryOnResult(try_on_result_id: string) {
+    setTryOnResult(try_on_result_id?: string) {
         this.try_on_result_id = try_on_result_id;
     }
 
@@ -295,12 +295,8 @@ export class OutfitStore {
         this.outfits = outfits;
     }
 
-    addOutfit(outfit?: Outfit) {
-        if (outfit === undefined) {
-            this.outfits.unshift(new Outfit());
-        } else {
-            this.outfits.unshift(outfit);
-        }
+    addOutfit(outfit: Outfit) {
+        this.outfits.unshift(outfit);
     }
 
     removeOutfit(outfitUUID: string) {

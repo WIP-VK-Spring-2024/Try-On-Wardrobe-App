@@ -43,6 +43,11 @@ export interface GarmentCardProps {
   tryOnAble?: boolean
 }
 
+// export interface GarmentTryOnProps {
+//   uuid?: string
+//   tryOnAble: boolean
+// }
+
 export class GarmentCard {
   uuid?: string
   name: string

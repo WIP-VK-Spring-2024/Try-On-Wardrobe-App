@@ -86,16 +86,18 @@ export const updateOutfit = async (outfit: Outfit, oldItems: string[]) => {
                 console.log("items", items);
                 console.log("old items", oldItems);
 
-                if (!items.every(uuid => oldItems.includes(uuid)) &&
+                if (oldItems && items.some(uuid => !oldItems.includes(uuid)) &&
                   userPhotoStore.photos.length > 0
                 ) {
-                  ajax.apiPost('/try-on/outfit', {
-                    body: JSON.stringify({
-                      user_image_id: userPhotoStore.photos[0].uuid,
-                      outfit_id: outfit.uuid,
-                    }),
-                    credentials: true,
-                  });
+                    outfit.setTryOnResult(undefined);
+
+                    ajax.apiPost('/try-on/outfit', {
+                        body: JSON.stringify({
+                        user_image_id: userPhotoStore.photos[0].uuid,
+                        outfit_id: outfit.uuid,
+                        }),
+                        credentials: true,
+                    });
                 }
 
                 return true;

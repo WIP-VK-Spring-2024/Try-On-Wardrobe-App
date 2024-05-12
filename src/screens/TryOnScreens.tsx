@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { ButtonFooter, Footer } from "../components/Footer";
 import {
-  resultStore,
   tryOnScreenGarmentSelectionStore,
   tryOnScreenStyleSelectionStore,
   tryOnScreenSubtypeSelectionStore,
@@ -13,7 +12,6 @@ import {
 
 import { View } from "@gluestack-ui/themed";
 
-import { apiEndpoint } from "../../config";
 import { BaseScreen } from "./BaseScreen";
 import { TryOnResultList } from "../components/TryOnResultList";
 import { TypeFilter } from "../components/FilterBlock";
@@ -124,9 +122,8 @@ export const PersonSelectionScreen = observer(
   ({ navigation, route }: { navigation: any, route: any }) => {
     const [infoShown, setInfoShown] = useState(false);
 
-    const nextScreen = route.params.next || 'Result';
-    const nextScreenParams = route.params.params;
-    const outfitId = route.params.outfitId;
+    const {nextScreenParams, outfitId, tryOnType } = route.params;
+    const nextScreen = route.params.nextScreen || 'Result';
 
     useFocusEffect(React.useCallback(() => {
       userPhotoSelectionStore.unselect();
@@ -179,15 +176,25 @@ export const PersonSelectionScreen = observer(
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
           <PeopleList
             navigation={navigation}
-            onPress={() =>
-              outfitId
-                ? tryOnOutfit(outfitId, () => {
+            onPress={() => {
+              switch (tryOnType) {
+                case 'garment':
+                  tryOn(() => {
                     navigation.navigate(nextScreen, nextScreenParams);
-                  })
-                : tryOn(() => {
+                  });
+                  break;
+                case 'outfit':
+                  tryOnOutfit(outfitId, () => {
                     navigation.navigate(nextScreen, nextScreenParams);
-                  })
-            }
+                  });
+                  break;
+                case 'post':
+                  tryOnPost(outfitId, () => {
+                    navigation.navigate(nextScreen, nextScreenParams);
+                  });
+                  break;
+              }
+            }}
             onItemDelete={item => {
               setDeleteUUID(item.uuid);
               setDeletionModalShown(true);
@@ -260,6 +267,26 @@ const tryOnOutfit = (outfitId: string, navigate: () => void) => {
 
   ajax
     .apiPost('/try-on/outfit', {
+      credentials: true,
+      body: JSON.stringify(tryOnBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(navigate)
+    .catch(err => console.error(err));
+};
+
+const tryOnPost = (postId: string, navigate: () => void) => {  
+  const tryOnBody = {
+    post_id: postId,
+    user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
+  };
+
+  console.log(tryOnBody);
+
+  ajax
+    .apiPost('/try-on/post', {
       credentials: true,
       body: JSON.stringify(tryOnBody),
       headers: {

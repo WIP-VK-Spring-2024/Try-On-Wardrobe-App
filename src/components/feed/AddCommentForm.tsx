@@ -7,20 +7,19 @@ import { Input } from "@gluestack-ui/themed";
 import { Pressable } from "@gluestack-ui/themed";
 import { ACTIVE_COLOR } from "../../consts";
 
-import ForwardIcon from '../../../assets/icons/forward.svg';
 import SendIcon from '../../../assets/icons/send.svg';
-import { ajax } from "../../requests/common";
 import { appState } from "../../stores/AppState";
 import { profileStore } from "../../stores/ProfileStore";
 
 interface AddCommentFormProps {
   navigation: any
   addComment: (comment: PostCommentProps) => void
+  height: number
+  setHeight: (n: number) => void
 }
 
 export const AddCommentForm = observer((props: AddCommentFormProps) => {
   const [value, setValue] = useState("");
-  const [height, setHeight] = useState(25);
 
   return (
     <View
@@ -32,7 +31,7 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
         isDisabled={false}
         isInvalid={false}
         isReadOnly={false}
-        height={height}
+        height={props.height}
         >
         <InputField
           multiline={true}
@@ -41,11 +40,15 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
           value={value}
           onChangeText={setValue}
           onContentSizeChange={(e) => {
-            setHeight(e.nativeEvent.contentSize.height)
+            props.setHeight(e.nativeEvent.contentSize.height)
           }}
         />
         <Pressable
           onPress={()=>{
+            if (value.length < 1) {
+              return;
+            }
+
             props.addComment({
               uuid: '0',
               authorName: profileStore.currentUser!.name,

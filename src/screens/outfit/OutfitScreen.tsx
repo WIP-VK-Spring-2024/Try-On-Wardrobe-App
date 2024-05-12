@@ -4,13 +4,13 @@ import { BaseScreen } from '../BaseScreen';
 import { appState, processNetworkError } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
 import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View, HStack } from "@gluestack-ui/themed";
-import { RobotoText, DeleteMenu, AlertModal } from "../../components/common";
+import { RobotoText, DeleteMenu, AlertModal, DeletionModal } from "../../components/common";
 import { getImageSource, getOptionalImageSource, nameErrorMsg } from "../../utils";
 import { Outfit, OutfitEdit, OutfitItem } from "../../stores/OutfitStore";
 import { tryOnStore } from '../../stores/TryOnStore'
 
 import { BackHeader } from "../../components/Header";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR, WINDOW_WIDTH } from "../../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, PRIMARY_COLOR, WINDOW_WIDTH, DELETE_BTN_COLOR } from "../../consts";
 import { StackActions, useFocusEffect } from "@react-navigation/native";
 import { deleteOutfit, updateOutfit, updateOutfitFields } from "../../requests/outfit";
 import { ButtonFooter } from "../../components/Footer";
@@ -20,8 +20,6 @@ import { TryOnButton } from "../../components/TryOnButton";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 import DotsIcon from '../../../assets/icons/dots-vertical.svg';
-import OutfitIcon from '../../../assets/icons/outfit.svg';
-import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
 import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 import EditIcon from '../../../assets/icons/editor.svg';
@@ -29,6 +27,7 @@ import ImageModal from "react-native-image-modal";
 
 import { errorMsgTimeout } from '../../consts';
 
+import { TryOnOutfitFooter, TryOnOutfitFooterStatus } from "../../components/TryOnOutfitFooter";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -128,8 +127,6 @@ interface HeaderMenuProps {
   onDelete: () => void
 }
 
-type Status = 'outfit' | 'try-on'
-
 const HeaderMenu = (props: HeaderMenuProps) => {
   return (
     <Menu
@@ -157,6 +154,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isErrorShown, setIsErrorShown] = useState(false);
 
+  const [deleteAlertShown, setDeleteAlertShown] = useState(false);
+
   const [cancel, setCancel] = useState<NodeJS.Timeout>();
   const setError = (msg: string) => {
     clearTimeout(cancel);
@@ -174,19 +173,9 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
       navigation={props.navigation}
       text={outfit.name === "Без названия" ? "Образ" : outfit.name}
       rightMenu={
-        <HeaderMenu
-          onDelete={async () => {
-            if (outfit.uuid === undefined) {
-              return false;
-            }
-
-            const deleteSuccess = await deleteOutfit(outfit.uuid);
-            if (deleteSuccess) {
-              props.navigation.dispatch(StackActions.pop(1));
-              props.navigation.navigate('OutfitSelection');
-            }
-          }}
-        />
+        <Pressable onPress={() => setDeleteAlertShown(true)}>
+          <TrashIcon width={iconSize} height={iconSize} fill={DELETE_BTN_COLOR} />
+        </Pressable>
       }
     />
   )
@@ -244,19 +233,6 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     />
   ) : null;
 
-  const CarouselFooter = () => (
-    <View alignItems="center" marginTop={5}>
-      <View flexDirection="row" alignItems="center" gap={10}>
-        <Pressable onPress={() => setStatus('outfit')}>
-          <OutfitIcon width={45} height={45} fill={status === 'outfit' ? ACTIVE_COLOR : DISABLED_COLOR} />
-        </Pressable>
-        <Pressable onPress={() => setStatus('try-on')}>
-          <HangerIcon width={35} height={35} stroke={status === 'try-on' ? ACTIVE_COLOR : DISABLED_COLOR} />
-        </Pressable>
-      </View>
-    </View>
-  );
-
   const CloseAlertDialog = observer(() => {
     return (
       <AlertModal
@@ -283,7 +259,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
 
   const [inEditing, setInEditing] = useState(false);
 
-  const [status, setStatus] = useState<Status>(props.route.params.status || 'outfit');
+  const [status, setStatus] = useState<TryOnOutfitFooterStatus>(props.route.params.status || 'outfit');
 
   useEffect(() => {
     setStatus(props.route.params.status || 'outfit');
@@ -295,6 +271,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
 
   const tryOnImage = tryOnStore.results.find(item => item.uuid === outfit.try_on_result_id)?.image;
 
+  const isTryOnAble = garments.some(garment => garment.tryOnAble);
+
   return (
     <>
       <BaseScreen navigation={props.navigation} header={header} footer={footer}>
@@ -302,7 +280,10 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           <Pressable
             backgroundColor="white"
             onPress={() =>
-              props.navigation.navigate('Editor', { outfit: outfit, oldItems: oldItems })
+              props.navigation.navigate('Editor', {
+                outfit: outfit,
+                oldItems: oldItems,
+              })
             }>
             {outfit.image === undefined ? (
               <View width="100%" height={300} backgroundColor="#fefefe"></View>
@@ -316,12 +297,8 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
               />
             )}
 
-            <View
-              position="absolute"
-              bottom={10}
-              right={10}
-            >
-              <EditIcon width={40} height={40} fill={ACTIVE_COLOR}/>
+            <View position="absolute" bottom={10} right={10}>
+              <EditIcon width={40} height={40} fill={ACTIVE_COLOR} />
             </View>
           </Pressable>
         ) : (
@@ -336,7 +313,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
               </HStack>
             ) : (
               <ImageModal
-                source={getOptionalImageSource(tryOnImage) || {uri: ''}}
+                source={getOptionalImageSource(tryOnImage) || { uri: '' }}
                 style={{
                   width: WINDOW_WIDTH,
                   height: WINDOW_HEIGHT / 2,
@@ -347,7 +324,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           </View>
         )}
 
-        <CarouselFooter />
+        {(isTryOnAble || outfit.try_on_result_id) && <TryOnOutfitFooter status={status} setStatus={setStatus} />}
 
         <View margin={20} flexDirection="column" gap={20}>
           <UpdateableTextInput
@@ -384,22 +361,41 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           <HAddItemCard
             text="Добавить одежду"
             onPress={() =>
-              props.navigation.navigate('Outfit/Garment', { outfit: outfit, oldItems: oldItems })
+              props.navigation.navigate('Outfit/Garment', {
+                outfit: outfit,
+                oldItems: oldItems,
+              })
             }
           />
         </View>
       </BaseScreen>
 
       <CloseAlertDialog />
-      {garments.filter(garment => garment.tryOnAble).length > 0 &&
+
+      <DeletionModal
+        isOpen={deleteAlertShown}
+        hide={() => setDeleteAlertShown(false)}
+        text={'ВЫ точно хотите удалить этот образ?'}
+        deleteUUID={outfit.uuid}
+        onAccept={async (uuid: string) => {
+          const deleteSuccess = await deleteOutfit(uuid);
+          if (deleteSuccess) {
+            props.navigation.dispatch(StackActions.pop(1));
+            props.navigation.navigate('OutfitSelection');
+          }
+        }}
+      />
+
+      {isTryOnAble && (
         <TryOnButton
+          tryOnType='outfit'
           outfitId={outfit.uuid}
           navigation={props.navigation}
           marginBottom={edit.hasChanges ? 56 : 0}
-          nextScreen='Outfit'
-          nextScreenParams={{outfit: outfit, status: 'try-on'}}
+          nextScreen="Outfit"
+          nextScreenParams={{ outfit: outfit, status: 'try-on' }}
         />
-      }
+      )}
     </>
   );
 });

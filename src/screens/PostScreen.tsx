@@ -2,29 +2,33 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, ACTIVE_COLOR } from "../consts";
 import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
 
-import { Avatar } from "../components/Avatar"
+import { Avatar } from "../components/Avatar";
 
-import { getImageSource, getOptionalImageSource } from "../utils";
+import { getImageSource, getOptionalImageSource, share } from "../utils";
 import { BackHeader } from "../components/Header";
 import { PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
-import { PostData } from "../stores/common"
+import { PostData } from "../stores/common";
 
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
 import { feedPropsMediator, feedUserMediator } from "../components/feed/mediator";
 import { profileStore } from "../stores/ProfileStore";
 import { SubscribeButton } from "../components/Profile";
 
+import ShareIcon from "../../assets/icons/share.svg";
+import { TryOnOutfitFooter, TryOnOutfitFooterStatus } from "../components/TryOnOutfitFooter";
+import { TryOnButton } from "../components/TryOnButton";
 
 interface PostCommentBlockProps {
   navigation: any
   comments: PostCommentTreeProps[]
+  onDelete: (uuid: string) => void
 };
 
 export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
@@ -50,6 +54,7 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
             rating={comment.rating}
             ratingStatus={comment.ratingStatus}
             navigation={props.navigation}
+            onDelete={props.onDelete}
           />
         ))
       }
@@ -142,35 +147,60 @@ export const PostScreen = observer((props: PostScreenProps) => {
       .catch(reason => console.error(reason));
   }, [])
 
+  const [status, setStatus] = useState<TryOnOutfitFooterStatus>('outfit');
+  const [height, setHeight] = useState(40);
+
+  const Footer = observer(() => {
+    return (
+      <View>
+        <TryOnButton
+          tryOnType="post"
+          navigation={props.navigation}
+          outfitId={postData.outfit_id}
+          marginBottom={height}
+        />
+        <AddCommentForm
+          height={height}
+          setHeight={setHeight}
+          addComment={addComment}
+          navigation={props.navigation}
+        />
+      </View>
+    );
+  });
+
   return (
+    <>
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост" />}
       navigation={props.navigation}
-      footer={
-        <AddCommentForm addComment={addComment} navigation={props.navigation} />
-      }>
-      <View w="100%" marginBottom={100} gap={20}>
-        <View flexDirection="column" alignContent="center" margin={10}>
+      footer={<Footer />}
+    >
+      <View w="100%" marginBottom={100} gap={10}>
+        <View flexDirection="column" alignContent="center" margin={10} marginBottom={0}>
           <ImageModal
             style={{
               width: WINDOW_WIDTH - 30,
               height: WINDOW_HEIGHT / 2,
               alignSelf: 'center',
             }}
-            source={getImageSource(postData.outfit_image)}
+            source={getImageSource(status === 'outfit' ?  postData.outfit_image : postData.try_on_image!)}
             resizeMode="contain"
+            overlayBackgroundColor={BASE_COLOR}
           />
+
+          {postData.try_on_image && <TryOnOutfitFooter status={status} setStatus={setStatus}/>}
         </View>
 
         <View
           backgroundColor="#ffffff"
           padding={10}
           flexDirection="row"
-          paddingRight={30}
-          paddingLeft={30}
+          paddingRight={25}
+          paddingLeft={25}
           justifyContent="space-between"
           alignItems="center"
-          gap={10}>
+          gap={8}>
           <Pressable
             flex={1}
             flexDirection="row"
@@ -216,10 +246,33 @@ export const PostScreen = observer((props: PostScreenProps) => {
             status={ratingStatus}
             setStatus={updateRatingStatus}
           />
+
+          <Pressable onPress={() => {
+            const images = [postData.outfit_image];
+            if (postData.try_on_image) {
+              images.push(postData.try_on_image);
+            }
+            
+            share({
+              title: 'Поделиться образом',
+              images: images,
+            })
+          }}>
+            <ShareIcon fill={ACTIVE_COLOR} width={20} height={20}/>
+          </Pressable>
         </View>
 
-        <PostCommentBlock navigation={props.navigation} comments={comments} />
+        <PostCommentBlock
+          navigation={props.navigation}
+          comments={comments}
+          onDelete={(uuid: string) => {
+            ajax.apiDelete(`comments/${uuid}`, {credentials: true}).then(_ => {
+              setComments(comments.filter(comment => comment.uuid != uuid));
+            });
+          }}
+        />
       </View>
     </BaseScreen>
+  </>
   );
 })

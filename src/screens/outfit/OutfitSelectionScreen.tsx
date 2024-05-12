@@ -15,6 +15,7 @@ import MagicIcon from '../../../assets/icons/magic.svg';
 
 import { MenuItemLabel, View } from '@gluestack-ui/themed'
 import { RobotoText } from '../../components/common';
+import { profileStore } from '../../stores/ProfileStore';
 
 interface OutfitListProps {
   navigation: any
@@ -28,7 +29,7 @@ const AddOutfitCard = (props: {navigation: any}) => {
       <View gap={10} width="100%" height="100%" justifyContent='center'>
         <MenuItem
           onPress={() => {
-            const newOutfit = new Outfit();
+            const newOutfit = new Outfit({privacy: profileStore.currentUser?.privacy || 'private'});
             props.navigation.navigate('Outfit/Garment', {
               outfit: newOutfit,
             });
