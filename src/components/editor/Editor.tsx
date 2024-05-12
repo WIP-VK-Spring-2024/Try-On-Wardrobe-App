@@ -8,6 +8,7 @@ import {
   Points,
   SkiaDomView,
   SkImage,
+  Rect,
 } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useSharedValue, useAnimatedStyle, useDerivedValue, SharedValue } from "react-native-reanimated";
@@ -471,7 +472,16 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images, nav
         }}
       >
         <Canvas style={styles.container} ref={canvasRef}>
-          <Fill color="white" />
+          <Fill
+            color="white"
+          >
+            <Rect
+              x={0}
+              y={0}
+              width={basePosition.w}
+              height={basePosition.h}
+            />
+          </Fill>
           <EditorItemList
             positions={sortedPositions}
             images={images}
