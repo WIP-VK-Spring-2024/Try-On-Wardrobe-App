@@ -18,7 +18,7 @@ import ShareIcon from "../../assets/icons/share.svg"
 
 const TryOnImage = observer(({ tryOnResult }: { tryOnResult: TryOnResult }) => {
   return (
-    <View width={WINDOW_WIDTH - 30}>
+    // <View width={WINDOW_WIDTH - 30}>
       <ImageModal
         source={getImageSource(tryOnResult.image)}
         style={{
@@ -28,10 +28,7 @@ const TryOnImage = observer(({ tryOnResult }: { tryOnResult: TryOnResult }) => {
         overlayBackgroundColor={BASE_COLOR + 'a0'}
         resizeMode="contain"
       />
-      <Pressable position="absolute" bottom={5}>
-        <ShareIcon width={25} height={25} fill={ACTIVE_COLOR} />
-      </Pressable>
-    </View>
+    // </View>
   );
 });
 
@@ -66,13 +63,15 @@ export const TryOnCardScreen = observer((props: {route: any, navigation: any}) =
 
   const tryOnResult = props.route.params.tryOnResult as TryOnResult;
 
-  const deleteBtn = (
-    <Pressable
-      onPress={() => {
-        setDeletionModalShown(true);
-      }}>
-      <TrashIcon width={25} height={25} fill={DELETE_BTN_COLOR} />
-    </Pressable>
+  const rightMenu = (
+    <View flexDirection="row" alignItems="center" gap={5}>
+      <Pressable onPress={() => share({title: 'Поделиться примеркой', images: [tryOnResult.image]})}>
+        <ShareIcon width={25} height={25} fill={ACTIVE_COLOR} />
+      </Pressable>
+      <Pressable onPress={() => setDeletionModalShown(true)}>
+        <TrashIcon width={25} height={25} fill={DELETE_BTN_COLOR} />
+      </Pressable>
+    </View>
   );
 
   const header = (
@@ -80,7 +79,7 @@ export const TryOnCardScreen = observer((props: {route: any, navigation: any}) =
       navigation={props.navigation}
       fontSize={24}
       text="Результат примерки"
-      rightMenu={deleteBtn}
+      rightMenu={rightMenu}
     />
   );
 

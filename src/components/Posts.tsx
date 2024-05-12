@@ -100,7 +100,7 @@ interface PostListProps {
 export const PostList = observer(({fetchData, navigation, renderItem}: PostListProps) => {
   const [data, setData] = useState<PostData[]>([]);
 
-  const updateSubcribed = (userId: string, isSubbed: boolean) => {
+  const updateSubscribed = (userId: string, isSubbed: boolean) => {
     console.log('updating subscription', userId, isSubbed)
     
     const newData = data.map(post => {
@@ -121,7 +121,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
 
   feedUserMediator.subscribe({
     id: '0',
-    cb: prop => updateSubcribed(prop.user_id, prop.isSubbed)
+    cb: prop => updateSubscribed(prop.user_id, prop.isSubbed)
   })
 
   useEffect(() => {
