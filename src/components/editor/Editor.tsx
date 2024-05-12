@@ -50,73 +50,81 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images, nav
 
   const aref = useRef<View | null>(null);
 
-  const getPanGesture = (index: number) => {
-    const id = useDerivedValue(() => {
-      const ind = sortedPositions.value[index]?.index || 0;
-      return ind;
-    });
+  useDerivedValue(() => {
+    console.log('updated activeId', activeId.value);
+  })
 
-    return Gesture.Native()
-    .onTouchesDown((event) => {
-      const touch = event.allTouches[0];
+  // const getPanGesture = (index: number) => {
+  //   // const id = useDerivedValue(() => {
+  //   //   const ind = sortedPositions.value[index]?.index || 0;
+  //   //   return ind;
+  //   // });
 
-      movingId.value = id.value;
-      activeId.value = id.value;
+  //   const id = {
+  //     value: 0
+  //   }
 
-      const c = {
-        x: positions.value[id.value].halfWidth,
-        y: positions.value[id.value].halfHeight
-      }
+  //   return Gesture.Native()
+  //   .onTouchesDown((event) => {
+  //     const touch = event.allTouches[0];
 
-      const cursor = {
-        x: touch.x,
-        y: touch.y
-      }
+  //     movingId.value = id.value;
+  //     activeId.value = id.value;
 
-      const centerCursor = {
-        x: cursor.x - c.x,
-        y: cursor.y - c.y
-      };
+  //     const c = {
+  //       x: positions.value[id.value].halfWidth,
+  //       y: positions.value[id.value].halfHeight
+  //     }
 
-      const {scale, angle} = positions.value[id.value];
+  //     const cursor = {
+  //       x: touch.x,
+  //       y: touch.y
+  //     }
 
-      cursorPosition.value = {
-        x: c.x + (centerCursor.x * Math.cos(angle) - centerCursor.y * Math.sin(angle)) * scale,
-        y: c.y + (centerCursor.x * Math.sin(angle) + centerCursor.y * Math.cos(angle)) * scale
-      };
+  //     const centerCursor = {
+  //       x: cursor.x - c.x,
+  //       y: cursor.y - c.y
+  //     };
 
-      const coords = {
-        x: touch.absoluteX - basePosition.x - cursorPosition.value.x,
-        y: touch.absoluteY - basePosition.y - cursorPosition.value.y
-      };
+  //     const {scale, angle} = positions.value[id.value];
 
-      const oldPositions = [...positions.value];
+  //     cursorPosition.value = {
+  //       x: c.x + (centerCursor.x * Math.cos(angle) - centerCursor.y * Math.sin(angle)) * scale,
+  //       y: c.y + (centerCursor.x * Math.sin(angle) + centerCursor.y * Math.cos(angle)) * scale
+  //     };
 
-      oldPositions[id.value].x = coords.x;
-      oldPositions[id.value].y = coords.y;
+  //     const coords = {
+  //       x: touch.absoluteX - basePosition.x - cursorPosition.value.x,
+  //       y: touch.absoluteY - basePosition.y - cursorPosition.value.y
+  //     };
 
-      positions.value = oldPositions;
+  //     const oldPositions = [...positions.value];
 
-    })
-    .onTouchesMove((event) => {
-      const touch = event.allTouches[0];
+  //     oldPositions[id.value].x = coords.x;
+  //     oldPositions[id.value].y = coords.y;
 
-      const coords = {
-        x: touch.absoluteX - basePosition.x - cursorPosition.value.x,
-        y: touch.absoluteY - basePosition.y - cursorPosition.value.y
-      };
+  //     positions.value = oldPositions;
 
-      const oldPositions = [...positions.value];
+  //   })
+  //   .onTouchesMove((event) => {
+  //     const touch = event.allTouches[0];
 
-      oldPositions[id.value].x = coords.x;
-      oldPositions[id.value].y = coords.y;
+  //     const coords = {
+  //       x: touch.absoluteX - basePosition.x - cursorPosition.value.x,
+  //       y: touch.absoluteY - basePosition.y - cursorPosition.value.y
+  //     };
 
-      positions.value = oldPositions;
-    })
-    .onTouchesUp((event) => {
-      movingId.value = undefined;
-    })
-  }
+  //     const oldPositions = [...positions.value];
+
+  //     oldPositions[id.value].x = coords.x;
+  //     oldPositions[id.value].y = coords.y;
+
+  //     positions.value = oldPositions;
+  //   })
+  //   .onTouchesUp((event) => {
+  //     movingId.value = undefined;
+  //   })
+  // }
 
   const scaleGesture = Gesture.Native()
     .onTouchesDown((event) => {
@@ -522,8 +530,12 @@ export const OutfitEditor = observer(({positions, canvasRef, outfit, images, nav
         </GestureDetector>
 
         <GestureDetectorViewList
-          positions={sortedPositions}
-          getPanGesture={getPanGesture}
+          positions={positions}
+          sortedPositions={sortedPositions}
+          movingId={movingId}
+          activeId={activeId}
+          cursorPosition={cursorPosition}
+          basePosition={basePosition}
         />
 
         <GestureDetector gesture={rotateGesture}>

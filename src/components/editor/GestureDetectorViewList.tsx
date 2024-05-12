@@ -1,19 +1,25 @@
 import React from "react";
 import { SharedValue, useDerivedValue } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
-import { RectangleWithIndex } from "./models";
+import { Rectangle, RectangleWithIndex } from "./models";
 import { GestureDetectorView } from "./GestureDetectorView";
 import { NativeGesture } from "react-native-gesture-handler";
 
 
+type idSharedValue = SharedValue<number | undefined>;
+
 interface GestureDetectorViewListProps {
-  positions: SharedValue<RectangleWithIndex[]>
-  getPanGesture: (id: number)=>NativeGesture
+  positions: SharedValue<Rectangle[]>
+  sortedPositions: SharedValue<RectangleWithIndex[]>
+  movingId: idSharedValue
+  activeId: idSharedValue
+  cursorPosition: SharedValue<{x: number, y: number}>
+  basePosition: {x: number, y: number, w: number, h: number}
 }
 
 export const GestureDetectorViewList = observer((props: GestureDetectorViewListProps) => {
   const indexedPositions = useDerivedValue(() => {
-    return props.positions.value.map((item, i) => ({...item, i}))
+    return props.sortedPositions.value.map((item, i) => ({...item, i}))
   })
 
   return (
@@ -23,8 +29,11 @@ export const GestureDetectorViewList = observer((props: GestureDetectorViewListP
           return (
             <GestureDetectorView 
               key={item.i} 
-              gesture={props.getPanGesture(item.index)}
-              positions={props.positions} 
+              positions={props.positions}
+              movingId={props.movingId}
+              activeId={props.activeId}
+              cursorPosition={props.cursorPosition}
+              basePosition={props.basePosition}
               id={item.index}
             />
           )
