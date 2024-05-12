@@ -44,7 +44,7 @@ export const BaseScreen = observer((props: BaseScreenProps & React.PropsWithChil
         { appState.successMessage!==undefined && <SuccessAlert msg={appState.successMessage}/> }
         <ScrollView
           style={{
-            flex: 1
+            flex: 1,
           }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps='handled'
