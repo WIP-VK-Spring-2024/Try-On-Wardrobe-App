@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "../consts";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, ACTIVE_COLOR } from "../consts";
 import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
@@ -22,30 +22,14 @@ import { profileStore } from "../stores/ProfileStore";
 import { SubscribeButton } from "../components/Profile";
 
 import ShareIcon from "../../assets/icons/share.svg";
+import { TryOnOutfitFooter, TryOnOutfitFooterStatus } from "../components/TryOnOutfitFooter";
+import { TryOnButton } from "../components/TryOnButton";
 
 interface PostCommentBlockProps {
   navigation: any
   comments: PostCommentTreeProps[]
+  onDelete: (uuid: string) => void
 };
-
-const excludedTypesForSharing = [
-  'default',
-  'addToReadingList',
-  'airDrop',
-  'assignToContact',
-  'copyToPasteBoard',
-  'mail',
-  'message',
-  'openInIBooks', // iOS 9 or later
-  'postToFacebook',
-  'postToFlickr',
-  'postToTencentWeibo',
-  'postToTwitter',
-  'postToVimeo',
-  'postToWeibo',
-  'print',
-  'saveToCameraRoll',
-  'markupAsPDF'];
 
 export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -70,6 +54,7 @@ export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
             rating={comment.rating}
             ratingStatus={comment.ratingStatus}
             navigation={props.navigation}
+            onDelete={props.onDelete}
           />
         ))
       }
@@ -162,32 +147,46 @@ export const PostScreen = observer((props: PostScreenProps) => {
       .catch(reason => console.error(reason));
   }, [])
 
+  const [status, setStatus] = useState<TryOnOutfitFooterStatus>('outfit');
+
   return (
+    <>
     <BaseScreen
       header={<BackHeader navigation={props.navigation} text="Пост" />}
       navigation={props.navigation}
       footer={
         <AddCommentForm addComment={addComment} navigation={props.navigation} />
       }>
-      <View w="100%" marginBottom={100} gap={20}>
-        <View flexDirection="column" alignContent="center" margin={10}>
+      <View w="100%" marginBottom={100} gap={10}>
+        <View flexDirection="column" alignContent="center" margin={10} marginBottom={0}>
+          {postData.tryonable &&
+            <TryOnButton
+              tryOnType='post'
+              navigation={props.navigation}
+              marginBottom={0}
+              outfitId={postData.outfit_id}
+            />
+          }
           <ImageModal
             style={{
               width: WINDOW_WIDTH - 30,
               height: WINDOW_HEIGHT / 2,
               alignSelf: 'center',
             }}
-            source={getImageSource(postData.outfit_image)}
+            source={getImageSource(status === 'outfit' ?  postData.outfit_image : postData.try_on_image!)}
             resizeMode="contain"
+            overlayBackgroundColor={BASE_COLOR}
           />
+
+          {postData.try_on_image && <TryOnOutfitFooter status={status} setStatus={setStatus}/>}
         </View>
 
         <View
           backgroundColor="#ffffff"
           padding={10}
           flexDirection="row"
-          // paddingRight={25}
-          paddingLeft={20}
+          paddingRight={25}
+          paddingLeft={25}
           justifyContent="space-between"
           alignItems="center"
           gap={8}>
@@ -245,16 +244,24 @@ export const PostScreen = observer((props: PostScreenProps) => {
             
             share({
               title: 'Поделиться образом',
-              message: 'Составляй свои образы и примеряй их в новом приложении TryOn Wardrobe!',
               images: images,
             })
           }}>
-            <ShareIcon fill="#000000" width={20} height={20}/>
+            <ShareIcon fill={ACTIVE_COLOR} width={20} height={20}/>
           </Pressable>
         </View>
 
-        <PostCommentBlock navigation={props.navigation} comments={comments} />
+        <PostCommentBlock
+          navigation={props.navigation}
+          comments={comments}
+          onDelete={(uuid: string) => {
+            ajax.apiDelete(`comments/${uuid}`, {credentials: true}).then(_ => {
+              setComments(comments.filter(comment => comment.uuid != uuid));
+            });
+          }}
+        />
       </View>
     </BaseScreen>
+  </>
   );
 })

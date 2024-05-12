@@ -7,9 +7,7 @@ import { Input } from "@gluestack-ui/themed";
 import { Pressable } from "@gluestack-ui/themed";
 import { ACTIVE_COLOR } from "../../consts";
 
-import ForwardIcon from '../../../assets/icons/forward.svg';
 import SendIcon from '../../../assets/icons/send.svg';
-import { ajax } from "../../requests/common";
 import { appState } from "../../stores/AppState";
 import { profileStore } from "../../stores/ProfileStore";
 
@@ -46,6 +44,10 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
         />
         <Pressable
           onPress={()=>{
+            if (value.length < 1) {
+              return;
+            }
+
             props.addComment({
               uuid: '0',
               authorName: profileStore.currentUser!.name,

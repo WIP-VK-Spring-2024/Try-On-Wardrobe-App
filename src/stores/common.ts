@@ -22,5 +22,5 @@ export interface PostData {
   rating: number
   user_id: string
   is_subbed: boolean
+  tryonable: boolean
 }
-  

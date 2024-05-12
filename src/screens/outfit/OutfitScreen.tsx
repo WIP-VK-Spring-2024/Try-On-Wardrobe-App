@@ -10,7 +10,7 @@ import { Outfit, OutfitEdit, OutfitItem } from "../../stores/OutfitStore";
 import { tryOnStore } from '../../stores/TryOnStore'
 
 import { BackHeader } from "../../components/Header";
-import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, DISABLED_COLOR, PRIMARY_COLOR, WINDOW_WIDTH, DELETE_BTN_COLOR } from "../../consts";
+import { WINDOW_HEIGHT, FOOTER_COLOR, ACTIVE_COLOR, PRIMARY_COLOR, WINDOW_WIDTH, DELETE_BTN_COLOR } from "../../consts";
 import { StackActions, useFocusEffect } from "@react-navigation/native";
 import { deleteOutfit, updateOutfit, updateOutfitFields } from "../../requests/outfit";
 import { ButtonFooter } from "../../components/Footer";
@@ -20,8 +20,6 @@ import { TryOnButton } from "../../components/TryOnButton";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 import DotsIcon from '../../../assets/icons/dots-vertical.svg';
-import OutfitIcon from '../../../assets/icons/outfit.svg';
-import HangerIcon from '../../../assets/icons/hanger.svg';
 import TrashIcon from '../../../assets/icons/trash.svg';
 import AddBtnIcon from '../../../assets/icons/add-btn.svg';
 import EditIcon from '../../../assets/icons/editor.svg';
@@ -29,6 +27,7 @@ import ImageModal from "react-native-image-modal";
 
 import { errorMsgTimeout } from '../../consts';
 
+import { TryOnOutfitFooter, TryOnOutfitFooterStatus } from "../../components/TryOnOutfitFooter";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -127,8 +126,6 @@ const HAddItemCard = observer((props: PropsWithChildren & HAddItemCardProps) => 
 interface HeaderMenuProps {
   onDelete: () => void
 }
-
-type Status = 'outfit' | 'try-on'
 
 const HeaderMenu = (props: HeaderMenuProps) => {
   return (
@@ -236,19 +233,6 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
     />
   ) : null;
 
-  const CarouselFooter = () => (
-    <View alignItems="center" marginTop={5}>
-      <View flexDirection="row" alignItems="center" gap={10}>
-        <Pressable onPress={() => setStatus('outfit')}>
-          <OutfitIcon width={45} height={45} fill={status === 'outfit' ? ACTIVE_COLOR : DISABLED_COLOR} />
-        </Pressable>
-        <Pressable onPress={() => setStatus('try-on')}>
-          <HangerIcon width={35} height={35} stroke={status === 'try-on' ? ACTIVE_COLOR : DISABLED_COLOR} />
-        </Pressable>
-      </View>
-    </View>
-  );
-
   const CloseAlertDialog = observer(() => {
     return (
       <AlertModal
@@ -275,7 +259,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
 
   const [inEditing, setInEditing] = useState(false);
 
-  const [status, setStatus] = useState<Status>(props.route.params.status || 'outfit');
+  const [status, setStatus] = useState<TryOnOutfitFooterStatus>(props.route.params.status || 'outfit');
 
   useEffect(() => {
     setStatus(props.route.params.status || 'outfit');
@@ -340,7 +324,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
           </View>
         )}
 
-        {(isTryOnAble || outfit.try_on_result_id) && <CarouselFooter />}
+        {(isTryOnAble || outfit.try_on_result_id) && <TryOnOutfitFooter status={status} setStatus={setStatus} />}
 
         <View margin={20} flexDirection="column" gap={20}>
           <UpdateableTextInput
@@ -404,6 +388,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
 
       {isTryOnAble && (
         <TryOnButton
+          tryOnType='outfit'
           outfitId={outfit.uuid}
           navigation={props.navigation}
           marginBottom={edit.hasChanges ? 56 : 0}

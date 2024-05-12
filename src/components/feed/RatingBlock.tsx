@@ -58,44 +58,29 @@ export const RatingBlock = observer((props: RatingBlockProps) => {
   }
 
   return (
-    <View
+    <Pressable
       flexDirection="row"
       justifyContent="center"
       alignItems="center"
       gap={5}
+      padding={5}
+      onPress={toggleRatingStatus('liked')}
     >
-      <Pressable
-        padding={5}
-        onPress={toggleRatingStatus('liked')}
-      >
-        {
-          props.status === 'liked'
-          ? <FilledHeartIcon
-            width={icon_size}
-            height={icon_size} 
-            stroke={ACTIVE_COLOR}
-            fill={ACTIVE_COLOR}
-          />
-          : <HeartIcon 
-            width={icon_size}
-            height={icon_size} 
-          />
-        }
-      </Pressable>
+      {
+        props.status === 'liked'
+        ? <FilledHeartIcon
+          width={icon_size}
+          height={icon_size} 
+          stroke={ACTIVE_COLOR}
+          fill={ACTIVE_COLOR}
+        />
+        : <HeartIcon 
+          width={icon_size}
+          height={icon_size} 
+        />
+      }
 
       <RobotoText fontSize={14}>{props.rating}</RobotoText>
-
-      {/* <Pressable
-        padding={5}
-        onPress={toggleRatingStatus('disliked')}
-      >
-        <DislikeIcon
-          width={icon_size}
-          height={icon_size}
-          stroke={"#000000"}
-          fill={props.status === 'disliked' ? PRIMARY_COLOR : "#ffffff"}
-        />
-      </Pressable> */}
-    </View>
+    </Pressable>
   )
 })

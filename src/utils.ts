@@ -198,14 +198,16 @@ export const clearObj = (obj: any) => Object.keys(obj).forEach(key => obj[key] =
 
 interface ShareProps {
     title: string
-    message: string
+    message?: string
     images: ImageType[]
 }
+
+const sharingAd = 'Составляй свои образы и примеряй их в новом приложении TryOn Wardrobe!';
 
 export const share = async ({ title, message, images }: ShareProps) => {
   const shareOptions: ShareOptions = {
     title: title,
-    message: message,
+    message: message || sharingAd,
     type: 'image/jpeg',
     urls: [],
   };

@@ -3,14 +3,15 @@ import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { RobotoText } from "../common";
 import { Pressable } from "@gluestack-ui/themed";
-import { getImageSource, getOptionalImageSource } from "../../utils"
+import { getOptionalImageSource } from "../../utils"
 
 import ReplyIcon from '../../../assets/icons/reply.svg';
 import { RatingBlock, RatingBlockProps, RatingStatus, getRatingFromStatus } from "./RatingBlock";
 import { ajax } from "../../requests/common";
 import { Avatar } from "../Avatar";
 import { ImageType } from "../../models";
-
+import TrashIcon from "../../../assets/icons/trash.svg"
+import { profileStore } from "../../stores/ProfileStore";
 
 interface PostCommentAvatarColumnProps {
   authorName: string
@@ -86,7 +87,9 @@ export interface PostCommentProps extends
 }
 
 interface PostCommentFooterProps extends RatingBlockProps {
-
+  onDelete?: (uuid: string) => void
+  uuid: string
+  authorUUID: string
 }
 
 const PostCommentFooter = observer((props: PostCommentFooterProps) => {
@@ -116,18 +119,35 @@ const PostCommentFooter = observer((props: PostCommentFooterProps) => {
         padding={5}
         flexDirection="row"
         alignItems="flex-start"
+        gap={2}
       >
         <ReplyIcon width={icon_size + 5} height={icon_size + 5} stroke="#000000"/>
         <RobotoText fontSize={14}>Ответить</RobotoText>
       </Pressable>
+
+      {props.authorUUID === profileStore.currentUser?.uuid &&
+        <Pressable
+          padding={5}
+          gap={2}
+          flexDirection="row"
+          alignItems="flex-start"
+          onPress={() => {
+            props.onDelete && props.onDelete(props.uuid);
+          }}
+        >
+          <TrashIcon width={icon_size + 5} height={icon_size + 5} fill="#000000"/>
+          <RobotoText fontSize={14}>Удалить</RobotoText>
+        </Pressable>
+      }
     </View>
   )
 })
   
 interface PostCommentFullProps extends PostCommentProps {
-    active?: boolean
-    onPress?: () => void
-    onLongPress?: () => void
+  active?: boolean
+  onPress?: () => void
+  onLongPress?: () => void
+  onDelete?: (uuid: string) => void
 }
 
 export const PostComment = observer((props: PostCommentFullProps) => {
@@ -181,6 +201,9 @@ export const PostComment = observer((props: PostCommentFullProps) => {
         rating={rating}
         status={ratingStatus}
         setStatus={updateRatingStatus}
+        authorUUID={props.authorUUID}
+        uuid={props.uuid}
+        onDelete={props.onDelete}
       />
     </Pressable>
   )

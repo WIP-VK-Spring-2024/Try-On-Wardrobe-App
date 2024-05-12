@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { WINDOW_WIDTH, WINDOW_HEIGHT, BASE_COLOR, DELETE_BTN_COLOR } from "../consts"
-import { getImageSource } from "../utils"
+import { WINDOW_WIDTH, WINDOW_HEIGHT, BASE_COLOR, DELETE_BTN_COLOR, ACTIVE_COLOR } from "../consts"
+import { getImageSource, share } from "../utils"
 import ImageModal from 'react-native-image-modal';
 import { TryOnResult, tryOnStore } from '../stores/TryOnStore'
 import { View, Image, Pressable } from "@gluestack-ui/themed"
@@ -14,19 +14,25 @@ import TrashIcon from "../../assets/icons/trash.svg"
 import { StackActions } from "@react-navigation/native"
 import { ajax } from "../requests/common"
 import { processNetworkError } from "../stores/AppState";
+import ShareIcon from "../../assets/icons/share.svg"
 
-const TryOnImage = observer(({tryOnResult} : {tryOnResult: TryOnResult}) => {
+const TryOnImage = observer(({ tryOnResult }: { tryOnResult: TryOnResult }) => {
   return (
-    <ImageModal
-      source={getImageSource(tryOnResult.image)}
-      style={{
-        width: WINDOW_WIDTH - 30,
-        height: WINDOW_HEIGHT / 2,
-      }}
-      overlayBackgroundColor={BASE_COLOR + 'a0'}
-      resizeMode="contain"
-    />
-  )
+    <View width={WINDOW_WIDTH - 30}>
+      <ImageModal
+        source={getImageSource(tryOnResult.image)}
+        style={{
+          width: WINDOW_WIDTH - 30,
+          height: WINDOW_HEIGHT / 2,
+        }}
+        overlayBackgroundColor={BASE_COLOR + 'a0'}
+        resizeMode="contain"
+      />
+      <Pressable position="absolute" bottom={5}>
+        <ShareIcon width={25} height={25} fill={ACTIVE_COLOR} />
+      </Pressable>
+    </View>
+  );
 });
 
 interface TryOnComponentsBlockProps {

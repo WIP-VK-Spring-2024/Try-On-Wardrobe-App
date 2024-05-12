@@ -335,6 +335,7 @@ export const GarmentScreen = observer((props: {route: any, navigation: any}) => 
 
       {props.route.params.garment.tryOnAble && (
         <TryOnButton
+          tryOnType='garment'
           garments={[props.route.params.garment]}
           navigation={props.navigation}
           marginBottom={garment.hasChanges ? 56 : 0}
