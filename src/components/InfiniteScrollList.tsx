@@ -86,7 +86,7 @@ export const InfiniteScrollList = observer(
     }
   };
 
-    return isFirstPageReceived && props.data.length > 0 ? (
+    return !isLastPageReceived || props.data.length > 0 ? (
       <FlatList
         {...props}
         data={props.data}

@@ -7,25 +7,45 @@ import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
 
-import { Avatar } from "../components/Avatar"
+import { Avatar } from "../components/Avatar";
 
-import { getImageSource, getOptionalImageSource } from "../utils";
+import { getImageSource, getOptionalImageSource, share } from "../utils";
 import { BackHeader } from "../components/Header";
 import { PostCommentProps, PostCommentTree, PostCommentTreeProps } from "../components/feed/PostComment";
 import { AddCommentForm } from "../components/feed/AddCommentForm";
 import { ajax } from "../requests/common";
-import { PostData } from "../stores/common"
+import { PostData } from "../stores/common";
 
 import { RatingBlock, RatingStatus, getRatingFromStatus, getStatusFromRating } from "../components/feed/RatingBlock";
 import { feedPropsMediator } from "../components/feed/mediator";
 import { profileStore } from "../stores/ProfileStore";
 import { SubscribeButton } from "../components/Profile";
 
+import ShareIcon from "../../assets/icons/share.svg";
 
 interface PostCommentBlockProps {
   navigation: any
   comments: PostCommentTreeProps[]
 };
+
+const excludedTypesForSharing = [
+  'default',
+  'addToReadingList',
+  'airDrop',
+  'assignToContact',
+  'copyToPasteBoard',
+  'mail',
+  'message',
+  'openInIBooks', // iOS 9 or later
+  'postToFacebook',
+  'postToFlickr',
+  'postToTencentWeibo',
+  'postToTwitter',
+  'postToVimeo',
+  'postToWeibo',
+  'print',
+  'saveToCameraRoll',
+  'markupAsPDF'];
 
 export const PostCommentBlock = observer((props: PostCommentBlockProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -159,11 +179,11 @@ export const PostScreen = observer((props: PostScreenProps) => {
           backgroundColor="#ffffff"
           padding={10}
           flexDirection="row"
-          paddingRight={30}
-          paddingLeft={30}
+          // paddingRight={25}
+          paddingLeft={20}
           justifyContent="space-between"
           alignItems="center"
-          gap={10}>
+          gap={8}>
           <Pressable
             flexDirection="row"
             justifyContent="center"
@@ -206,6 +226,21 @@ export const PostScreen = observer((props: PostScreenProps) => {
             status={ratingStatus}
             setStatus={updateRatingStatus}
           />
+
+          <Pressable onPress={() => {
+            const images = [postData.outfit_image];
+            if (postData.try_on_image) {
+              images.push(postData.try_on_image);
+            }
+            
+            share({
+              title: 'Поделиться образом',
+              message: 'Составляй свои образы и примеряй их в новом приложении TryOn Wardrobe!',
+              images: images,
+            })
+          }}>
+            <ShareIcon fill="#000000" width={20} height={20}/>
+          </Pressable>
         </View>
 
         <PostCommentBlock navigation={props.navigation} comments={comments} />
