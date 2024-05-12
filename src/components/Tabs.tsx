@@ -1,7 +1,7 @@
 import { Divider, Pressable, View, ScrollView } from "@gluestack-ui/themed";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import { DimensionValue } from "react-native";
+import { DimensionValue, StyleSheet, ViewProps, ViewStyle } from "react-native";
 import { RobotoText } from "./common";
 import { ACTIVE_COLOR } from "../consts";
 
@@ -51,11 +51,15 @@ interface TabsProps {
   tabs: TabProps[]
   value: string
   setValue: (value: string) => void
+  containerStyle?: ViewStyle
+  contentContainerStyle?: ViewStyle
 }
 
-export const Tabs = observer(({tabs, value, setValue}: TabsProps) => {
+export const Tabs = observer(({tabs, value, setValue, containerStyle, contentContainerStyle}: TabsProps) => {
   return (
-    <View>
+    <View
+      style={containerStyle}
+    >
       <View
         flexDirection="row"
       >
@@ -74,7 +78,9 @@ export const Tabs = observer(({tabs, value, setValue}: TabsProps) => {
 
       <Divider h="$0.5" marginTop={10} marginBottom={10}/>
 
-      <View>
+      <View
+        style={contentContainerStyle}
+      >
         {
           tabs.find(tab => tab.value === value)?.content
         }

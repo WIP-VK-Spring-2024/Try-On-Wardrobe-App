@@ -14,9 +14,10 @@ import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
 import { userUnsub, userSub } from "../requests/user"
 import { Avatar } from "./Avatar";
+import { feedPropsMediator, feedUserMediator } from "./feed/mediator";
 
-export const BackButton = (props: {navigation: any, flex?: number}) => {
-  const onBackPress = () => props.navigation.dispatch(StackActions.pop(1))
+export const BackButton = (props: {navigation: any, flex?: number, onBackPress?: ()=>void}) => {
+  const onBackPress = props.onBackPress || (() => props.navigation.dispatch(StackActions.pop(1)))
 
   return (
     <Pressable
@@ -38,6 +39,7 @@ interface SubscribeButtonProps {
 
 export const SubscribeButton = observer(
   ({ isSubbed, setIsSubbed, user }: SubscribeButtonProps) => {
+    console.log('btn', isSubbed)
     return (
       <Button
         size="xs"

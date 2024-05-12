@@ -30,6 +30,20 @@ class Mediator<T, PropsType> {
     }
 }
 
-export const feedPropsMediator = new Mediator<string, {status: RatingStatus}>();
+interface StatusProp {
+    propType: "status"
+    payload: RatingStatus
+}
+
+interface IsSubbedProp {
+    user_id: string
+    isSubbed: boolean
+}
+
+export type MediatorPropType = StatusProp
+
+export const feedPropsMediator = new Mediator<string, MediatorPropType>();
 
 export const feedAvatarMediator = new Mediator<string, {avatar: ImageType}>();
+
+export const feedUserMediator = new Mediator<string, IsSubbedProp>();

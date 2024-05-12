@@ -10,29 +10,54 @@ import { ajax } from "../requests/common"
 import { convertPostResponse, getOptionalImageSource } from "../utils";
 import { PostList } from "../components/Posts";
 import { Avatar } from "../components/Avatar";
+import { feedUserMediator } from "../components/feed/mediator";
 
 interface OtherUserHeaderProps {
   navigation: any
+  route: any
   user: Subscription
 }
 
-const OtherUserHeader = observer(({navigation, user}: OtherUserHeaderProps) => {
-  const [isSubbed, setIsSubbed] = useState(user.is_subbed);
+const OtherUserHeader = observer(({navigation, route, user}: OtherUserHeaderProps) => {
+  const setIsSubbed = (isSubbed: boolean) => {
+    feedUserMediator.propagate('0', {
+      user_id: user.uuid,
+      isSubbed
+    })
+
+    navigation.setParams({
+      user: {
+        ...user,
+        is_subbed: isSubbed
+      }
+    })
+  }
 
   return (
-    <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2">
-      <BackButton navigation={navigation} flex={2} />
+    <View flexDirection="row" w="100%" alignItems="center" $base-padding="$2" gap={10}>
+      <BackButton navigation={navigation} onBackPress={() => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
 
-      <View flexDirection="row" alignItems="center" gap={20} flex={9}>
-        <Avatar size="lg" name={user.name} source={getOptionalImageSource(user.avatar)}/>
-        <RobotoText fontSize={18} numberOfLines={1}>
+        navigation.navigate({
+          name: prevRoute.name,
+          params: {
+            is_subbed: route.params.user.is_subbed
+          },
+          merge: true
+        })
+      }}/>
+
+      <View flexDirection="row" alignItems="center" gap={10} flex={10}>
+        <Avatar size="md" name={user.name} source={getOptionalImageSource(user.avatar)}/>
+        <RobotoText fontSize={18} numberOfLines={1} flex={1}>
           {user.name}
         </RobotoText>
       </View>
 
-      <View flex={5} marginRight={5}>
+      <View marginRight={5}>
         <SubscribeButton
-          isSubbed={isSubbed}
+          isSubbed={route.params.user.is_subbed}
           setIsSubbed={setIsSubbed}
           user={user}
         />
@@ -69,6 +94,7 @@ export const OtherUserProfileScreen = observer(({navigation, route}: {navigation
       <OtherUserHeader
         user={user}
         navigation={navigation}
+        route={route}
       />
       <PostList fetchData={fetchUserPosts} navigation={navigation}/>
     </View>
