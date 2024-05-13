@@ -11,7 +11,7 @@ import {
 import { RobotoText, AlertModal, Modal } from "../components/common";
 import SettingsIcon from "../../assets/icons/settings.svg"
 import LogoutIcon from "../../assets/icons/logout.svg"
-import { PRIMARY_COLOR, ACTIVE_COLOR} from "../consts";
+import { PRIMARY_COLOR, ACTIVE_COLOR, WINDOW_HEIGHT} from "../consts";
 import { useFocusEffect } from '@react-navigation/native'
 import { cacheManager } from "../cacheManager/cacheManager"
 import { appState } from "../stores/AppState"
@@ -173,7 +173,7 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
 
   return (
     <Modal isOpen={isOpen} hide={hide} h="60%">
-      <View marginTop={10} gap={10}>
+      <View marginTop={10} gap={10} h="100%">
         <RobotoText textAlign="center" fontSize={22}>
           Поиск
         </RobotoText>
@@ -190,6 +190,11 @@ const SearchUsersModal = observer(({subs, isOpen, hide, navigation}: SearchUsers
         <Tabs
           value={tab}
           setValue={setTab}
+          showDivider={false}
+          contentContainerStyle={{
+            marginTop: 15,
+            height: WINDOW_HEIGHT / 3,
+          }}
           tabs={[
             {
               value: 'subs',
@@ -275,10 +280,12 @@ export const CurrentUserProfileScreen = observer(({navigation}: {navigation: any
         <Tabs 
           value={tab} 
           setValue={setTab} 
+          showDivider={false}
           containerStyle={{
             height: "100%",
           }}
           contentContainerStyle={{
+            marginTop: 10,
             flex: 1
           }}
 

@@ -53,9 +53,10 @@ interface TabsProps {
   setValue: (value: string) => void
   containerStyle?: ViewStyle
   contentContainerStyle?: ViewStyle
+  showDivider?: boolean
 }
 
-export const Tabs = observer(({tabs, value, setValue, containerStyle, contentContainerStyle}: TabsProps) => {
+export const Tabs = observer(({tabs, value, setValue, containerStyle, contentContainerStyle, showDivider}: TabsProps) => {
   return (
     <View
       style={containerStyle}
@@ -76,7 +77,7 @@ export const Tabs = observer(({tabs, value, setValue, containerStyle, contentCon
         }
       </View>
 
-      <Divider h="$0.5" marginTop={10} marginBottom={10}/>
+      {showDivider === false || <Divider h="$0.5" marginTop={10} marginBottom={10}/>}
 
       <View
         style={contentContainerStyle}

@@ -61,6 +61,7 @@ export const searchUsers = (query: string, since: string, limit?: number) => {
         .then(resp => resp.json())
         .then(json => {
             const users: Subscription[] = json;
+            profileStore.clearUsers();
             profileStore.appendUsers(users);
         })
         .catch(error => processNetworkError(error))

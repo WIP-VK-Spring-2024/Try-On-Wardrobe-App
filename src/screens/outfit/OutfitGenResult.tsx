@@ -238,7 +238,10 @@ interface OutfitGenResultScreenProps {
 
 export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps) => {
   // const uuids = garmentStore.garments.slice(0, 3).map(g => g.uuid) as string[];
-
+  useEffect(() => {
+    return () => outfitGenUUIDStore.setOutfits([]);
+  }, []);
+  
   const outfits = outfitGenUUIDStore.outfits;
 
   // console.log('outfits:', outfits)

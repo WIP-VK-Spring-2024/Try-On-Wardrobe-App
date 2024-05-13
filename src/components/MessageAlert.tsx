@@ -21,6 +21,20 @@ export const ConnectionErrorAlert = observer(() => {
   )
 });
   
+export const ErrorAlert = observer(() => {
+  return (
+    <Alert mx="$2.5" action="error" variant="solid" w="100%">
+      <AlertIcon as={InfoIcon} mr="$3" />
+      <AlertText>
+        {appState.error}
+      </AlertText>
+      <Pressable onPress={()=>appState.closeError()}>
+        <Icon as={CloseIcon} marginRight={10}/>
+      </Pressable>
+    </Alert>
+  )
+});
+  
 export const SuccessAlert = observer((props: {msg: string}) => {
   return (
     <Alert mx="$2.5" action="success" variant="solid" w="100%">

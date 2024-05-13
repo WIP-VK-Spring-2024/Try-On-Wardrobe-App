@@ -23,10 +23,12 @@ import { ajax } from "../requests/common";
 import { tryOnValidationStore } from "../stores/TryOnStore"
 import { InfoButton, Tooltip } from "../components/InfoButton";
 import { DeletionModal, RobotoText, UnorderedList } from "../components/common"
-import { PRIMARY_COLOR } from "../consts";
+import { FOOTER_HEIGHT, PRIMARY_COLOR } from "../consts";
 import { deleteUserPhoto } from "../requests/user_photo"
 import { useFocusEffect } from "@react-navigation/native";
 import { NoClothesMessage } from "../components/NoClothesMessage";
+import { appState } from "../stores/AppState";
+import { ErrorAlert } from "../components/MessageAlert";
 
 interface TryOnRequest {
   clothes_id: string[];
@@ -47,11 +49,11 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
   
   const [infoShown, setInfoShown] = useState(false);
 
-  const tooltip = (
+  const ClothesTooltip = observer((props: {bottom: number}) => (
     <Tooltip
       isOpen={infoShown}
       hide={() => setInfoShown(false)}
-      top={-170}
+      bottom={props.bottom}
       margin={20}
       >
       <RobotoText fontSize={tooltipFontSize}>
@@ -65,7 +67,7 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
         Платья можно примерять только без других вещей.
       </RobotoText>
     </Tooltip>
-  );
+  ));
 
   const rightMenu = (
     <View flexDirection="row" gap={10} justifyContent="space-between" alignItems="center">
@@ -87,11 +89,13 @@ export const TryOnGarmentSelectionScreen = observer(({navigation}: {navigation: 
 
   const footer =
     tryOnScreenGarmentSelectionStore.selectedItems.length > 0 ? (
-    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person', {showStep: true})}>
-      {tooltip}
+    <ButtonFooter onPress={() => navigation.navigate('TryOn/Person', {showStep: true, tryOnType: 'garment'})}>
+      <ClothesTooltip bottom={FOOTER_HEIGHT + 10}/>
     </ButtonFooter>
   ) : (
-    <View w="100%" justifyContent="center">{tooltip}</View>
+    <View w="100%" justifyContent="center">
+      <ClothesTooltip bottom={10}/>
+    </View>
   );
 
   return (
@@ -137,7 +141,7 @@ export const PersonSelectionScreen = observer(
         <Tooltip
           isOpen={infoShown}
           hide={() => setInfoShown(false)}
-          top={-210}
+          bottom={10}
           margin={20}>
           <RobotoText fontSize={tooltipFontSize}>
             Для того, чтобы примерить одежду, сначала нужно загрузить своё фото.
@@ -162,39 +166,28 @@ export const PersonSelectionScreen = observer(
     );
 
     const header = (
-      <BackHeader
-        navigation={navigation}
-        rightMenu={rightMenu}
-      >
-        {route.params?.showStep && <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>}
-        <RobotoText fontSize={tryOnHeaderFontSize}>Выберите своё фото</RobotoText>
-      </BackHeader>
+      <View>
+        <BackHeader navigation={navigation} rightMenu={rightMenu}>
+          {route.params?.showStep && (
+            <RobotoText fontSize={tryOnStepFontSize}>Шаг 2 из 2</RobotoText>
+          )}
+          <RobotoText fontSize={tryOnHeaderFontSize}>
+            Выберите своё фото
+          </RobotoText>
+        </BackHeader>
+        {appState.error && <ErrorAlert />}
+      </View>
     );
 
     return (
       <>
         <BaseScreen navigation={navigation} header={header} footer={tooltip}>
+
           <PeopleList
             navigation={navigation}
-            onPress={() => {
-              switch (tryOnType) {
-                case 'garment':
-                  tryOn(() => {
-                    navigation.navigate(nextScreen, nextScreenParams);
-                  });
-                  break;
-                case 'outfit':
-                  tryOnOutfit(outfitId, () => {
-                    navigation.navigate(nextScreen, nextScreenParams);
-                  });
-                  break;
-                case 'post':
-                  tryOnPost(outfitId, () => {
-                    navigation.navigate(nextScreen, nextScreenParams);
-                  });
-                  break;
-              }
-            }}
+            onPress={() => tryOn(tryOnType, outfitId, () => {
+              navigation.navigate(nextScreen, nextScreenParams);
+            })}
             onItemDelete={item => {
               setDeleteUUID(item.uuid);
               setDeletionModalShown(true);
@@ -235,7 +228,47 @@ export const TryOnMainScreen = observer(({navigation}: {navigation: any}) => {
   );
 });
 
-const tryOn = (navigate: () => void) => {  
+const tryOn = (tryOnType: string, outfitId: string, navigate: () => void) => {
+  const props = (() => {
+      switch (tryOnType) {
+      case 'garment':
+        return tryOnClothes();
+      case 'outfit':
+        return tryOnOutfit(outfitId);
+      case 'post':
+        return tryOnPost(outfitId);
+    }
+  })();
+
+  if (!props) {
+    appState.setError('бебебе');
+    return;
+  }
+
+  ajax
+    .apiPost(props.route, {
+      credentials: true,
+      body: JSON.stringify(props.body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(resp => {
+      if (resp.status === 503) {
+        appState.setError('Этот функционал временно недоступен, попробуйте позже');
+        return;
+      }
+      navigate();
+    })
+    .catch(err => console.error(err));
+};
+
+interface TryOnProps {
+  route: string
+  body: object
+}
+
+const tryOnClothes = () : TryOnProps => {  
   const tryOnBody: TryOnRequest = {
     clothes_id: tryOnScreenGarmentSelectionStore.selectedItems.map(
       item => item.uuid,
@@ -243,56 +276,32 @@ const tryOn = (navigate: () => void) => {
     user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
   };
 
-  console.log(tryOnBody);
-
-  ajax
-    .apiPost('/try-on', {
-      credentials: true,
-      body: JSON.stringify(tryOnBody),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(navigate)
-    .catch(err => console.error(err));
+  return {
+    route: '/try-on',
+    body: tryOnBody
+  }
 };
 
-const tryOnOutfit = (outfitId: string, navigate: () => void) => {  
+const tryOnOutfit = (outfitId: string) => {  
   const tryOnBody = {
     outfit_id: outfitId,
     user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
   };
 
-  console.log(tryOnBody);
-
-  ajax
-    .apiPost('/try-on/outfit', {
-      credentials: true,
-      body: JSON.stringify(tryOnBody),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(navigate)
-    .catch(err => console.error(err));
+  return {
+    route: '/try-on/outfit',
+    body: tryOnBody
+  }
 };
 
-const tryOnPost = (postId: string, navigate: () => void) => {  
+const tryOnPost = (postId: string) => {  
   const tryOnBody = {
     post_id: postId,
     user_image_id: userPhotoSelectionStore.selectedItem?.uuid,
   };
 
-  console.log(tryOnBody);
-
-  ajax
-    .apiPost('/try-on/post', {
-      credentials: true,
-      body: JSON.stringify(tryOnBody),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(navigate)
-    .catch(err => console.error(err));
+  return {
+    route: '/try-on/post',
+    body: tryOnBody
+  }
 };

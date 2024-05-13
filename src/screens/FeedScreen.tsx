@@ -10,6 +10,7 @@ import { appState } from "../stores/AppState";
 import { PostList } from "../components/Posts";
 import { AddMenu } from "../components/AddMenu"
 import { Tabs } from "../components/Tabs";
+import { FOOTER_HEIGHT, HEADER_HEIGHT, WINDOW_HEIGHT } from "../consts";
 
 interface PostResponse {
   uuid: string
@@ -56,15 +57,18 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
   const [tab, setTab] = useState('new');
 
   return (
-    <View height="100%" gap={10}>
+    <View height="100%" justifyContent="space-between">
       <Header navigation={props.navigation} rightMenu={null}/>
       <Tabs
         value={tab}
         setValue={setTab}
+        showDivider={false}
         containerStyle={{
-          height: "100%",
+          height: WINDOW_HEIGHT - FOOTER_HEIGHT - HEADER_HEIGHT - 10,
+          marginTop: 10,
         }}
         contentContainerStyle={{
+          marginTop: 10,
           flex: 1,
         }}
         tabs={[
