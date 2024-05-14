@@ -76,7 +76,8 @@ export const RatingBlock = observer((props: RatingBlockProps) => {
         />
         : <HeartIcon 
           width={icon_size}
-          height={icon_size} 
+          height={icon_size}
+          fill={ACTIVE_COLOR}
         />
       }
 
