@@ -116,7 +116,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
     props.navigation.navigate('Garment', {garment: garmentStore.garments[0]});   
   }
 
-  const [step, setStep] = useState<Step>('main');
+  const [step, setStep] = useState<Step>('garment');
 
   const MenuBackButton = () => (
     <Pressable onPress={() => setStep('main')}>
@@ -151,6 +151,9 @@ export const AddMenu = observer((props: {navigation: any}) => {
 
         {step === 'garment' && (
           <View gap={10}>
+            <RobotoText textAlign="center" fontSize={menuEntryFontSize}>
+              Добавить одежду
+            </RobotoText>
             <MenuItem
               onPress={async () => {
                 const created = await createGarmentFromGallery();
@@ -173,7 +176,7 @@ export const AddMenu = observer((props: {navigation: any}) => {
               text="Сфотографировать"
             />
 
-            <MenuBackButton />
+            {/* <MenuBackButton /> */}
           </View>
         )}
 
