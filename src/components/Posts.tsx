@@ -95,9 +95,10 @@ interface PostListProps {
   fetchData: FetchDataType<PostData>
   renderItem?: (data: ListRenderItemInfo<PostData>) => React.JSX.Element
   navigation: any
+  retryInterval?: number
 }
 
-export const PostList = observer(({fetchData, navigation, renderItem}: PostListProps) => {
+export const PostList = observer(({fetchData, navigation, renderItem, retryInterval}: PostListProps) => {
   const [data, setData] = useState<PostData[]>([]);
 
   const updateSubscribed = (userId: string, isSubbed: boolean) => {
@@ -215,7 +216,7 @@ export const PostList = observer(({fetchData, navigation, renderItem}: PostListP
   return <InfiniteScrollList<PostData>
     data={data}
     setData={setData}
-
+    retryInterval={retryInterval}
     numColumns={3}
     fetchData={fetchData}
     keyExtractor={item => item.uuid}

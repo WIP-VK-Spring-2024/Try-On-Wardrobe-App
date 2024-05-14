@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { BaseScreen } from '../BaseScreen';
 import { appState, processNetworkError } from '../../stores/AppState';
 import { GarmentCard } from "../../stores/GarmentStore";
-import { Badge, BadgeIcon, BadgeText, Spinner, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View, HStack } from "@gluestack-ui/themed";
+import { Badge, BadgeIcon, BadgeText, CheckCircleIcon, Image, Menu, MenuItem, Pressable, SlashIcon, View } from "@gluestack-ui/themed";
 import { RobotoText, DeleteMenu, AlertModal, DeletionModal } from "../../components/common";
 import { getImageSource, getOptionalImageSource, nameErrorMsg } from "../../utils";
 import { Outfit, OutfitEdit, OutfitItem } from "../../stores/OutfitStore";
@@ -28,6 +28,7 @@ import ImageModal from "react-native-image-modal";
 import { errorMsgTimeout } from '../../consts';
 
 import { TryOnOutfitFooter, TryOnOutfitFooterStatus } from "../../components/TryOnOutfitFooter";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 const tryOnAbleText = 'Можно примерить'
 const notTryOnAbleText = 'Нельзя примерить'
@@ -307,10 +308,7 @@ export const OutfitScreen = observer((props: {navigation: any, route: any}) => {
             alignItems="center"
             justifyContent="center">
             {outfit.try_on_result_id === undefined ? (
-              <HStack>
-                <Spinner size="large" color={PRIMARY_COLOR} />
-                <RobotoText>Загрузка...</RobotoText>
-              </HStack>
+              <LoadingSpinner />
             ) : (
               <ImageModal
                 source={getOptionalImageSource(tryOnImage) || { uri: '' }}

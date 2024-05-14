@@ -21,6 +21,7 @@ import FilledHeartIcon from '../../../assets/icons/heart-filled.svg';
 import HeartIcon from '../../../assets/icons/heart.svg';
 import { profileStore } from "../../stores/ProfileStore";
 import { ajax } from "../../requests/common";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 const MARGIN = 10;
 const GAP = 10;
@@ -260,15 +261,18 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
         margin={10}
       >
         {
-          outfits.map((outfit, i) => {
-            return (
-              <OutfitGenCard
-                navigation={props.navigation}
-                key={i}
-                garmentUUIDS={outfits[i]}
-              />
-            )
-          })
+          outfits ?
+            outfits.map((outfit, i) => {
+              return (
+                <OutfitGenCard
+                  navigation={props.navigation}
+                  key={i}
+                  garmentUUIDS={outfits[i]}
+                />
+              )
+            })
+            :
+            <LoadingSpinner />
         }
       </View>
     </BaseScreen>

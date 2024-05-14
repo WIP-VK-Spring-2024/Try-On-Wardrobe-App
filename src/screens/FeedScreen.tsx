@@ -80,7 +80,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
           {
             value: 'recs',
             header: 'Рекомендации',
-            content: <View><PostList fetchData={fetchRecommended} navigation={props.navigation} /></View>,
+            content: <View><PostList fetchData={fetchRecommended} navigation={props.navigation} retryInterval={1500} /></View>,
           }
         ]}  
       />

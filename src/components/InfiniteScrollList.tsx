@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ActivityIndicator, FlatList, FlatListProps } from "react-native";
 import { getLast } from "../utils";
 import { RefreshControl, ScrollView } from "@gluestack-ui/themed";
 import { RobotoText } from "./common";
+import { useFocusEffect } from "@react-navigation/native";
 
 export type FetchDataType<T> = (limit: number, since: string) => Promise<T[]>
 
@@ -12,28 +13,61 @@ interface InfiniteScrollListProps<T> extends Omit<FlatListProps<T>, 'data'> {
   setData: (data: T[])=>void
   fetchData: FetchDataType<T>
   noItemsText?: string
+  retryInterval?: number
 }
 
 export const InfiniteScrollList = observer(
 <T extends {created_at: string}>(props: InfiniteScrollListProps<T>) => {
-    // const [data, setData] = useState<T[]>([]);
-    
-    const limit = 9;
-    const [since, setSince] = useState((new Date()).toISOString());
+  const limit = 9;
+  const [since, setSince] = useState((new Date()).toISOString());
 
-    const [isFirstPageReceived, setFirstPageRecieved] = useState(false);
-    const [isLastPageReceived, setLastPageReceived] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+  const [isLastPageReceived, setLastPageReceived] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-    const fetchData = () => {
+  const intervalHandle = useRef<NodeJS.Timeout>();
+
+  const clearRetryInterval = useCallback(() => {
+      if (intervalHandle.current) {
+        clearInterval(intervalHandle.current);
+        intervalHandle.current = undefined;
+      }
+  }, [intervalHandle]);
+
+  const manageRetry = useCallback(() => {
+    if (intervalHandle.current === undefined) {
+      intervalHandle.current = setInterval(fetchData, props.retryInterval)
+    }
+    return clearRetryInterval;
+  }, [intervalHandle]);
+
+  useEffect(() => {
+    if (!props.retryInterval) {
+      fetchData();
+    } else {
+      return manageRetry();
+    }
+  }, []);
+
+  useFocusEffect(() => {
+    if (props.retryInterval) {
+      return manageRetry();
+    }
+  });
+
+  const fetchData = () => {
       return props.fetchData(limit, since)
         .then(recieved => {
           if (recieved.length > 0) {
             setSince(getLast(recieved).created_at);
+            clearRetryInterval();
           } else {
-            setLastPageReceived(true);
+            props.retryInterval
+              ? intervalHandle.current === undefined &&
+                (intervalHandle.current = setInterval(fetchData, props.retryInterval))
+              : setLastPageReceived(true);
+            return;
           }
 
           props.setData([...props.data, ...recieved]);
@@ -41,44 +75,26 @@ export const InfiniteScrollList = observer(
         .catch(reason => {
           console.error(reason);
         })
+  };
+
+  
+  const fetchNextPage = () => {
+    if (!isLastPageReceived) {
+      fetchData();
     }
+  }
 
-    
-    const fetchNextPage = () => {
-      if (!isLastPageReceived) {
-        fetchData();
-      }
-    }
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
 
-    const fetchFirstPage = () => {
-      return fetchData()
-        .then(() => {
-          setFirstPageRecieved(true);
-          return true;
-        })
-        .catch(reason => {
-          console.error(reason);
-          return false;
-        })
-    }
-    
-    const onRefresh = React.useCallback(() => {
-      setRefreshing(true);
+    setSince((new Date()).toISOString());
+    props.setData([]);
+    setLastPageReceived(false);
 
-      setSince((new Date()).toISOString());
-      props.setData([]);
-      setFirstPageRecieved(false);
-      setLastPageReceived(false);
-
-      fetchFirstPage().then(() => {
-        setRefreshing(false);
-      })
-    }, [])
-
-    useEffect(() => {
-      fetchFirstPage();
-    }, []);
-
+    fetchData().then(() => {
+      setRefreshing(false);
+    })
+  }, [])
 
   const ListEndLoader = () => {
     if (!isLastPageReceived && isLoading) {
@@ -86,22 +102,22 @@ export const InfiniteScrollList = observer(
     }
   };
 
-    return !isLastPageReceived || props.data.length > 0 ? (
-      <FlatList
-        {...props}
-        data={props.data}
-        onEndReached={fetchNextPage}
-        onEndReachedThreshold={0.8}
-        ListFooterComponent={ListEndLoader}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-    ) : (
-      <ScrollView h="100%" marginTop={10} contentContainerStyle={{justifyContent: "center"}}>
-        <RobotoText fontSize={22} textAlign="center">
-          {props.noItemsText || 'Ничего не найдено'}
-        </RobotoText>
-      </ScrollView>
-    );
+  return !isLastPageReceived || props.data.length > 0 ? (
+    <FlatList
+      {...props}
+      data={props.data}
+      onEndReached={fetchNextPage}
+      onEndReachedThreshold={0.8}
+      ListFooterComponent={ListEndLoader}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    />
+  ) : (
+    <ScrollView h="100%" marginTop={10} contentContainerStyle={{justifyContent: "center"}}>
+      <RobotoText fontSize={22} textAlign="center">
+        {props.noItemsText || 'Ничего не найдено'}
+      </RobotoText>
+    </ScrollView>
+  );
 })
