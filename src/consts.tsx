@@ -2,6 +2,7 @@ import {Dimensions} from 'react-native';
 
 export const PRIMARY_COLOR = '#E6CCB2';
 export const SECONDARY_COLOR = '#B08968';
+export const TERTIARY_COLOR = '#ddb892';
 export const ACTIVE_COLOR = '#9C6644';
 export const DISABLED_COLOR = ACTIVE_COLOR+'55';
 

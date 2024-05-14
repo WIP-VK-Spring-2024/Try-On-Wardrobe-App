@@ -9,7 +9,7 @@ import {
   Button,
 } from '@gluestack-ui/themed';
 import { RobotoText } from "../components/common";
-import { PRIMARY_COLOR, ACTIVE_COLOR } from "../consts";
+import { PRIMARY_COLOR, ACTIVE_COLOR, TERTIARY_COLOR } from "../consts";
 import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
 import { userUnsub, userSub } from "../requests/user"
@@ -43,7 +43,8 @@ export const SubscribeButton = observer(
       <Button
         size="xs"
         action={isSubbed ? 'secondary' : 'primary'}
-        bgColor={isSubbed ? PRIMARY_COLOR : ACTIVE_COLOR}
+        bgColor={isSubbed ? TERTIARY_COLOR : ACTIVE_COLOR}
+        borderRadius={20}
         onPress={() => {
           if (isSubbed) {
             userUnsub(user.uuid).then(_ => {

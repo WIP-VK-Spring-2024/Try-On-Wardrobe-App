@@ -49,7 +49,9 @@ export const PostCard = observer((props: PostCardProps) => {
       width={(WINDOW_WIDTH - 40) / 3}
       height={WINDOW_HEIGHT / 3}
       flexDirection="column"
-      backgroundColor="white">
+      backgroundColor="white"
+      borderRadius={15}
+      >
       <Pressable
         width="100%"
         padding={4}
