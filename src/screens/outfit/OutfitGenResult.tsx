@@ -6,7 +6,7 @@ import { garmentStore } from "../../stores/GarmentStore";
 import { ImageType } from "../../models";
 import { getImageSource } from "../../utils";
 import { View } from "@gluestack-ui/themed";
-import { ACTIVE_COLOR, WINDOW_HEIGHT, WINDOW_WIDTH } from "../../consts";
+import { ACTIVE_COLOR, FOOTER_HEIGHT, HEADER_HEIGHT, WINDOW_HEIGHT, WINDOW_WIDTH } from "../../consts";
 import { BackHeader } from "../../components/Header";
 
 import { Pressable } from "@gluestack-ui/themed";
@@ -261,7 +261,7 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
         margin={10}
       >
         {
-          outfits ?
+          outfits.length !== 0 ?
             outfits.map((outfit, i) => {
               return (
                 <OutfitGenCard
@@ -272,7 +272,14 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
               )
             })
             :
-            <LoadingSpinner />
+            <View
+              w="100%"
+              h={WINDOW_HEIGHT - FOOTER_HEIGHT - HEADER_HEIGHT}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <LoadingSpinner />
+            </View>
         }
       </View>
     </BaseScreen>

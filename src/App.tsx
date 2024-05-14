@@ -100,7 +100,7 @@ const App = observer((): JSX.Element => {
         
         <Stack.Screen name="Login" component={LoginScreen} />
 
-        <Stack.Screen name="Feed" component={FeedScreen} />
+        <Stack.Screen name="Feed" component={FeedScreen}/>
 
         <Stack.Screen name="Post" component={PostScreen} />
 

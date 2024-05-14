@@ -245,6 +245,8 @@ const tryOn = (tryOnType: string, outfitId: string, navigate: () => void) => {
     return;
   }
 
+  console.log(props.body);
+
   ajax
     .apiPost(props.route, {
       credentials: true,

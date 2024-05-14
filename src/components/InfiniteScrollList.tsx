@@ -19,6 +19,15 @@ interface InfiniteScrollListProps<T> extends Omit<FlatListProps<T>, 'data'> {
 export const InfiniteScrollList = observer(
 <T extends {created_at: string}>(props: InfiniteScrollListProps<T>) => {
   const limit = 9;
+
+  const getLimit = () => {
+    if (props.data.length % 3 === 0) {
+      return limit;
+    }
+
+    return 12 - props.data.length % 3;
+  }
+
   const [since, setSince] = useState((new Date()).toISOString());
 
   const [isLastPageReceived, setLastPageReceived] = useState(false);
@@ -28,19 +37,19 @@ export const InfiniteScrollList = observer(
 
   const intervalHandle = useRef<NodeJS.Timeout>();
 
-  const clearRetryInterval = useCallback(() => {
+  const clearRetryInterval = () => {
       if (intervalHandle.current) {
         clearInterval(intervalHandle.current);
         intervalHandle.current = undefined;
       }
-  }, [intervalHandle]);
+  };
 
-  const manageRetry = useCallback(() => {
+  const manageRetry = () => {
     if (intervalHandle.current === undefined) {
       intervalHandle.current = setInterval(fetchData, props.retryInterval)
     }
     return clearRetryInterval;
-  }, [intervalHandle]);
+  };
 
   useEffect(() => {
     if (!props.retryInterval) {
@@ -50,31 +59,31 @@ export const InfiniteScrollList = observer(
     }
   }, []);
 
-  useFocusEffect(() => {
+  useFocusEffect(React.useCallback(() => {
     if (props.retryInterval) {
       return manageRetry();
     }
-  });
+  }, []));
 
   const fetchData = () => {
-      return props.fetchData(limit, since)
-        .then(recieved => {
-          if (recieved.length > 0) {
-            setSince(getLast(recieved).created_at);
-            clearRetryInterval();
-          } else {
-            props.retryInterval
-              ? intervalHandle.current === undefined &&
-                (intervalHandle.current = setInterval(fetchData, props.retryInterval))
-              : setLastPageReceived(true);
-            return;
-          }
+    return props.fetchData(getLimit(), since)
+      .then(recieved => {
+        if (recieved.length > 0) {
+          setSince(getLast(recieved).created_at);
+          clearRetryInterval();
+        } else {
+          props.retryInterval
+            ? intervalHandle.current === undefined &&
+              (intervalHandle.current = setInterval(fetchData, props.retryInterval))
+            : setLastPageReceived(true);
+          return;
+        }
 
-          props.setData([...props.data, ...recieved]);
-        })
-        .catch(reason => {
-          console.error(reason);
-        })
+        props.setData([...props.data, ...recieved]);
+      })
+      .catch(reason => {
+        console.error(reason);
+      })
   };
 
   

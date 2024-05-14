@@ -42,7 +42,6 @@ const fetchRecommended = (limit: number, _: string) => {
     credentials: true
   }).then((resp: any) => {
     return resp.json().then((json: PostResponse[]) => {
-      console.log(json);
       const data = json.map(convertPostResponse);
       return data;
     })
