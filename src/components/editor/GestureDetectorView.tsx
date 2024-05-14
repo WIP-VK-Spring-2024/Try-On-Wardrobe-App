@@ -1,12 +1,13 @@
 import React, { useDebugValue } from 'react'
 import { Gesture, GestureDetector, NativeGesture } from 'react-native-gesture-handler';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { Rectangle, RectangleWithIndex } from './models';
 
 type idSharedValue = SharedValue<number | undefined>;
 
 interface GestureDetectorViewProps {
   positions: SharedValue<Rectangle[]>
+  sortedPositions: SharedValue<RectangleWithIndex[]>
   movingId: idSharedValue
   activeId: idSharedValue
   cursorPosition: SharedValue<{x: number, y: number}>
@@ -15,16 +16,20 @@ interface GestureDetectorViewProps {
 }
 
 export const GestureDetectorView = (props: GestureDetectorViewProps) => {
+  const id = useDerivedValue(() => {
+    return props.sortedPositions.value[props.id]?.index || 0;
+  })
+
   const gesture = Gesture.Native()
     .onTouchesDown((event) => {
       const touch = event.allTouches[0];
 
-      props.movingId.value = props.id;
-      props.activeId.value = props.id;
+      props.movingId.value = id.value;
+      props.activeId.value = id.value;
 
       const c = {
-        x: props.positions.value[props.id].halfWidth,
-        y: props.positions.value[props.id].halfHeight
+        x: props.positions.value[id.value].halfWidth,
+        y: props.positions.value[id.value].halfHeight
       }
 
       const cursor = {
@@ -37,7 +42,7 @@ export const GestureDetectorView = (props: GestureDetectorViewProps) => {
         y: cursor.y - c.y
       };
 
-      const {scale, angle} = props.positions.value[props.id];
+      const {scale, angle} = props.positions.value[id.value];
 
       props.cursorPosition.value = {
         x: c.x + (centerCursor.x * Math.cos(angle) - centerCursor.y * Math.sin(angle)) * scale,
@@ -51,8 +56,8 @@ export const GestureDetectorView = (props: GestureDetectorViewProps) => {
 
       const oldPositions = [...props.positions.value];
 
-      oldPositions[props.id].x = coords.x;
-      oldPositions[props.id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       props.positions.value = oldPositions;
     })
@@ -66,8 +71,8 @@ export const GestureDetectorView = (props: GestureDetectorViewProps) => {
 
       const oldPositions = [...props.positions.value];
 
-      oldPositions[props.id].x = coords.x;
-      oldPositions[props.id].y = coords.y;
+      oldPositions[id.value].x = coords.x;
+      oldPositions[id.value].y = coords.y;
 
       props.positions.value = oldPositions;
     })
@@ -79,15 +84,15 @@ export const GestureDetectorView = (props: GestureDetectorViewProps) => {
     return {
       position: "absolute",
 
-      top: props.positions.value[props.id]?.y || 0,
-      left: props.positions.value[props.id]?.x || 0,
+      top: props.positions.value[id.value]?.y || 0,
+      left: props.positions.value[id.value]?.x || 0,
 
-      width: props.positions.value[props.id]?.width || 0,
-      height: props.positions.value[props.id]?.height || 0,
+      width: props.positions.value[id.value]?.width || 0,
+      height: props.positions.value[id.value]?.height || 0,
 
       transform: [
-        {"rotate": `${props.positions.value[props.id]?.angle || 0}rad`},
-        {"scale": props.positions.value[props.id]?.scale || 0},
+        {"rotate": `${props.positions.value[id.value]?.angle || 0}rad`},
+        {"scale": props.positions.value[id.value]?.scale || 0},
       ]
     }
   }

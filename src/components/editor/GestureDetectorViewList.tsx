@@ -30,11 +30,12 @@ export const GestureDetectorViewList = observer((props: GestureDetectorViewListP
             <GestureDetectorView 
               key={item.i} 
               positions={props.positions}
+              sortedPositions={props.sortedPositions}
               movingId={props.movingId}
               activeId={props.activeId}
               cursorPosition={props.cursorPosition}
               basePosition={props.basePosition}
-              id={item.index}
+              id={item.i}
             />
           )
         })
