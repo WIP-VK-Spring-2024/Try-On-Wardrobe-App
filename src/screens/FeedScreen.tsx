@@ -64,7 +64,7 @@ export const FeedScreen = observer((props: FeedScreenProps) => {
         setValue={setTab}
         showDivider={false}
         containerStyle={{
-          height: WINDOW_HEIGHT - FOOTER_HEIGHT - HEADER_HEIGHT - 10,
+          height: WINDOW_HEIGHT - FOOTER_HEIGHT - HEADER_HEIGHT - 10 - 25,
           marginTop: 10,
         }}
         contentContainerStyle={{

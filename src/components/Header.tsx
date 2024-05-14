@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, ReactNode } from 'react';
 
 import { Box, ChevronLeftIcon, Pressable, View} from '@gluestack-ui/themed';
-import {PRIMARY_COLOR, ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR} from '../consts';
+import {PRIMARY_COLOR, ACTIVE_COLOR, HEADER_COLOR, HEADER_ICON_COLOR, TEXT_COLOR, HEADER_HEIGHT} from '../consts';
 import {RobotoText} from './common';
 import { StackActions } from '@react-navigation/native';
 
@@ -25,7 +25,7 @@ const HeaderBase = (props: PropsWithChildren) => {
   return (
     <Box
       bg={HEADER_COLOR}
-      $base-height={60}
+      h={HEADER_HEIGHT}
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
