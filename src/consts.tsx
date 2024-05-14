@@ -20,3 +20,7 @@ export const WINDOW_WIDTH = Dimensions.get('window').width;
 export const WINDOW_HEIGHT = Dimensions.get('window').height;
 
 export const errorMsgTimeout = 5000;
+
+export const FOOTER_HEIGHT = 56;
+export const HEADER_HEIGHT = 60;
+export const COMMENT_INPUT_HEIGHT = 40;

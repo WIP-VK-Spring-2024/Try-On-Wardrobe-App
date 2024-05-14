@@ -2,7 +2,6 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { BaseScreen } from "./BaseScreen";
 import { Box, HStack, View } from "@gluestack-ui/themed";
-import { Spinner } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Header } from "../components/Header";
 import { Image } from "@gluestack-ui/themed";
@@ -11,6 +10,7 @@ import { PRIMARY_COLOR, WINDOW_HEIGHT } from "../consts";
 import { RatingButtons } from "../components/TryOnRating";
 import { StyleSheet } from 'react-native'
 import { useFocusEffect } from "@react-navigation/native";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 const style = StyleSheet.create({
     overlay: {
@@ -33,10 +33,7 @@ export const ResultScreen = observer(({navigation}: {navigation: any}) => {
       header={<Header navigation={navigation} rightMenu={null} />}>
       <Box h={WINDOW_HEIGHT-130} w="100%" display="flex" alignItems="center" justifyContent="center">
         {resultStore.resultUrl === undefined ? (
-          <HStack>
-            <Spinner size="large" color={PRIMARY_COLOR} />
-            <RobotoText>Загрузка...</RobotoText>
-          </HStack>
+          <LoadingSpinner />
         ) : (
           <Box w="100%" flex={1}>
             <Image

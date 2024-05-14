@@ -14,7 +14,6 @@ import { StackActions } from '@react-navigation/native'
 import SearchIcon from "../../assets/icons/search.svg"
 import { userUnsub, userSub } from "../requests/user"
 import { Avatar } from "./Avatar";
-import { feedPropsMediator, feedUserMediator } from "./feed/mediator";
 
 export const BackButton = (props: {navigation: any, flex?: number, onBackPress?: ()=>void}) => {
   const onBackPress = props.onBackPress || (() => props.navigation.dispatch(StackActions.pop(1)))
@@ -107,12 +106,10 @@ export const SubsBlock = observer((props: SubBlockProps) => {
     <View flexDirection="row">
       <View flex={1} />
       <View gap={10} flex={8}>
-        <View flexDirection="row" alignItems="center" gap={10}>
+        <Pressable flexDirection="row" alignItems="center" gap={10} onPress={() => props.onSearch()}>
           <RobotoText fontSize={18}>Подписки</RobotoText>
-          <Pressable onPress={() => props.onSearch()}>
-            <SearchIcon fill={'#000000'} width={20} height={20} />
-          </Pressable>
-        </View>
+          <SearchIcon fill={'#000000'} width={20} height={20} />
+        </Pressable>
         {props.subs.length > 0 ? (
           <SubsList
            {...props}

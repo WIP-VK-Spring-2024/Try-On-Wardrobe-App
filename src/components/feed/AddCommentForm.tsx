@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { InputField, View } from "@gluestack-ui/themed";
 import { Input } from "@gluestack-ui/themed";
 import { Pressable } from "@gluestack-ui/themed";
-import { ACTIVE_COLOR } from "../../consts";
+import { ACTIVE_COLOR, COMMENT_INPUT_HEIGHT } from "../../consts";
 
 import SendIcon from '../../../assets/icons/send.svg';
 import { appState } from "../../stores/AppState";
@@ -61,7 +61,7 @@ export const AddCommentForm = observer((props: AddCommentFormProps) => {
             setValue('');
           }}
         >
-          <SendIcon width={40} height={40} fill={ACTIVE_COLOR}/>
+          <SendIcon width={40} height={COMMENT_INPUT_HEIGHT} fill={ACTIVE_COLOR}/>
         </Pressable>
       </Input>
     </View>

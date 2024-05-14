@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { BaseScreen } from "./BaseScreen";
 import ImageModal from "react-native-image-modal";
-import { WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, ACTIVE_COLOR } from "../consts";
+import { WINDOW_HEIGHT, WINDOW_WIDTH, BASE_COLOR, ACTIVE_COLOR, COMMENT_INPUT_HEIGHT } from "../consts";
 import { View } from "@gluestack-ui/themed";
 import { RobotoText } from "../components/common";
 import { Pressable } from "@gluestack-ui/themed";
@@ -148,7 +148,7 @@ export const PostScreen = observer((props: PostScreenProps) => {
   }, [])
 
   const [status, setStatus] = useState<TryOnOutfitFooterStatus>('outfit');
-  const [height, setHeight] = useState(40);
+  const [height, setHeight] = useState(COMMENT_INPUT_HEIGHT);
 
   const Footer = observer(() => {
     return (

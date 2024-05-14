@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Button, Center, Pressable, View} from '@gluestack-ui/themed';
-import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR, BASE_COLOR} from '../consts';
+import {PRIMARY_COLOR, SECONDARY_COLOR, ADD_BTN_COLOR, TEXT_COLOR, FOOTER_COLOR, FOOTER_ICON_COLOR, WINDOW_WIDTH, ACTIVE_COLOR, BASE_COLOR, FOOTER_HEIGHT} from '../consts';
 
 import NewsPaperIcon from '../../assets/icons/paper.svg';
 import GarmentIcon from '../../assets/icons/garment.svg';
@@ -64,6 +64,7 @@ export const Footer = observer(({navigation}: {navigation: any}) => {
   return (
     <Box
       bg={FOOTER_COLOR}
+      height={FOOTER_HEIGHT}
       display="flex"
       flexDirection="row"
       justifyContent="space-around"
@@ -123,7 +124,7 @@ interface ButtonFooterProps {
 
 export const ButtonFooter = observer(({text, onPress, children}: ButtonFooterProps & React.PropsWithChildren) => {
   return (
-    <Button paddingHorizontal={0} onPress={onPress} bgColor={SECONDARY_COLOR} h={65} w="100%" justifyContent="center">
+    <Button paddingHorizontal={0} onPress={onPress} bgColor={SECONDARY_COLOR} h={FOOTER_HEIGHT} w="100%" justifyContent="center">
       <Center>
         <RobotoText color="white" fontSize="$2xl">
           {text || 'Выбрать'}

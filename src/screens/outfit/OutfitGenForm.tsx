@@ -15,6 +15,7 @@ import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { errorMsgTimeout } from "../../consts"
+import { appState } from "../../stores/AppState";
 
 
 const PurposeCheckboxGroup = observer(() => {
@@ -117,8 +118,12 @@ export const OutfitGenFormScreen = observer((props: OutfitGenFormScreenProps) =>
             setError('Недостаточно вещей для генерации образа - добавьте хотя бы 1 вещь категории "Верх" и 1 вещь категории "Низ" в свой гардероб');
             return;
           }
+          if (resp.status === 503) {
+            setError('Этот функционал временно недоступен, попробуйте позже');
+            return;
+          }
           props.navigation.navigate('OutfitGenResult');
-        });
+        }).catch(err => console.log(err));
       }}
     />
   )

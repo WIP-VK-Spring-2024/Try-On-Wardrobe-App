@@ -21,6 +21,7 @@ import FilledHeartIcon from '../../../assets/icons/heart-filled.svg';
 import HeartIcon from '../../../assets/icons/heart.svg';
 import { profileStore } from "../../stores/ProfileStore";
 import { ajax } from "../../requests/common";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 
 const MARGIN = 10;
 const GAP = 10;
@@ -238,7 +239,10 @@ interface OutfitGenResultScreenProps {
 
 export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps) => {
   // const uuids = garmentStore.garments.slice(0, 3).map(g => g.uuid) as string[];
-
+  useEffect(() => {
+    return () => outfitGenUUIDStore.setOutfits([]);
+  }, []);
+  
   const outfits = outfitGenUUIDStore.outfits;
 
   // console.log('outfits:', outfits)
@@ -257,15 +261,18 @@ export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps
         margin={10}
       >
         {
-          outfits.map((outfit, i) => {
-            return (
-              <OutfitGenCard
-                navigation={props.navigation}
-                key={i}
-                garmentUUIDS={outfits[i]}
-              />
-            )
-          })
+          outfits ?
+            outfits.map((outfit, i) => {
+              return (
+                <OutfitGenCard
+                  navigation={props.navigation}
+                  key={i}
+                  garmentUUIDS={outfits[i]}
+                />
+              )
+            })
+            :
+            <LoadingSpinner />
         }
       </View>
     </BaseScreen>
