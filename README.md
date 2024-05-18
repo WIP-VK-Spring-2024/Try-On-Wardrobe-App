@@ -1,5 +1,13 @@
 # Try-On-Wardrobe app
 
+## Fast setup
+Requirements: ```npm, npx pod-install```
+```
+npm install
+npx pod-install
+npm run ios -project TryOn.xcodeproj -- --simulator="iPhone 14 Pro (16.0)"
+```
+
 ## Getting Started
 
 > **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
