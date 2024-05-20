@@ -39,7 +39,7 @@ import { CloseIcon } from '@gluestack-ui/themed';
 
 export const RobotoText = observer((props: any) => {
   return (
-    <Text style={{fontFamily: 'Roboto'}} {...props}>
+    <Text style={{fontFamily: 'Roboto-Regular'}} {...props}>
       {props.children}
     </Text>
   );
