@@ -15,8 +15,6 @@ import { ButtonFooter } from "../../components/Footer";
 import { ajax } from "../../requests/common";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { errorMsgTimeout } from "../../consts"
-import { appState } from "../../stores/AppState";
-
 
 const PurposeCheckboxGroup = observer(() => {
   const purposeByUUID = (uuid: string) => {
