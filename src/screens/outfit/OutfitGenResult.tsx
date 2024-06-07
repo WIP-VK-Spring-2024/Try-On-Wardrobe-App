@@ -134,14 +134,8 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const canvasRef = useCanvasRef();
 
-  const canSaveRef = useRef<boolean>(true);
-
   const onSave = () => {
-    if (!canSaveRef.current) {
-      return;
-    }
-
-    canSaveRef.current = false;
+    setIsSelected(true);
 
     const outfit = new Outfit({
       privacy: profileStore.currentUser?.privacy || 'private',
@@ -169,6 +163,7 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
             return outfit;
           })
           .catch(reason => {
+            setIsSelected(false);
             console.error(reason);
             return false;
           })
@@ -185,16 +180,13 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
       onPress={() => {
         const outfit = outfitStore.outfits.find(o => o.uuid === uuid);
 
-        if (outfit === undefined) {
-          setIsSelected(!isSelected);
+        if (outfit === undefined && isSelected === false) {
           onSave()?.then((res) => {
             if (res) {
               props.navigation.navigate('Outfit', {outfit: res})
             }
           })
-        }
-
-        if (outfit !== undefined) {
+        } else {
           props.navigation.navigate('Outfit', {outfit: outfit})
         }
       }}
@@ -214,10 +206,12 @@ const OutfitGenCard = observer((props: OutfitGenCardProps) => {
         right={10}
 
         onPress={() => {
-          setIsSelected(!isSelected)
-          if (!isSelected) {
-            canSaveRef.current = false;
-            ajax.apiDelete(`/outfits/${uuid}`, {credentials: true})
+          if (isSelected) {
+            setIsSelected(false);
+            ajax
+              .apiDelete(`/outfits/${uuid}`, { credentials: true })
+              .then(_ => uuid && outfitStore.removeOutfit(uuid))
+              .catch(_ => setIsSelected(true));
           } else {
             onSave();
           }
@@ -238,20 +232,20 @@ interface OutfitGenResultScreenProps {
 }
 
 export const OutfitGenResultScreen = observer((props: OutfitGenResultScreenProps) => {
-  // const uuids = garmentStore.garments.slice(0, 3).map(g => g.uuid) as string[];
   useEffect(() => {
     return () => outfitGenUUIDStore.setOutfits([]);
   }, []);
   
   const outfits = outfitGenUUIDStore.outfits;
-
-  // console.log('outfits:', outfits)
+  // const outfits = outfitStore.outfits
+  //   .slice(0, 4)
+  //   .map(outfit => outfit.items.map(item => item.garmentUUID));
 
   return (
     <BaseScreen
       navigation={props.navigation}
       header={
-        <BackHeader navigation={props.navigation} text="Комплекты"/>
+        <BackHeader navigation={props.navigation} text="Образы"/>
       }
     >
       <View
